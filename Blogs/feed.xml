@@ -5,9 +5,131 @@
     <description></description>
     <link>http://172.16.0.2:4000/Blogs/</link>
     <atom:link href="http://172.16.0.2:4000/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 26 May 2019 02:26:50 +0800</pubDate>
-    <lastBuildDate>Sun, 26 May 2019 02:26:50 +0800</lastBuildDate>
+    <pubDate>Wed, 29 May 2019 00:59:01 +0800</pubDate>
+    <lastBuildDate>Wed, 29 May 2019 00:59:01 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Jekyll Markdown Syntax Reference</title>
+        <description>&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;[link](url)&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://gist.github.com/roachhd/779fa77e9b90fe945b0c&quot;&gt;Reference link&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 27 May 2019 00:00:00 +0800</pubDate>
+        <link>http://172.16.0.2:4000/Blogs/note/JekyllMarkdownSyntaxReference.html</link>
+        <guid isPermaLink="true">http://172.16.0.2:4000/Blogs/note/JekyllMarkdownSyntaxReference.html</guid>
+        
+        <category>Jekyll</category>
+        
+        <category>Markdown</category>
+        
+        
+        <category>Note</category>
+        
+      </item>
+    
+      <item>
+        <title>Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</title>
+        <description>&lt;p&gt;I got to know Gumbel distribution when I surveyed papers for my project extension. In addition to its capability to relax the bottleneck of discrete distributions and allow gradients to pass through, I am impressed by that it can really simplify processes of generating discrete samples. Given a discrete distribution of $\lvert C \rvert$ categories, and the probability of each category expressed as follows:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+P(C_j) = \frac{exp(\text{logit}_j)}{\sum_{i=1}^{\lvert C \rvert}exp(\text{logit}_i)}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;where $C_i$ refers to i-th category; then to generate a sample $Sample_c$ from that distribution, we can make use of samples from standard Gumbel distribution (Gumbel distribution with mean $0$, scale $1$):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation} \label{eq:samplingFromDiscrete}
+Sample_c = argmax_{i \in Z, 1 \leq i \leq \lvert C \rvert} (\text{logit}_i + Sample_{g,i})
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;where $Sample_{g,i}$ is a sample drawn independently from standard Gumbel distribution for the i-th category.&lt;/p&gt;
+
+&lt;p&gt;The convenience comes from the fact that sampling from standard Gumbel distribution is rather easy, as it has an invertible, closed-form CDF:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align} 
+&amp;p = CDF_{Gumbel}(g) = exp(-exp(-g)) \label{eq:CDFOfGumbel} \\
+&amp;g = CDF_{Gumbel}^{-1}(p) = -ln(-ln(p))
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;As a result, we can get $Sample_{g,i}$ by sampling $u_{i}$ from $Uniform[0, 1]$ and computing $Sample_{g,i} = CDF_{Gumbel}^{-1}(u_{i})$.&lt;/p&gt;
+
+&lt;p&gt;I had always taken \eqref{eq:samplingFromDiscrete} for granted until I saw a reference a few days ago, which explains why \eqref{eq:samplingFromDiscrete} is equivalent to sampling from the original discrete distribution. The proof is not too hard to derive with my limited mathematical knowledge, so here I just write it down using my own words to help me better capture the intuition behind.&lt;/p&gt;
+
+&lt;p&gt;Note that samples generated via \eqref{eq:samplingFromDiscrete} also follow a distribution, which describes the probability of $z_i = logit_i + Sample_{g,i}$ being the largest, for each cateogry $i$. If each $Sample_{g,i}$ is replaced with a random variable $G_i$, then it can be thought of as there are $\lvert C \rvert$ independent random variables $Z_i = logit_i + G_i$, each of which follows a Gumbel distribution with mean $logit_i$ and scale $1$. To show what those probabilities really are, we start from assuming that for some category $j$, $Z_j$ is given to be some $z_j$, and write down the conditional probability of $Z_j = z_j$ being the largest as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; P(Z_j \text{ is the largest} \vert Z_j = z_j, logit_{1 .. \lvert C \rvert}) \nonumber \\
+&amp; = \prod_{i = 1, i \neq j}^{\lvert C \rvert}P(logit_i + G_i &lt; z_j) \nonumber \\
+&amp; = \prod_{i = 1, i \neq j}^{\lvert C \rvert}P(G_i &lt; z_j - logit_i) \label{eq:conditionalProbabilityOfzjIsTheLargest}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Each term in the product of \eqref{eq:conditionalProbabilityOfzjIsTheLargest} is the cumulative probability of standard Gumbel distribution ranging from $-\inf$ to $z_j - logit_i$, which can be expanded using the CDF from \eqref{eq:CDFOfGumbel}:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; P(Z_j \text{ is the largest} \vert Z_j = z_j, logit_{1 .. \lvert C \rvert}) \nonumber \\
+&amp; = \prod_{i = 1, i \neq j}^{\lvert C \rvert}exp(-exp(-(z_j - logit_i)) \nonumber \\
+&amp; = exp(\sum_{i = 1, i \neq j}^{\lvert C \rvert}-exp(-z_j + logit_i)) \nonumber \\
+&amp; = exp(-exp(-z_j) * \sum_{i = 1, i \neq j}^{\lvert C \rvert}exp(logit_i)) \nonumber \\
+&amp; = exp(-exp(-z_j) * (\sum_{i = 1}^{\lvert C \rvert}exp(logit_i) - exp(logit_j))) \nonumber \\
+&amp; = exp(-exp(-z_j) * (S - exp(logit_j)))
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $S = \sum_{i = 1}^{\lvert C \rvert}exp(logit_i)$. With that conditional probability, the target distribution can be obtained by Bayes rule and marginalising out $Z_j$, which
+is also a Gumbel distribution with mean $logit_j$ and scale $1$ (So the PDF of it is $P(Z_j) = exp(-(Z_j - logit_j + exp(-(Z_j - logit_j))))$):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert}) \nonumber \\
+&amp; = \int_{-\infty}^{\infty} P(Z_j \text{ is the largest} \vert Z_j, logit_{1 .. \lvert C \rvert}) * P(Z_j) dZ_j \nonumber \\
+&amp; = \int_{-\infty}^{\infty} exp(-exp(-Z_j) * (S - exp(logit_j))) * \nonumber \\
+&amp; \phantom{= \int_{-\infty}^{\infty}} exp(-(Z_j - logit_j + exp(-(Z_j - logit_j)))) dZ_j \nonumber \\
+&amp; = \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S + exp(-Z_j) * exp(logit_j)) * \nonumber \\
+&amp; \phantom{= \int_{-\infty}^{\infty}} exp(-(Z_j - logit_j) - exp(-Z_j) * exp(logit_j)) dZ_j \nonumber \\
+&amp; = exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S - Z_j) dZ_j \label{eq:integralOverZj}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;The integral part still looks intimidating, but it turns out we can introduce a new variable $\hat{Z_j} = Z_j - ln(S)$ to further simplify \eqref{eq:integralOverZj}:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S - Z_j) dZ_j \nonumber \\
+&amp; = exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-\hat{Z_j} - ln(S)) * \nonumber \\
+&amp; \phantom{= exp(logit_j) * \int_{-\infty}^{\infty}} S - \hat{Z_j} - ln(S)) d\hat{Z_j} \nonumber \\
+&amp; = \frac{exp(logit_j)}{S} * \int_{-\infty}^{\infty} exp(-(exp(-\hat{Z_j}) + \hat{Z_j})) d\hat{Z_j} \label{eq:integralOverZHatj}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Note that the integral in \eqref{eq:integralOverZHatj} is equivalent to integrating the PDF of standard Gumbel distribution over its support, so that integral is just 1, and we arrive at:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert}) = \frac{exp(logit_j)}{S} \nonumber \\
+&amp; \phantom{P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert})} = \frac{exp(logit_j)}{\sum_{i = 1}^{\lvert C \rvert}exp(logit_i)} \label{eq:finale}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;As a result, the probability of each category being sampled via \eqref{eq:samplingFromDiscrete} is exactly the same amount of probability assigned to each one by the original discrete distribution.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Gumbel_distribution&quot;&gt;https://en.wikipedia.org/wiki/Gumbel_distribution&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/&quot;&gt;https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Mon, 27 May 2019 00:00:00 +0800</pubDate>
+        <link>http://172.16.0.2:4000/Blogs/note/Gumbel-Distribution.html</link>
+        <guid isPermaLink="true">http://172.16.0.2:4000/Blogs/note/Gumbel-Distribution.html</guid>
+        
+        <category>MachineLearning</category>
+        
+        <category>Probability</category>
+        
+        
+        <category>Note</category>
+        
+      </item>
     
   </channel>
 </rss>
