@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	
+	<script type="text/javascript"
+	        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']],
+		processEscapes: true},
+		jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+		extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+		TeX: {
+		extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+		equationNumbers: {
+		autoNumber: "AMS"
+		}
+		}
+		});
+		</script>
+	
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blogs/assets/css/main.css">
+  <link rel="canonical" href="/Blogs/note/WassersteinGAN.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="/Blogs/feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open Sans">
+
+<!-- font awesome -->
+
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	
+	<title>Intuitions behind Wasserstein GAN</title>
+
+	
+
+
+</head>
+
+
+  
+
+
+  </head>
+
+  <body>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Intuitions behind Wasserstein GAN</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="11 Jun 2019" itemprop="datePublished">Jun 11 2019</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Chao</span>
+        
+		<br>
+		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://172.16.0.2:4000/Blogs/tags/">MachineLearning</a>
+        
+		<a class="post-tags-item" href="http://172.16.0.2:4000/Blogs/tags/">GAN</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+    </center>
+</div>
+
+
+
+
+<div class="post-content" itemprop="articleBody">
+    <p>Since the appearance of Generative Adversarial Network, aka GAN, a large number of variants have been proposed in attempts to improve the training dynamics, and Wasserstein GAN (WGAN) is one of them. The reason I would like to make a note of it is because in my last project, this type of GAN, specifically, WGAN-GP, was the only one working among several types and architectures I had tried. Honestly, most of time I just pick a model and try it to see if it works; but since WGAN has proven its success in my own case, I think it is time to deepen my understanding about it. There have already been abundant discussions and explanations about WGAN on the Internet, so here I simply write down some informal interpretation of my own.</p>
+
+<h2 id="wasserstein-distance">Wasserstein Distance</h2>
+<p>The central idea of WGAN is to replace means of measuring the similarity between two distributions with the one called Wasserstein Distance (WD), which is defined as:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned} 
+& WD_2[P, Q] = \inf_{\pi} \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi(x, y) dx dy \\
+& where
+\begin{cases}
+P(x) = \int_{y \in \text{support}_Q} \pi(x, y) dy \\
+Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
+\end{cases}
+\end{aligned}
+\label{eq:WD2}
+\end{equation} %]]></script>
+
+<p>Note that the distance between every pair of $x$ and $y$ in \eqref{eq:WD2} is defined as 2-norm. The use of other metrics is also possible, but for the consistency with later discussion 2-norm is specifically adopted.</p>
+
+<p>$\pi$ can be viewed as a transport plan which depicts how one can shift around the densities in one distribution so that the resultant distribution matches the other one. This interpretation comes from the fact that $\pi$ satisfies the <em>where</em> condition: for any point $x’ \in \text{support}_P$, if from every point $y’ \in \text{support}_Q$ the amount of density described by $\pi(x = x’, y = y’)$ is moved to $x’$, then the density of $P(x = x’)$ can be obtained. Hence, by applying such a transport plan the entire distribution $P$ can be constructed from the distribution $Q$, and vice versa.</p>
+
+<p>There are many possible transport plans to meet the <em>where</em> condition, so in order to tell which one is preferable, a cost is designed to serve the purpose. From my point of view, the best way to interpret this cost is to follow the idea of <a href="https://en.wikipedia.org/wiki/Earth_mover%27s_distance">Earth mover’s distance</a>: considering there are several piles of dirt at different locations, and certain amounts of dirt from each pile is going to be moved to other locations, how can we quantify the effort required to complete this job? Well, one way to summarise the overall effort, or cost, of such transport is to calculate the sum of each amount of dirt to be moved times the corresponding distance to be travelled. By analogy, $\pi(x, y)$ describes amounts of density to be moved between every pair of points $x$ and $y$; if the definition of distance between two points is set to be 2-norm, then \eqref{eq:WD2} is equivalent to computing such costs across all transport plans and finding the lowest one. As a result, WD between two distributions $P$ and $Q$ indicates the minimum effort demanded to make them identical; and the larger this value is, the more dissimilar these two distributions are.</p>
+
+<p>It might look like WD is just another criterion for comparing distributions, but it indeed stands out from other distance measures due to its smoothness property. In the paper where WGAN is introduced, the authors used a simple example to illustrate this advantage. Supposed two distributions $P$ and $Q_{\theta}$ are defined as follows:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& P(x, y) =
+\begin{cases}
+1,& x = 0, 0 \leq y \leq 1 \\
+0,& otherwise
+\end{cases} \\
+& Q_{\theta}(x, y) =
+\begin{cases}
+1,& x = \theta, 0 \leq y \leq 1 \\
+0,& otherwise
+\end{cases} 
+\end{aligned} %]]></script>
+
+<p>Note that $Q_{\theta}$ can be seen as a parametric distribution with $\theta$ being the parameter. In this case, Kullback Leibler divergence (KL), reverse KL, and Jensen-Shannon divergence (JS) can be explicted computed:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+KL[P \lVert Q_{\theta}] & = \int P(x, y) ln(\frac{P(x, y)}{Q_{\theta}(x, y)}) dx dy \\
+& = [\int P(x, y) ln(P(x, y)) dx dy] \\
+& \phantom{=} - [\int P(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
+& = 
+\begin{cases}
+0,& \theta = 0 \\
+-\infty,& \theta \neq 0
+\end{cases} \\
+KL[Q_{\theta} \lVert P] & = \int Q_{\theta}(x, y) ln(\frac{Q_{\theta}(x, y)}{P(x, y)}) dx dy \\
+& = [\int Q_{\theta}(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
+& \phantom{=} - [\int Q_{\theta}(x, y) ln(P(x, y)) dx dy] \\
+& = 
+\begin{cases}
+0,& \theta = 0 \\
+-\infty,& \theta \neq 0
+\end{cases} \\
+JS[P \lVert Q_{\theta}] & = 0.5 * KL[P \lVert 0.5 * (P + Q) ] \\
+& \phantom{=} + 0.5 * KL[Q \lVert 0.5 * (P + Q)] \\
+& = 0.5 * [\int P(x, y) ln(P(x, y)) dx dy] \\ 
+& \phantom{=} - 0.5 * [\int P(x, y) ln(0.5 * (P(x, y) + Q_{\theta}(x, y))) dx dy] \\
+& \phantom{=} + 0.5 * [\int Q_{\theta}(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
+& \phantom{=} - 0.5 * [\int Q_{\theta}(x, y) ln(0.5 * (P(x, y) + Q_{\theta}(x, y))) dx dy] \\
+& = -0.5 * (-ln(2)) \\
+& \phantom{=} - 0.5 * \int P(x, y) * ln(P(x, y) + Q_{\theta}(x, y)) dx dy \\
+& \phantom{=} -0.5 * (-ln(2)) \\
+& \phantom{=} - 0.5 * \int Q_{\theta}(x, y) * ln((P(x, y) + Q_{\theta}(x, y))) dx dy \\
+& =
+\begin{cases}
+ln(2) - ln(2) = 0, & \theta = 0 \\
+ln(2),& \theta \neq 0
+\end{cases} \\
+\end{aligned} %]]></script>
+
+<p>All three distance measures lead to a discontinuous drop at $\theta = 0$; moreover , KL and reverse KL give a numerically unstable result of $-\infty$ when $\theta \neq 0$.</p>
+
+<p>On the other hand, with the definition of $WD_2$, the minimum cost of adjusting $Q_{\theta}$ to match $P$ can be achived when moving the non-zero density at each point of $Q_{\theta}$ a distance of $\theta^2$ along x-axis towards $0$, and that results in:</p>
+
+<script type="math/tex; mode=display">WD_2[P, Q_{\theta}] = \theta^2 * 1 = \theta^2</script>
+
+<p>Clearly, $WD_2$ demonstrates better smoothness and continuousness. Note that this property is rather important when such distance measures are used as objectives of optimisation via gradient descent. For example, in the particular case above gradients of the 4 distances w.r.t $\theta$ are:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& \nabla_{\theta} KL[P \lVert Q_{\theta}] = 
+\begin{cases}
+undefined,& \theta = 0\\
+0,& \theta \neq 0
+\end{cases} \\
+& \nabla_{\theta} KL[Q_{\theta} \lVert P] =
+\begin{cases}
+undefined,& \theta = 0\\
+0,& \theta \neq 0
+\end{cases} \\
+& \nabla_{\theta} JS[P \lVert Q_{\theta}] =
+\begin{cases}
+undefined,& \theta = 0\\
+0,& \theta \neq 0
+\end{cases} \\
+& \nabla_{\theta} WD_2[P, Q_{\theta}] = 2\theta
+\end{aligned} %]]></script>
+
+<p>It can been seen that optimisation via gradient descent in that case will not work with KL, reverse KL and JS due to lack of gradient information; but it is possible to reach the optimum $\theta$ through gradients of $WD_2$.</p>
+
+<h2 id="wgan">WGAN</h2>
+<p>Standard GANs are known for its unstable and difficult training process, and some researches have suggested that it might be due to the objective it uses, which leads to the minimisation of JS distance between model distribution and data distribution. As pointed out in the previous <a href="#dir0">section</a>, JS sometime can be problematic in problems of optimisation, while other measures of good properties, such as WD, might be better choices for construction of GAN. Therefore, the inventors of WGAN tried to bring WD (particularly, $WD_2$) into and GAN architecture, resulting in a new objective (given $Q$ is a model distribution and $P$ is the data distribution which needs to be modelled):</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& \min_{Q} WD_2[P, Q] = \\
+& \phantom{min_Q} \min_{Q} \inf_{\pi} \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi(x, y) dx dy \\
+& \phantom{min_Q} where
+\begin{cases}
+P(x) = \int_{y \in \text{support}_Q} \pi(x, y) dy \\
+Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
+\end{cases}
+\end{aligned}
+\label{eq:WGANGoal}
+\end{equation} %]]></script>
+
+<p>In contrast to implicit minimisation of the JS distance between $P$ and $Q$ in standard GANs, \eqref{eq:WGANGoal} explicitly expresses the goal of reducing $WD_2$. However, that seems to make the objective quite different from the one of standard GANs, since it does not directly correspond to a minimax game anymore; in addition, the calculation of \eqref{eq:WGANGoal} involves finding a $\pi$ which satisfies both infimum and the <em>where</em> condition, which makes the whole equation looks rather intimidating. Fortunately, it turns out that \eqref{eq:WGANGoal} can be transformed into its dual form according to the theorem of Kantorovich-Rubinstein Duality:</p>
+
+<script type="math/tex; mode=display">\begin{equation} 
+\min_{Q} WD_2[P, Q] = \min_{Q} \sup_{f, \lVert f \rVert_L \le 1} E_{x \sim P}[f(x)] - E_{y \sim Q}[f(y)] 
+\label{eq:WGANDualGoal}
+\end{equation}</script>
+
+<p>where $\lVert f \rVert_L$ stands for a Lipschitz constant of $f$ under norm-2 metric. If a neural network of enough capacity with parameter set $\phi$ is used to model $f$ such that supremum can be reached; and samples of $Q$ are generated via mapping each sample $z$ from a known distribution $Z$ with another neural network $g$ parameterized by $\theta$, then \eqref{eq:WGANDualGoal} can be rewritten as:</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\min_{Q} WD_2[P, Q] = \min_{\theta} \max_{\phi} E_{x \sim P}[f_{\phi}(x)] - E_{z \sim Z}[f_{\phi}(g_\theta(z))] 
+\label{eq:WGANPraticalGoal}
+\end{equation}</script>
+
+<p>It can be seen from \eqref{eq:WGANPraticalGoal} that a new minimax game between a gnerator of $g_{\theta}$ and a critic $f_{\phi}$ emerges: the generator is optimised to produce samples from a better Q which reduce $WD_2$, while the job of the critic is to compute the $WD_2$ of the current $Q$ and the data distribution $P$ through maximisation of the objective.</p>
+
+<p>Arguably, the most important part which allows us to be able to perform minimax optimisation is the conversion from the original problem into its dual form, with the help of Kantorovich-Rubinstein Duality. While one could go through a solid mathematical derivation to explain how this conversion works, here I would simply like to provide some intuitions based on my understanding about this dual form from the aspect of Lipschitz continuity.</p>
+
+<p>As expounded in <a href="https://en.wikipedia.org/wiki/Lipschitz_continuity">here</a>, Lipschitz continuity is basically a notion to represent how fast a function $f:X \to W$ can change, described by a number $K \ge 0$ called Lipschitz constant which satisfies:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& d_W(f(x_1) - f(x_2)) \le K * d_X(x_1, x_2), \\
+& \forall x_1, x_2 \in X
+\end{aligned} %]]></script>
+
+<p>where $d_X$ and $d_W$ are two metrics for the space $X$ and $W$ respectively. With that definition, the $\lVert f \rVert_L \le 1$ appearing in \eqref{eq:WGANDualGoal} can be expressed more precisely as:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& \lVert f(x) - f(y) \rVert_2 = \lvert f(x) - f(y) \vert \le 1 * \lVert x - y \rVert_2 \\
+& \implies -\lVert x - y \rVert_2 \le f(x) - f(y) \le \lVert x - y \rVert_2, \\
+& \forall x, y \in \text{support}_Q \cup \text{support}_P
+\end{aligned}
+\label{eq:lipschitz1Norm2}
+\end{equation} %]]></script>
+
+<p>The first equality in \eqref{eq:lipschitz1Norm2} comes from the fact that $f$ is a real-valued function.</p>
+
+<p>Now back to the definition of $WD_2$. Supposing an optimal transport plan $\pi^*$, which is one of the solutions to \eqref{eq:WD2}, is given, then it can be rewritten as (<em>where</em> condition is omitted):</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+WD_2[P, Q] = \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi^*(x, y) dx dy
+\label{eq:WD2OptimalPI}
+\end{equation}</script>
+
+<p>The combination of \eqref{eq:lipschitz1Norm2} and \eqref{eq:WD2OptimalPI} yields the following inequality:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{align}
+& \int_{x \in \text{support}_P, y \in \text{support}_Q} (f(x) - f(y)) \pi^*(x, y) dx dy \nonumber \\
+& \le \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi^*(x, y) dx dy \nonumber \\ 
+& \implies \int_{x \in \text{support}_P, y \in \text{support}_Q} (f(x) - f(y)) \pi^*(x, y) dx dy \nonumber \\
+& \phantom{\implies} \le WD_2[P, Q] \label{eq:WD2LowerBound}
+\end{align} %]]></script>
+
+<p>Note that \eqref{eq:WD2LowerBound} has suggested when the two sides of the equation are equal: if some function $f^*$ satisfies $f^*(x) - f^*(y) = \lVert x - y \rVert_{2}$ for every pair $x$, $y$ in the transport plan described by $\pi^*$, i.e. $\pi^*(x, y) \ne 0$, then it can be concluded that:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& \int_{x \in \text{support}_P, y \in \text{support}_Q} (f^*(x) - f^*(y)) \pi^*(x, y) dx dy \\
+& = \int_{x \in \text{support}_P, y \in \text{support}_Q, \pi^*(x, y) \ne 0} (f^*(x) - f^*(y)) \pi^*(x, y) dx dy \\
+& \phantom{=} + \int_{x \in \text{support}_P, y \in \text{support}_Q, \pi^*(x, y) = 0} (f^*(x) - f^*(y)) \pi^*(x, y) dx dy \\
+& = \int_{x \in \text{support}_P, y \in \text{support}_Q, \pi^*(x, y) \ne 0} \lVert x - y \rVert_{2} \pi^*(x, y) dx dy + 0 \\
+& = WD_2[P, Q]
+\end{aligned} %]]></script>
+
+<p>Since $WD_2[P, Q]$ represents the upper bound of \eqref{eq:WD2LowerBound}, and it has been shown that such upper bound can be reached with $f^*$. That implies the following equation holds under the assumption that the parameterised form of $f$, $f_{\phi}$, can express any f whose $\lVert f \rVert_L \le 1$, including $f^*$:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& WD_2[P, Q] \\
+& = \max_{\phi} \int_{x \in \text{support}_P, y \in \text{support}_Q} (f_{\phi}(x) - f_{\phi}(y)) \pi^*(x, y) dx dy
+\end{aligned}
+\label{eq:maximisationWRTPhi}
+\end{equation} %]]></script>
+
+<p>Interestingly, \eqref{eq:maximisationWRTPhi} can be further simplified through the derivation below</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& WD_2[P, Q] \\
+& = \max_{\phi} \int_{x \in \text{support}_P, y \in \text{support}_Q} f_{\phi}(x) * \pi^*(x, y) dx dy \\
+& \phantom{= \max_{\phi}} - \int_{x \in \text{support}_P, y \in \text{support}_Q} f_{\phi}(y) * \pi^*(x, y) dx dy \\
+& = \max_{\phi} \int_{x \in \text{support}_P} f_{\phi}(x) * P(x) dx \\
+& \phantom{= \max_{\phi}} - \int_{y \in \text{support}_Q} f_{\phi}(y) * Q(y) dy \\
+& = \max_{\phi} E_{x \sim P}[f_{\phi}(x)] - E_{y \sim Q}[f_{\phi}(y)]
+\end{aligned}
+\label{eq:WD2DualForm}
+\end{equation} %]]></script>
+
+<p>It turns out that there is no need to know what the exact $\pi^*$ is in order to compute $WD_2[P, Q]$, and that is why the minimisation of \eqref{eq:WGANGoal} can be achieved by solving \eqref{eq:WGANDualGoal}.</p>
+
+<h2 id="geometric-interpretation-of-eqrefeqwd2dualform">Geometric Interpretation of \eqref{eq:WD2DualForm}</h2>
+<p>Inspired by the idea of high-dimensional data visualisation, I have found it helpful to approach \eqref{eq:WD2DualForm} with this geometric interpretation. Although I have to emphasise that this is only my personal understanding, which is rather informal and might be theoretically inaccurate.</p>
+
+<p>The essence of Wasserstein Distance is to describe how far two distributions are separate. If a set of samples are used to represent the corresponding distribution from which they are generated, such a distance can also be viewed as the degree of separation between two groups of sample points on average. One way to estimate this average distance is to compute it directly in the space of supports of distributions, as seen in \label{eq:WD2}; the other way is to project samples onto a space of few dimensions, and then do the estimation in that reduced space. \eqref{eq:WD2DualForm}, where $f$ can be viewed as a projection function brining every data point onto the real line, is in a sense analogous to the latter approach.</p>
+
+<p>The use of projection is rather common in tasks such as high-dimensional data visualisation. The type of projection is specifically selected so that information of interest is retained after projection, and hence the result lie in a more meaningful and representative space. So what information is preserved through the projection introduced in \eqref{eq:WD2DualForm}? Well, note that that projection is described by some function $f^*$ which can maximise \eqref{eq:WD2DualForm} and satisfies ($\pi^*$ is the joint distribution describing the optimal transport plan corresponding to $f^*$):</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& \lVert f^* \rVert_L \le 1 \\
+& f^*(x) - f^*(y) = \lVert x - y \rVert_{2}, if \pi^*(x, y) \ne 0  \\
+& f^*(x) - f^*(y) \le \lVert x - y \rVert_{2}, if \pi^*(x, y) = 0 
+\end{aligned} %]]></script>
+
+<p>That suggests that $f^*$ preserves the distances of pairs of points in the optimal transport plan, while distances between other points are allowed to decrease (resulting in information loss to some extent). Since pairs in the plan most likely contain data points from two respective distributions for the purpose of density matching, such preservation of distance information leads to a phenomenon where projected points from one distribution tend to stay the same distances away from those coming from the other distribution; in other words, the projection gives rise to two clusters with similiar degree of separation as the original distributions have, and each cluster corresponds to one distribution, respectively.</p>
+
+<figure>
+  <img src="/Blogs/assets/images/2019-06-11-WassersteinGAN/GeometricInterpretationOfWD2.png" alt="An illustration of the projection $f^*$" />
+	<figcaption>An illustration of the projection $f^*$</figcaption>
+</figure>
+
+<p>Just as what projection benefits in tasks of high-dimensional data visualisation, $f^*$ also gives advantage in terms of the calculation of $WD_2$. It can be seen from \eqref{eq:WD2DualForm} that $WD_2$ becomes the distance between the means of two resulting clusters of projected points. That implies distributions to be compared are in a sense better described after the projection, as one single piece of statistics (mean) is representative enough to reflect the relative location of an entire cluster..</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://en.wikipedia.org/wiki/Lipschitz_continuity">https://en.wikipedia.org/wiki/Lipschitz_continuity</a></li>
+  <li><a href="https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html">https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html</a></li>
+  <li><a href="http://proceedings.mlr.press/v70/arjovsky17a.html">Martin Arjovsky, Soumith Chintala, and Leon Bottou. Wasserstein Generative Adversarial Networks. In: Proceedings of the 34th International Conference on Machine Learning. Ed. by Doina Precup and Yee Whye Teh. Vol. 70. Proceedings of Machine Learning Research. International Convention Centre, Sydney, Australia: PMLR, June 2017, pp. 214223.</a></li>
+</ul>
+
+
+</div>
+
+
+</article>
+
+
+
+<foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+
+<!-- Directory -->
+
+<script src="/Blogs/assets/js/main.js"></script>
+
+</foot>
+
+
+
+  </div>
+
+</body>
+
+
+<footer class="site-footer">
+
+
+	<center>
+			
+	<a class="tab-link" href="/Blogs/archive/">Archive</a> /
+	<a class="tab-link" href="/Blogs/category/">Category</a> / 
+	<a class="tab-link" href="/Blogs/tags/">Tags</a> 
+
+	
+	</center>
+    
+
+</footer>
+
+
+
+</html>

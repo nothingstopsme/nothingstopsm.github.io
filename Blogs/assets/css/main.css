@@ -42,7 +42,9 @@ figure > img {
   display: block; }
 
 figcaption {
-  font-size: 21.875px; }
+  font-size: 21.875px;
+  margin-top: 30px;
+  text-align: center; }
 
 /**
  * Lists
@@ -356,7 +358,8 @@ table, th {
 .post-content p {
   margin: 24px;
   line-height: 37.5px;
-  letter-spacing: 0px; }
+  letter-spacing: 0px;
+  font-size: 22.5px; }
 
 .post-category {
   display: none;
