@@ -5,8 +5,8 @@
     <description></description>
     <link>http://172.16.0.2:4000/Blogs/</link>
     <atom:link href="http://172.16.0.2:4000/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 19 Jun 2019 19:53:48 +0800</pubDate>
-    <lastBuildDate>Wed, 19 Jun 2019 19:53:48 +0800</lastBuildDate>
+    <pubDate>Wed, 19 Jun 2019 20:02:27 +0800</pubDate>
+    <lastBuildDate>Wed, 19 Jun 2019 20:02:27 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -252,7 +252,7 @@ WD_2[P, Q] = \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y 
 	&lt;figcaption&gt;An illustration of the projection $f^*$&lt;/figcaption&gt;
 &lt;/figure&gt;
 
-&lt;p&gt;Just as what projection benefits in tasks of high-dimensional data visualisation, $f^*$ also gives advantage in terms of the calculation of $WD_2$. It can be seen from \eqref{eq:WD2DualForm} that $WD_2$ becomes the distance between the means of two resulting clusters of projected points. That implies distributions to be compared are in a sense better described after the projection, as one single piece of statistics (mean) is representative enough to reflect the relative location of an entire cluster..&lt;/p&gt;
+&lt;p&gt;Just as what projection benefits in tasks of high-dimensional data visualisation, $f^*$ also gives advantage in terms of the calculation of $WD_2$. It can be seen from \eqref{eq:WD2DualForm} that $WD_2$ becomes the distance between the means of two resulting clusters of projected points. That implies distributions to be compared are in a sense better described after the projection, as one single piece of statistics (mean) is representative enough to reflect the relative location of an entire cluster.&lt;/p&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 &lt;ul&gt;
