@@ -5,8 +5,8 @@
     <description></description>
     <link>http://172.16.0.2:4000/Blogs/</link>
     <atom:link href="http://172.16.0.2:4000/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 19 Jun 2019 20:07:50 +0800</pubDate>
-    <lastBuildDate>Wed, 19 Jun 2019 20:07:50 +0800</lastBuildDate>
+    <pubDate>Sat, 22 Jun 2019 00:37:38 +0800</pubDate>
+    <lastBuildDate>Sat, 22 Jun 2019 00:37:38 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
     
       <item>
@@ -61,7 +61,7 @@ KL[P \lVert Q_{\theta}] &amp; = \int P(x, y) ln(\frac{P(x, y)}{Q_{\theta}(x, y)}
 &amp; = 
 \begin{cases}
 0,&amp; \theta = 0 \\
--\infty,&amp; \theta \neq 0
+\infty,&amp; \theta \neq 0
 \end{cases} \\
 KL[Q_{\theta} \lVert P] &amp; = \int Q_{\theta}(x, y) ln(\frac{Q_{\theta}(x, y)}{P(x, y)}) dx dy \\
 &amp; = [\int Q_{\theta}(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
@@ -69,7 +69,7 @@ KL[Q_{\theta} \lVert P] &amp; = \int Q_{\theta}(x, y) ln(\frac{Q_{\theta}(x, y)}
 &amp; = 
 \begin{cases}
 0,&amp; \theta = 0 \\
--\infty,&amp; \theta \neq 0
+\infty,&amp; \theta \neq 0
 \end{cases} \\
 JS[P \lVert Q_{\theta}] &amp; = 0.5 * KL[P \lVert 0.5 * (P + Q) ] \\
 &amp; \phantom{=} + 0.5 * KL[Q \lVert 0.5 * (P + Q)] \\
@@ -88,13 +88,13 @@ ln(2),&amp; \theta \neq 0
 \end{cases} \\
 \end{aligned} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;All three distance measures lead to a discontinuous drop at $\theta = 0$; moreover , KL and reverse KL give a numerically unstable result of $-\infty$ when $\theta \neq 0$.&lt;/p&gt;
+&lt;p&gt;All three distance measures lead to a discontinuous drop at $\theta = 0$; moreover , KL and reverse KL give a numerically unstable result of $\infty$ when $\theta \neq 0$.&lt;/p&gt;
 
-&lt;p&gt;On the other hand, with the definition of $WD_2$, the minimum cost of adjusting $Q_{\theta}$ to match $P$ can be achived when moving the non-zero density at each point of $Q_{\theta}$ a distance of $\theta^2$ along x-axis towards $0$, and that results in:&lt;/p&gt;
+&lt;p&gt;On the other hand, with the definition of $WD_2$, the minimum cost of adjusting $Q_{\theta}$ to match $P$ can be achived by moving the distribution $Q_{\theta}$ a distance of $\lvert \theta \rvert$ along x-axis towards $0$, and that results in:&lt;/p&gt;
 
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;WD_2[P, Q_{\theta}] = \theta^2 * 1 = \theta^2&lt;/script&gt;
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;WD_2[P, Q_{\theta}] = \lvert \theta \rvert * 1 = \lvert \theta \rvert&lt;/script&gt;
 
-&lt;p&gt;Clearly, $WD_2$ demonstrates better smoothness and continuousness. Note that this property is rather important when such distance measures are used as objectives of optimisation via gradient descent. For example, in the particular case above gradients of the 4 distances w.r.t $\theta$ are:&lt;/p&gt;
+&lt;p&gt;Clearly, $WD_2$ demonstrates better smoothness and continuousness. Note that this property is rather important when such distance measures are used as objectives of optimisation via gradient descent. For example, in the particular case above the respective gradients of 4 distances w.r.t $\theta$ are:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
 \begin{aligned}
@@ -113,10 +113,15 @@ undefined,&amp; \theta = 0\\
 undefined,&amp; \theta = 0\\
 0,&amp; \theta \neq 0
 \end{cases} \\
-&amp; \nabla_{\theta} WD_2[P, Q_{\theta}] = 2\theta
+&amp; \nabla_{\theta} WD_2[P, Q_{\theta}]
+\begin{cases}
+undefined,&amp; \theta = 0\\
+-1,&amp; \theta &lt; 0 \\
+1,&amp; \theta &gt; 0 
+\end{cases}
 \end{aligned} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;It can been seen that optimisation via gradient descent in that case will not work with KL, reverse KL and JS due to lack of gradient information; but it is possible to reach the optimum $\theta$ through gradients of $WD_2$.&lt;/p&gt;
+&lt;p&gt;It can been seen that optimisation via gradient descent in that case will not work with KL, reverse KL and JS due to lack of gradient information; but it is still possible to reach the optimum $\theta$ through the gradient of $WD_2$.&lt;/p&gt;
 
 &lt;h2 id=&quot;wgan&quot;&gt;WGAN&lt;/h2&gt;
 &lt;p&gt;Standard GANs are known for its unstable and difficult training process, and some researches have suggested that it might be due to the objective it uses, which leads to the minimisation of JS distance between model distribution and data distribution. As pointed out in the previous &lt;a href=&quot;#dir0&quot;&gt;section&lt;/a&gt;, JS sometime can be problematic in problems of optimisation, while other measures of good properties, such as WD, might be better choices for construction of GAN. Therefore, the inventors of WGAN tried to bring WD (particularly, $WD_2$) into and GAN architecture, resulting in a new objective (given $Q$ is a model distribution and $P$ is the data distribution which needs to be modelled):&lt;/p&gt;
