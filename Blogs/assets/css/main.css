@@ -160,15 +160,23 @@ pre {
 /**
  * Table
  */
-table, th {
-  width: 100%;
-  table-layout: fixed;
+table {
+  width: 95%;
   margin: 24px;
   text-align: center;
-  border-bottom: 1px solid #eee;
   border-collapse: collapse;
   line-height: 25px;
   letter-spacing: 0px; }
+
+th {
+  color: #f8f8f8;
+  background-color: #5c5c5c;
+  font-weight: 500;
+  border: 1px solid #000; }
+
+td {
+  background-color: #f8f8f8;
+  border: 1px solid; }
 
 /**
  * Wrapper
