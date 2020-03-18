@@ -149,13 +149,13 @@
 
 <p>But, why does label smoothing have such power? A recent paper has presented an interesting insight into the penultimate layer, right before softmax, of classification models, and I would like to add my own interpretation based on their finding to offer some intuition.</p>
 
-<p>First, in most cases, a penultimate layer only involve a linear transformation:</p>
+<p>First, in most cases, a penultimate layer only involves a linear transformation:</p>
 
 <script type="math/tex; mode=display">\begin{aligned}
 y_k(x) = x^T \odot w_k
 \end{aligned}</script>
 
-<p>where $x$ is the input to the penultimate layer, and $w_k$ describes for class $k$ the linear mapping which produces the logit for class $k$. The softmax result for class $k$ given $x$, $s_k(x)$, can then be expressed in terms of $x^T \dot w_k$ (assuming the number of classes is $K$).</p>
+<p>where $x$ is the input to the penultimate layer, and $w_k$ describes the linear mapping which produces the logit for class $k$. The softmax output for class $k$ given $x$, $s_k(x)$, can then be expressed in terms of $x^T \odot w_k$ (assuming the total number of classes is $K$).</p>
 
 <script type="math/tex; mode=display">\begin{equation}
 \begin{aligned}
@@ -172,14 +172,15 @@ s_k(x) = \frac{exp(x^T \odot w_k)}{\sum_{i=1}^{K} exp(x^T \odot w_i)}
 & s_k(x) = \frac{exp(-0.5 \lVert x \rVert_2^2) * exp(-0.5 \lVert w_{max} \rVert_2^2)}{exp(-0.5 \lVert x \rVert_2^2) * exp(-0.5 \lVert w_{max} \rVert_2^2)} \\
 & \phantom{s_k(x) =} * \frac{exp(x^T \odot w_k)}{\sum_{i=1}^{K} exp(x^T \odot w_i)} \\
 & \phantom{s_k(x)} = \frac{exp(-0.5 \lVert x \rVert_2^2 + x^T \odot w_k - 0.5 \lVert w_{max} \rVert_2^2)}{\sum_{i=1}^{K} exp(-0.5 \lVert x \rVert_2^2 + x^T \odot w_i – 0.5 \lVert w_{max} \rVert_2^2)} \\
-& \phantom{s_k(x)} = \frac{exp(-0.5 * (\lVert x \rVert_2^2 - 2 * x^T \odot w_k + \lVert w_{max} \rVert_2^2))}{\sum_{i=1}^{K} exp(-0.5 * (\lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{max} \rVert_2^2))}
+& \phantom{s_k(x)} = \frac{exp(-0.5 * (\lVert x \rVert_2^2 - 2 * x^T \odot w_k + \lVert w_{max} \rVert_2^2))}{\sum_{i=1}^{K} exp(-0.5 * (\lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{max} \rVert_2^2))} \\
+& \phantom{s_k(x)} = \frac{exp(-0.5 * z(x, w_k))}{\sum_{i=1}^{K} exp(-0.5 * z(x, w_i))}
 \end{aligned}
 \label{eq:softmax2}
 \end{equation} %]]></script>
 
-<p>where $w_{max}$ refers to the vector with the largest length among all $w_i$, $i \in \{ j \lvert j \in \mathbb{Z}, 0 \leq j \leq K \}$.</p>
+<p>where $w_{max}$ refers to the vector with the largest length among all $w_i$, $i \in \{ j \lvert j \in \mathbb{Z}, 0 \leq j \leq K \}$; also the last equality is put in for simplification, by letting $z(x, w) = \lVert x \rVert_2^2 - 2 * x^T \odot w + \lVert w_{max} \rVert_2^2$.</p>
 
-<p>One might notice a high degree of similarity between the terms in the expressions inside exponetial functions in the last equality of \eqref{eq:softmax2}, and the ones which would have been involved in a L2 norm. In effect, they can be linked through the following inequality (let $z(x, w_i) = \lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{max} \rVert_2^2$):</p>
+<p>One might notice a high degree of similarity between the terms in the function $z$ and the ones which would have been involved in a L2 norm. In effect, they can be linked through the following inequality:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{equation}
