@@ -5,8 +5,8 @@
     <description></description>
     <link>http://localhost:4000/Blogs/</link>
     <atom:link href="http://localhost:4000/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Wed, 18 Mar 2020 20:45:40 +0800</pubDate>
-    <lastBuildDate>Wed, 18 Mar 2020 20:45:40 +0800</lastBuildDate>
+    <pubDate>Thu, 19 Mar 2020 01:34:10 +0800</pubDate>
+    <lastBuildDate>Thu, 19 Mar 2020 01:34:10 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
@@ -61,7 +61,7 @@
 
 &lt;h2 id=&quot;calibration&quot;&gt;Calibration&lt;/h2&gt;
 
-&lt;p&gt;When doing classification, one will usually use softmax as the final step to produce a vector of the length equal to the number of classes. Despite the fact that all entries in that vector add up to 1, it does not necessarily mean that vector (approximately) describes a distribution of classes. For example, if the result of its two-class classification is $[0.9, 0.1]$, in the case of &lt;strong&gt;badly calibrated models&lt;/strong&gt; that only implies the first class receives a higher (normalised) score, and hence has a higher rank, than the second class does. As for the purpose of mere classification, ranking does do the job; nonetheless, there are some scenarios where distributions of classes are required, so that the accuracy of decisions (the probability that a chosen class is correct) can be estimated, or samples following the same distributions can be generated. To that end, we need to &lt;strong&gt;calibrate&lt;/strong&gt; our model, and one way to achieve that is to apply label smoothing during training.&lt;/p&gt;
+&lt;p&gt;When doing classification, one will usually use softmax as the final step to produce a vector of the length equal to the number of classes. Despite the fact that all entries in that vector add up to 1, it does not necessarily mean that vector (approximately) describes a distribution of classes. For example, if the result of its two-class classification is $[0.9, 0.1]$, in the case of &lt;strong&gt;uncalibrated models&lt;/strong&gt; that only implies the first class receives a higher (normalised) score, and hence has a higher rank, than the second class does. As for the purpose of mere classification, ranking does do the job; nonetheless, there are some scenarios where distributions of classes are required, so that the accuracy of decisions (the probability that a chosen class is correct) can be estimated, or samples following the same distributions can be generated. To that end, we need to &lt;strong&gt;calibrate&lt;/strong&gt; our model, and one way to achieve that is to apply label smoothing during training.&lt;/p&gt;
 
 &lt;p&gt;But, why does label smoothing have such power? A recent paper has presented an interesting insight into the penultimate layer, right before softmax, of classification models, and I would like to add my own interpretation based on their finding to offer some intuition.&lt;/p&gt;
 
@@ -119,16 +119,16 @@ s_k(x) = \frac{exp(x^T \odot w_k)}{\sum_{i=1}^{K} exp(x^T \odot w_i)}
 
 &lt;ul&gt;
   &lt;li&gt;
-    &lt;p&gt;When a model is trained given labels in one-hot encoding, $z(x, w_l)$ can become quite large as $s_l(x)$ is approaching 0. In fact, there is no theoretical upper bound for it; at the same time, rising $z(x, w_l)$ will also boost $s_k(x)$, so $z(x, w_k)$ does not have to be very small to generate a dominant response of softmax for class $k$. That potential increase in $z(x, w_k)$, which corresponds to the upper bounds of the distances between $x$ and $w_k$, suggest the possible presence of broad clusters.&lt;/p&gt;
+    &lt;p&gt;When a model is trained given labels in one-hot encoding, $z(x, w_l)$ can become quite large as $s_l(x)$ is approaching 0. In fact, there is no theoretical upper bound for it; at the same time, rising $z(x, w_l)$ will also boost $s_k(x)$, so $z(x, w_k)$ does not have to be very small to generate a dominant response of softmax for class $k$. That potential increase in $z(x, w_k)$, which corresponds to the upper bounds of the distances between $x$ and $w_k$, suggests the possible presence of broad clusters.&lt;/p&gt;
   &lt;/li&gt;
   &lt;li&gt;
     &lt;p&gt;The use of label smoothing essentially limits the growth of $z(x, w_l)$ so that the resulting $s_l(x)$ can account for the slight probability assigned to class $l$. That also makes minimisation of $z(x, w_k)$ more necessary as $s_k(x)$ cannot be further increased by unboundedly large $z(x, w_l)$. Therefore, in contrast to the case where one-hot encoding is directly employed, clusters are more likely to be tighter due to a smaller distance bound $z(x, w_k)$ under the effect of label smoothing.&lt;/p&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;Moreover, the connection between penultimate layers and clustering introduces a different angle for understanding the subsequent softmax. The equivalent form of the softmax, \eqref{eq:softmax2}, can now be seen an approximation of the posterior probabilities of classes given data under a Gaussian Mixture model, with the assumption that the covariance matrix of every Gaussian is $I * \sigma^2$, $\sigma^2 = 1$, and the prior for classes is a uniform distribution. That assumption, $\sigma^2 = 1$ in particular, implies the probability model is not quite suitable for data coming from broad clusters, since it cannot estimate their posterior probabilities very well, or put it differently, &lt;strong&gt;badly calibrated&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;One of the advantanges of connecting penultimate layers with clustering is that it offers a different way to understand the subsequent softmax. The equivalent form of the softmax, \eqref{eq:softmax2}, can now be seen an approximation of the posterior probabilities of classes given data under a Gaussian Mixture model, with the assumption that the covariance matrix of every Gaussian is $I * \sigma^2$, $\sigma^2 = 1$, and the prior for classes is a uniform distribution. That assumption, $\sigma^2 = 1$ in particular, implies the probability model is not suitable for data coming from broad clusters, since it cannot estimate their posterior probabilities very well, or to put it differently, is &lt;strong&gt;uncalibrated&lt;/strong&gt;.&lt;/p&gt;
 
-&lt;p&gt;As mentioned earlier, without label smoothing, the clusters formed by the inputs to the penultimate layer could end up with large widths. In that case, poor calibration occurs because the distribution of those inputs cannot be fitted properly under the model assumption of $\sigma^2 = 1$; this analysis might also explain why previous researches have found temperature scaling, which divides the logits to the softmax function by a constant named temperature $T$, can help to calibrate models:&lt;/p&gt;
+&lt;p&gt;As mentioned earlier, without label smoothing, the clusters formed by the inputs to the penultimate layer could end up with large widths. In that case, bad calibration occurs because the distribution of those inputs cannot be fitted properly under the model assumption of $\sigma^2 = 1$; this analysis might also explain why previous researches have found temperature scaling, which divides the logits to the softmax function by a constant named temperature $T$, can help to calibrate models:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{aligned}
 s_k^{\text{TS}}(x) = \frac{exp(\frac{x^T \odot w_k}{T})}{\sum_{i=1}^{K} exp(\frac{x^T \odot w_i}{T})}
