@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	
+	<script type="text/javascript"
+	        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+
+	<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+		tex2jax: {
+		inlineMath: [['$','$'], ['\\(','\\)']],
+		processEscapes: true},
+		jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+		extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+		TeX: {
+		extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+		equationNumbers: {
+		autoNumber: "AMS"
+		}
+		}
+		});
+		</script>
+	
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blogs/assets/css/main.css">
+  <link rel="canonical" href="/Blogs/note/LabelSmoothing.html">
+  <link rel="alternate" type="application/rss+xml" title="" href="/Blogs/feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open Sans">
+
+<!-- font awesome -->
+
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+	
+	<title>Looking into Label Smoothing</title>
+
+	
+
+
+</head>
+
+
+  
+
+
+  </head>
+
+  <body>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Looking into Label Smoothing</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="09 Mar 2020" itemprop="datePublished">Mar 9 2020</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Chao</span>
+        
+		<br>
+		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://:4000/Blogs/tags/">MachineLearning</a>
+        
+		<a class="post-tags-item" href="http://:4000/Blogs/tags/">Probability</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+    </center>
+</div>
+
+
+
+
+<div class="post-content" itemprop="articleBody">
+    <p>I have forgotten where I obtained this impression about label smoothing: “Since data could be mislablled, to reflect the possibility of errors, labels are weighted to reduce our confidence about them.” While that description seems to present a straightforward intuition, it does not tell the full story, which I came to realise a few days ago after revisited this technique. So here are the missing pieces I have found.</p>
+
+<h2 id="regularisation">Regularisation</h2>
+<p>Given a label $L$ represented as a one-hot vector $L_{\text{one-hot}}$ and the total number of classes $K$, the authors of label smoothing defined the smoothed vector $L_{\text{ls}}$ by a small proportion $\alpha$ as:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& L_{\text{ls}}[k] = (1 - \alpha) * L_{\text{one-hot}} [k] + \frac{\alpha}{K} \\
+& where\,\,L_{\text{one-hot}}[k] =
+\begin{cases}
+1,& L = k \\
+0,& otherwise
+\end{cases}
+\end{aligned}
+\label{eq:labelSmoothing}
+\end{equation} %]]></script>
+
+<p>Most probability models fitting categorical distributions are optimised towards a lower expected cross entropy between model estimations and labels. Suppose $P$ is a vector of probabilities for different classes outputted by a model; with the notations from \eqref{eq:labelSmoothing}, the cross entropy $E_{\text{one-hot}}$ between $L_{\text{one-hot}}$ and $P$ is</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& E_{\text{one-hot}} = - \sum_{i=0}^K L_{\text{one-hot}} [i] * log(P[i]) = log(P[k]), L = k
+\end{aligned} %]]></script>
+
+<p>If the one-hot version of labels is replaced with the smoothed one, a different version of cross entropy, $E_{\text{ls}}$ can be obtained:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{aligned}
+& E_{\text{ls}} = - \sum_{i=0}^K L_{\text{ls}} [i] * log(P[i]) \\
+& \phantom{ E_{\text{ls}}} = - \sum_{i=0}^K [(1 - \alpha) * L_{\text{one-hot}} [i] + \frac{\alpha}{K}] * log(P[i]) \\
+& \phantom{ E_{\text{ls}}} = (1 - \alpha) * (-1) * \sum_{i=0}^K L_{\text{one-hot}} [i] * log(P[i]) \\
+& \phantom{ E_{\text{ls}} = } - \alpha * \sum_{i=0}^K \frac{1}{K} * log(P[i]) \\
+& \phantom{ E_{\text{ls}}} = (1 - \alpha) * E_{\text{one-hot}} - \alpha * \sum_{i=0}^K \frac{1}{K} * (log(P[i]) - log(\frac{1}{K})) \\
+& \phantom{ E_{\text{ls}} = } - \alpha * \sum_{i=0}^K \frac{1}{K} log(\frac{1}{K}) \\
+& \phantom{ E_{\text{ls}}} = (1 - \alpha) * E_{\text{one-hot}} + \alpha * KL[\text{Uniform}_K \lVert P] \\
+& \phantom{ E_{\text{ls}} = } + \alpha * Entropy(\text{Uniform}_K)
+\end{aligned} %]]></script>
+
+<p>Since $Entropy(\text{Uniform}_K)$ is a constant, the minimisation of $E_{\text{ls}}$ for a model effectively achieves two things:</p>
+
+<ol>
+  <li>Minimise $E_{\text{one-hot}}$, which is the original optimisation objective of the model, with a weight of $ (1 - \alpha)$.</li>
+  <li>Minimise $KL[\text{Uniform}_K \lVert P]$, which serves as a <strong>regularisor</strong> to bring the distribution of $P$ towards the one of $\text{Uniform}_K$, with a weight of $\alpha$.</li>
+</ol>
+
+<p>So “reduce confidence” can be seen as the result of regularisation which causes models to produce flatter distributions.</p>
+
+<h2 id="calibration">Calibration</h2>
+
+<p>When doing classification, one will usually use softmax as the final step to produce a vector of the length equal to the number of classes. Despite the fact that all entries in that vector add up to 1, it does not necessarily mean that vector (approximately) describes a distribution of classes. For example, if the result of its two-class classification is $[0.9, 0.1]$, in the case of <strong>badly calibrated models</strong> that only implies the first class receives a higher (normalised) score, and hence has a higher rank, than the second class does. As for the purpose of mere classification, ranking does do the job; nonetheless, there are some scenarios where distributions of classes are required, so that the accuracy of decisions (the probability that a chosen class is correct) can be estimated, or samples following the same distributions can be generated. To that end, we need to <strong>calibrate</strong> our model, and one way to achieve that is to apply label smoothing during training.</p>
+
+<p>But, why does label smoothing have such power? A recent paper has presented an interesting insight into the penultimate layer, right before softmax, of classification models, and I would like to add my own interpretation based on their finding to offer some intuition.</p>
+
+<p>First, in most cases, a penultimate layer only involve a linear transformation:</p>
+
+<script type="math/tex; mode=display">\begin{aligned}
+y_k(x) = x^T \odot w_k
+\end{aligned}</script>
+
+<p>where $x$ is the input to the penultimate layer, and $w_k$ describes for class $k$ the linear mapping which produces the logit for class $k$. The softmax result for class $k$ given $x$, $s_k(x)$, can then be expressed in terms of $x^T \dot w_k$ (assuming the number of classes is $K$).</p>
+
+<script type="math/tex; mode=display">\begin{equation}
+\begin{aligned}
+s_k(x) = \frac{exp(x^T \odot w_k)}{\sum_{i=1}^{K} exp(x^T \odot w_i)}
+\end{aligned}
+\label{eq:softmax}
+\end{equation}</script>
+
+<p>Since the multiplication of both numerator and denominator in \eqref{eq:softmax} by the same constant factors will not change the ratio, \eqref{eq:softmax} can be further derived as follows:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& s_k(x) = \frac{exp(-0.5 \lVert x \rVert_2^2) * exp(-0.5 \lVert w_{max} \rVert_2^2)}{exp(-0.5 \lVert x \rVert_2^2) * exp(-0.5 \lVert w_{max} \rVert_2^2)} \\
+& \phantom{s_k(x) =} * \frac{exp(x^T \odot w_k)}{\sum_{i=1}^{K} exp(x^T \odot w_i)} \\
+& \phantom{s_k(x)} = \frac{exp(-0.5 \lVert x \rVert_2^2 + x^T \odot w_k - 0.5 \lVert w_{max} \rVert_2^2)}{\sum_{i=1}^{K} exp(-0.5 \lVert x \rVert_2^2 + x^T \odot w_i – 0.5 \lVert w_{max} \rVert_2^2)} \\
+& \phantom{s_k(x)} = \frac{exp(-0.5 * (\lVert x \rVert_2^2 - 2 * x^T \odot w_k + \lVert w_{max} \rVert_2^2))}{\sum_{i=1}^{K} exp(-0.5 * (\lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{max} \rVert_2^2))}
+\end{aligned}
+\label{eq:softmax2}
+\end{equation} %]]></script>
+
+<p>where $w_{max}$ refers to the vector with the largest length among all $w_i$, $i \in \{ j \lvert j \in \mathbb{Z}, 0 \leq j \leq K \}$.</p>
+
+<p>One might notice a high degree of similarity between the terms in the expressions inside exponetial functions in the last equality of \eqref{eq:softmax2}, and the ones which would have been involved in a L2 norm. In effect, they can be linked through the following inequality (let $z(x, w_i) = \lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{max} \rVert_2^2$):</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+\begin{equation}
+\begin{aligned}
+& z(x, w_i) = \lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{max} \rVert_2^2 \\
+& \phantom{z(x, w_i)} \geq \lVert x \rVert_2^2 - 2 * x^T \odot w_i + \lVert w_{i} \rVert_2^2 \\
+& \phantom{z(x, w_i)} = \lVert x - w_i \rVert_2^2 \geq 0
+\end{aligned}
+\label{eq:L2Inequality}
+\end{equation} %]]></script>
+
+<p>Meanwhile, \eqref{eq:softmax2} also suggests that a model trained with some example from class $k$ of which the penultimate representation is $x$ will produce small $z(x, w_k)$ and large $z(x, w_l)$ for all other classes $l \neq k$, so that the distinct differences between them can result in dominant $s_k(x)$ with tiny $s_l(x)$ to reflect the labelling. Since according to \eqref{eq:L2Inequality}, the function $z$ describes an upper bound of the L2 norm squared of the difference between its two input arguments, it can be further inferred that $\lVert x - w_k \rVert_2^2$ should be small while there is room for $\lVert x - w_l \rVert_2^2$ to grow. From a geometric perspective, if $x$ and $w_k$/$w_l$ are viewed as points in a hyperspace, the relation, in terms of bounds of L2 norms, between those points loosely describes a form of clustering, with cluster centres being $w_k$/$w_l$.</p>
+
+<figure>
+  <img src="/Blogs/assets/images/2020-03-09-LabelSmoothing/PenultimateClustering.png" alt="A schematic diagram for the geometric view of $x$ and $w_k$/$w_l$" />
+	<figcaption>A schematic diagram for the geometric view of $x$ and $w_k$/$w_l$</figcaption>
+</figure>
+
+<p>This phenomenon of clustering is one of the discoveries presented in the aforementioned paper; besides, the authors also explored the effect of label smoothing to the widths of clusters, on which my interpretation is as follows:</p>
+
+<ul>
+  <li>
+    <p>When a model is trained given labels in one-hot encoding, $z(x, w_l)$ can become quite large as $s_l(x)$ is approaching 0. In fact, there is no theoretical upper bound for it; at the same time, rising $z(x, w_l)$ will also boost $s_k(x)$, so $z(x, w_k)$ does not have to be very small to generate a dominant response of softmax for class $k$. That potential increase in $z(x, w_k)$, which corresponds to the upper bounds of the distances between $x$ and $w_k$, suggest the possible presence of broad clusters.</p>
+  </li>
+  <li>
+    <p>The use of label smoothing essentially limits the growth of $z(x, w_l)$ so that the resulting $s_l(x)$ can account for the slight probability assigned to class $l$. That also makes minimisation of $z(x, w_k)$ more necessary as $s_k(x)$ cannot be further increased by unboundedly large $z(x, w_l)$. Therefore, in contrast to the case where one-hot encoding is directly employed, clusters are more likely to be tighter due to a smaller distance bound $z(x, w_k)$ under the effect of label smoothing.</p>
+  </li>
+</ul>
+
+<p>Moreover, the connection between penultimate layers and clustering introduces a different angle for understanding the subsequent softmax. The equivalent form of the softmax, \eqref{eq:softmax2}, can now be seen an approximation of the posterior probabilities of classes given data under a Gaussian Mixture model, with the assumption that the covariance matrix of every Gaussian is $I * \sigma^2$, $\sigma^2 = 1$, and the prior for classes is a uniform distribution. That assumption, $\sigma^2 = 1$ in particular, implies the probability model is not quite suitable for data coming from broad clusters, since it cannot estimate their posterior probabilities very well, or put it differently, <strong>badly calibrated</strong>.</p>
+
+<p>As mentioned earlier, without label smoothing, the clusters formed by the inputs to the penultimate layer could end up with large widths. In that case, poor calibration occurs because the distribution of those inputs cannot be fitted properly under the model assumption of $\sigma^2 = 1$; this analysis might also explain why previous researches have found temperature scaling, which divides the logits to the softmax function by a constant named temperature $T$, can help to calibrate models:</p>
+
+<script type="math/tex; mode=display">\begin{aligned}
+s_k^{\text{TS}}(x) = \frac{exp(\frac{x^T \odot w_k}{T})}{\sum_{i=1}^{K} exp(\frac{x^T \odot w_i}{T})}
+\end{aligned}</script>
+
+<p>Since it is equivalent to dividing the function $z$ by $T$ in \eqref{eq:softmax2}, the scaling in effect adjusts $\sigma^2$ so that the sizes of clusters can be better described. Similarly, label smoothing provides the effect of improving the degree of calibration by matching the probability model to the underlying data as temperature scaling does, but it achieves that through encouraging tighter clusters, and hence increasing the validity of $\sigma^2 = 1$.</p>
+
+<h2 id="references">References</h2>
+<ul>
+  <li><a href="https://arxiv.org/abs/1906.02629">Rafael Müller, Simon Kornblith, and Geoffrey E.Hinton. “When Does Label Smoothing Help?” In:CoRRabs/1906.02629 (2019). arXiv:1906.02629.url:http://arxiv.org/abs/1906.02629</a></li>
+</ul>
+
+
+</div>
+
+
+</article>
+
+
+
+<foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+
+<!-- Directory -->
+
+<script src="/Blogs/assets/js/main.js"></script>
+
+</foot>
+
+
+
+  </div>
+
+</body>
+
+
+<footer class="site-footer">
+
+
+	<center>
+			
+	<a class="tab-link" href="/Blogs/archive/">Archive</a> /
+	<a class="tab-link" href="/Blogs/category/">Category</a> / 
+	<a class="tab-link" href="/Blogs/tags/">Tags</a> 
+
+	
+	</center>
+    
+
+</footer>
+
+
+
+</html>
