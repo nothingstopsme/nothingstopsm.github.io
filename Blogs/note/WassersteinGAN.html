@@ -98,7 +98,7 @@
     <p>Since the appearance of Generative Adversarial Network, aka GAN, a large number of variants have been proposed in attempts to improve the training dynamics, and Wasserstein GAN (WGAN) is one of them. The reason I would like to make a note of it is because in my last project, this type of GAN, specifically, WGAN-GP, was the only one working among several types and architectures I had tried. Honestly, most of time I just pick a model and try it to see if it works; but since WGAN has proven its success in my own case, I think it is time to deepen my understanding about it. There have already been abundant discussions and explanations about WGAN on the Internet, so here I simply write down some informal interpretation of my own.</p>
 
 <h2 id="wasserstein-distance">Wasserstein Distance</h2>
-<p>The central idea of WGAN is to replace means of measuring the similarity between two distributions with the one called Wasserstein Distance (WD), which is defined as:</p>
+<p>The central idea of WGAN is to replace the means of measuring the similarity between two distributions with the one called Wasserstein Distance (WD), which is defined as:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{equation}
@@ -113,7 +113,7 @@ Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
 \label{eq:WD2}
 \end{equation} %]]></script>
 
-<p>Note that the distance between every pair of $x$ and $y$ in \eqref{eq:WD2} is defined as 2-norm. The use of other metrics is also possible, but for the consistency with later discussion 2-norm is specifically adopted.</p>
+<p>Note that the distance between every pair of $x$ and $y$ in \eqref{eq:WD2} is defined via 2-norm. The use of other metrics is also possible, but for the consistency with later discussion 2-norm is specifically adopted.</p>
 
 <p>$\pi$ can be viewed as a transport plan which depicts how one can shift around the densities in one distribution so that the resultant distribution matches the other one. This interpretation comes from the fact that $\pi$ satisfies the <em>where</em> condition: for any point $x’ \in \text{support}_P$, if from every point $y’ \in \text{support}_Q$ the amount of density described by $\pi(x = x’, y = y’)$ is moved to $x’$, then the density of $P(x = x’)$ can be obtained. Hence, by applying such a transport plan the entire distribution $P$ can be constructed from the distribution $Q$, and vice versa.</p>
 
@@ -135,7 +135,7 @@ Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
 \end{cases} 
 \end{aligned} %]]></script>
 
-<p>Note that $Q_{\theta}$ can be seen as a parametric distribution with $\theta$ being the parameter. In this case, Kullback Leibler divergence (KL), reverse KL, and Jensen-Shannon divergence (JS) can be explicted computed:</p>
+<p>where $Q_{\theta}$ is a parametric distribution with $\theta$ being its parameter. In that case, Kullback Leibler divergence (KL), reverse KL, and Jensen-Shannon divergence (JS) can be explicted computed:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{aligned}
@@ -224,7 +224,7 @@ Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
 \label{eq:WGANGoal}
 \end{equation} %]]></script>
 
-<p>In contrast to implicit minimisation of the JS distance between $P$ and $Q$ in standard GANs, \eqref{eq:WGANGoal} explicitly expresses the goal of reducing $WD_2$. However, that seems to make the objective quite different from the one of standard GANs, since it does not directly correspond to a minimax game anymore; in addition, the calculation of \eqref{eq:WGANGoal} involves finding a $\pi$ which satisfies both infimum and the <em>where</em> condition, which makes the whole equation looks rather intimidating. Fortunately, it turns out that \eqref{eq:WGANGoal} can be transformed into its dual form according to the theorem of Kantorovich-Rubinstein Duality:</p>
+<p>In contrast to implicit minimisation of the JS distance between $P$ and $Q$ in standard GANs, \eqref{eq:WGANGoal} explicitly expresses the goal of reducing $WD_2$. That seems to make the objective quite different from the one of standard GANs, since it does not directly correspond to a minimax game anymore; in addition, the calculation of \eqref{eq:WGANGoal} involves finding a $\pi$ which satisfies both infimum and the <em>where</em> condition, which makes the whole equation looks rather intimidating. Fortunately, it turns out that \eqref{eq:WGANGoal} can be transformed into its dual form according to the theorem of Kantorovich-Rubinstein Duality:</p>
 
 <script type="math/tex; mode=display">\begin{equation} 
 \min_{Q} WD_2[P, Q] = \min_{Q} \sup_{f, \lVert f \rVert_L \le 1} E_{x \sim P}[f(x)] - E_{y \sim Q}[f(y)] 
@@ -238,7 +238,7 @@ Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
 \label{eq:WGANPraticalGoal}
 \end{equation}</script>
 
-<p>It can be seen from \eqref{eq:WGANPraticalGoal} that a new minimax game between a gnerator of $g_{\theta}$ and a critic $f_{\phi}$ emerges: the generator is optimised to produce samples from a better Q which reduce $WD_2$, while the job of the critic is to compute the $WD_2$ of the current $Q$ and the data distribution $P$ through maximisation of the objective.</p>
+<p>It can be seen from \eqref{eq:WGANPraticalGoal} that a new minimax game between a generator of $g_{\theta}$ and a critic $f_{\phi}$ emerges: the generator is optimised to produce samples from a better Q which reduce $WD_2$, while the job of the critic is to compute the $WD_2$ of the current $Q$ and the data distribution $P$ through maximisation of the objective.</p>
 
 <p>Arguably, the most important part which allows us to be able to perform minimax optimisation is the conversion from the original problem into its dual form, with the help of Kantorovich-Rubinstein Duality. While one could go through a solid mathematical derivation to explain how this conversion works, here I would simply like to provide some intuitions based on my understanding about this dual form from the aspect of Lipschitz continuity.</p>
 
@@ -323,16 +323,15 @@ WD_2[P, Q] = \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y 
 <h2 id="geometric-interpretation-of-eqrefeqwd2dualform">Geometric Interpretation of \eqref{eq:WD2DualForm}</h2>
 <p>Inspired by the idea of high-dimensional data visualisation, I have found it helpful to approach \eqref{eq:WD2DualForm} with this geometric interpretation. Although I have to emphasise that this is only my personal understanding, which is rather informal and might be theoretically inaccurate.</p>
 
-<p>The essence of Wasserstein Distance is to describe how far two distributions are separate. If a set of samples are used to represent the corresponding distribution from which they are generated, such a distance can also be viewed as the degree of separation between two groups of sample points on average. One way to estimate this average distance is to compute it directly in the space of supports of distributions, as seen in \label{eq:WD2}; the other way is to project samples onto a space of few dimensions, and then do the estimation in that reduced space. \eqref{eq:WD2DualForm}, where $f$ can be viewed as a projection function brining every data point onto the real line, is in a sense analogous to the latter approach.</p>
+<p>The essence of Wasserstein Distance is to describe how far two distributions are separate. If a set of samples are used to represent the corresponding distribution from which they are generated, such a distance can also be viewed as the degree of separation between two groups of sample points on average. One way to estimate this average distance is to compute it directly in the space of supports of distributions, as seen in \eqref{eq:WD2}; the other way is to project samples onto a space of few dimensions, and then do the estimation in that reduced space. \eqref{eq:WD2DualForm}, where $f$ can be viewed as a projection function brining every data point onto the real line, is in a sense analogous to the latter approach.</p>
 
 <p>The use of projection is rather common in tasks such as high-dimensional data visualisation. The type of projection is specifically selected so that information of interest is retained after projection, and hence the result lie in a more meaningful and representative space. So what information is preserved through the projection introduced in \eqref{eq:WD2DualForm}? Well, note that that projection is described by some function $f^*$ which can maximise \eqref{eq:WD2DualForm} and satisfies ($\pi^*$ is the joint distribution describing the optimal transport plan corresponding to $f^*$):</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\begin{aligned}
-& \lVert f^* \rVert_L \le 1 \\
-& f^*(x) - f^*(y) = \lVert x - y \rVert_{2}, if \pi^*(x, y) \ne 0  \\
-& f^*(x) - f^*(y) \le \lVert x - y \rVert_{2}, if \pi^*(x, y) = 0 
-\end{aligned} %]]></script>
+<script type="math/tex; mode=display">\begin{cases}
+\lVert f^* \rVert_L \le 1 \\
+f^*(x) - f^*(y) = \lVert x - y \rVert_{2}\text{, if } \pi^*(x, y) \ne 0  \\
+f^*(x) - f^*(y) \le \lVert x - y \rVert_{2}\text{, if } \pi^*(x, y) = 0 
+\end{cases}</script>
 
 <p>That suggests that $f^*$ preserves the distances of pairs of points in the optimal transport plan, while distances between other points are allowed to decrease (resulting in information loss to some extent). Since pairs in the plan most likely contain data points from two respective distributions for the purpose of density matching, such preservation of distance information leads to a phenomenon where projected points from one distribution tend to stay the same distances away from those coming from the other distribution; in other words, the projection gives rise to two clusters with similiar degree of separation as the original distributions have, and each cluster corresponds to one distribution, respectively.</p>
 
