@@ -336,8 +336,11 @@ f^*(x) - f^*(y) \le \lVert x - y \rVert_{2}\text{, if } \pi^*(x, y) = 0
 <p>That suggests that $f^*$ preserves the distances of pairs of points in the optimal transport plan, while distances between other points are allowed to decrease (resulting in information loss to some extent). Since pairs in the plan most likely contain data points from two respective distributions for the purpose of density matching, such preservation of distance information leads to a phenomenon where projected points from one distribution tend to stay the same distances away from those coming from the other distribution; in other words, the projection gives rise to two clusters with similiar degree of separation as the original distributions have, and each cluster corresponds to one distribution, respectively.</p>
 
 <figure>
-  <img src="/Blogs/assets/images/2019-06-11-WassersteinGAN/GeometricInterpretationOfWD2.png" alt="An illustration of the projection $f^*$" />
-	<figcaption>An illustration of the projection $f^*$</figcaption>
+	
+	<img src="/Blogs/assets/images/2019-06-11-WassersteinGAN/GeometricInterpretationOfWD2.png" alt="An illustration of the projection $f^*$" />
+	<figcaption>
+	An illustration of the projection $f^*$
+	</figcaption>
 </figure>
 
 <p>Just as what projection benefits in tasks of high-dimensional data visualisation, $f^*$ also gives advantage in terms of the calculation of $WD_2$. It can be seen from \eqref{eq:WD2DualForm} that $WD_2$ becomes the distance between the means of two resulting clusters of projected points. That implies distributions being compared are in a sense better described after the projection, as one single piece of statistics (mean) is representative enough to reflect the relative location of an entire cluster.</p>

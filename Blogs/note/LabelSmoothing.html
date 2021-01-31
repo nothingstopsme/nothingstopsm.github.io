@@ -195,8 +195,11 @@ s_k(x) = \frac{exp(x^T \odot w_k)}{\sum_{i=1}^{K} exp(x^T \odot w_i)}
 <p>Meanwhile, \eqref{eq:softmax2} also suggests that a model trained with some example from class $k$ of which the penultimate representation is $x$ will produce small $z(x, w_k)$ and large $z(x, w_l)$ for all other classes $l \neq k$, so that the distinct differences between them can result in dominant $s_k(x)$ with tiny $s_l(x)$ to reflect the labelling. Since according to \eqref{eq:L2Inequality}, the function $z$ describes an upper bound of the L2 norm squared of the difference between its two input arguments, it can be further inferred that $\lVert x - w_k \rVert_2^2$ should be small while there is room for $\lVert x - w_l \rVert_2^2$ to grow. From a geometric perspective, if $x$ and $w_k$/$w_l$ are viewed as points in a hyperspace, the relation, in terms of bounds of L2 norms, between those points loosely describes a form of clustering, with cluster centres being $w_k$/$w_l$.</p>
 
 <figure>
-  <img src="/Blogs/assets/images/2020-03-09-LabelSmoothing/PenultimateClustering.png" alt="A schematic diagram for the geometric view of $x$ and $w_k$/$w_l$" />
-	<figcaption>A schematic diagram for the geometric view of $x$ and $w_k$/$w_l$</figcaption>
+	
+	<img src="/Blogs/assets/images/2020-03-09-LabelSmoothing/PenultimateClustering.png" alt="A schematic diagram for the geometric view of $x$ and $w_k$/$w_l$" />
+	<figcaption>
+	A schematic diagram for the geometric view of $x$ and $w_k$/$w_l$
+	</figcaption>
 </figure>
 
 <p>This phenomenon of clustering is one of the discoveries presented in the aforementioned paper; besides, the authors also explored the effect of label smoothing to the widths of clusters, on which my interpretation is as follows:</p>
