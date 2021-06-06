@@ -5,13 +5,320 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 31 Jan 2021 21:16:10 +0800</pubDate>
-    <lastBuildDate>Sun, 31 Jan 2021 21:16:10 +0800</lastBuildDate>
+    <pubDate>Sun, 06 Jun 2021 19:48:02 +0800</pubDate>
+    <lastBuildDate>Sun, 06 Jun 2021 19:48:02 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
+        <title>A Dissection of Attention: Kernel Interpretation</title>
+        <description>&lt;p&gt;In the field of machine learning, one of the most influential breakthroughs would be no doubt the advent of attention, and it has become a common technique applied in many different types of learning problems. Such prevalence, however, somehow had left me with the impression that it had been just a handy trick to conduct a data-dependent and normalised linear combination until recently, when I once again stood corrected. Brilliant researchers has now demonstrated how attention could be examined through the lens of kernels, which opens up the possibility for computing the attention weights in a much more efficient way. Surprisingly, its derivation only requires the basic understanding of the conventional &lt;em&gt;kernel trick&lt;/em&gt;, and hence this resulting post contains my &lt;del&gt;successful&lt;/del&gt; attempt to go through that idea with my rudimentary knowledge about kernels.&lt;/p&gt;
+
+&lt;h2 id=&quot;what-are-kernels-&quot;&gt;What Are Kernels? &lt;a name=&quot;what_are_kernels&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Since the new interpretation is from the perspective of kernels, please bear with me digressing to that question for a moment, and here is my rather simplified and informal answer: an alternative way to compute the dot product of any two vectors under the associated feature mapping. For example, given a mapping function $\phi:\mathbb{R}^m \to \mathbb{R}^n$, for any two column vectors $x, t \in \mathbb{R}^m$ the kernel $Ker_{\phi}$ (corresponding to $\phi$) will satisfy ($\odot$ stands for the dot product):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; Ker_{\phi}(x, t) = Ker_{\phi}(t, x) = \phi(x) \odot \phi(t)
+\end{aligned}
+\label{eq:kernel_definition}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Note that $Ker_{\phi}$ is defined as a function taking $x$ and $t$ as its inputs. It suggests that if the evaluation of $Ker_{\phi}$ does not involve the associated feature mapping, then one can obtain the dot product of $\phi(x)$ and $\phi(t)$ without needing to know the explicit forms of those vectors under the mapping, and that is the most common use case when it comes to the application of the concept of kernels. Why? Imagine that $\phi$ is a complicated function which produces vectors of large dimensionality ($n \gg m$); a dot product in the output space of such a $\phi$ requires potentially high complexity of $O(n)$, whereas a cleverly designed $Ker_{\phi}$ might only take the complexity as small as $O(k)$. In other words, even with a very expressive $\phi$ (which incurs the surge in the dimensionality of its output space) the complexity of computing the dot products can still be kept at a manageable level, via the corresponding kernel $Ker_{\phi}$.&lt;/p&gt;
+
+&lt;p&gt;To demonstrate such exploitation, consider the following kernel:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; Ker_{\phi_{exp}}(x, t) = exp(x \odot t) = \prod_{i=0}^{m-1} exp(x_i * t_i)
+\end{aligned}
+\label{eq:exponetial_kernel}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Each term $exp(x_i * t_i)$ can be expressed in terms of &lt;em&gt;Taylor series&lt;/em&gt; at $x_i * t_i = 0$, which yields&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; exp(x_i * t_i) \\
+&amp; = 1 + \frac{x_i * t_i}{1!} + \frac{(x_i * t_i)^2}{2!} + \frac{(x_i * t_i)^3}{3!} + \dotsb \\
+&amp; = 1 + \frac{x_i}{\sqrt{1!}} * \frac{t_i}{\sqrt{1!}} + \frac{x_i^2}{\sqrt{2!}} * \frac{t_i^2}{\sqrt{2!}} + \frac{x_i^3}{\sqrt{3!}} * \frac{t_i^3}{\sqrt{3!}} + \dotsb \\
+&amp; = [1, \frac{x_i}{\sqrt{1!}}, \frac{x_i^2}{\sqrt{2!}}, \frac{x_i^3}{\sqrt{3!}}, \dotsc] \odot [1, \frac{t_i}{\sqrt{1!}}, \frac{t_i^2}{\sqrt{2!}}, \frac{t_i^3}{\sqrt{3!}}, \dotsc] \\
+&amp; = {\phi_{exp}}_{i}(x) \odot {\phi_{exp}}_{i}(t)
+\end{aligned}
+\label{eq:exponetial_kernel_term_i_in_taylor_series}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;That indicates for $m = 1$, $\phi_{exp}$ in effect produces vectors of infinite dimensions; furthermore, following the same principle of \eqref{eq:exponetial_kernel_term_i_in_taylor_series}, it can be shown that when $m \ge 2$ the dimensionality of the output space can only become “more infinite” (if infinity can really be compared). For instance, below is the case where $m = 2$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \prod_{i=0}^{1} exp(x_i * t_i) \\
+&amp; = exp(x_0 * t_0) * exp(x_1 * t_1) \\
+&amp; = (1 + \frac{x_0}{\sqrt{1!}} * \frac{t_0}{\sqrt{1!}} + \frac{x_0^2}{\sqrt{2!}} * \frac{t_0^2}{\sqrt{2!}} + \frac{x_0^3}{\sqrt{3!}} * \frac{t_0^3}{\sqrt{3!}} + \dotsb) * \\
+&amp; \phantom{=} (1 + \frac{x_1}{\sqrt{1!}} * \frac{t_1}{\sqrt{1!}} + \frac{x_1^2}{\sqrt{2!}} * \frac{t_1^2}{\sqrt{2!}} + \frac{x_1^3}{\sqrt{3!}} * \frac{t_1^3}{\sqrt{3!}} + \dotsb) \\
+&amp; = (1 + \frac{x_0}{\sqrt{1!}} * \frac{t_0}{\sqrt{1!}} + \frac{x_0^2}{\sqrt{2!}} * \frac{t_0^2}{\sqrt{2!}} + \dotsb) + \\
+&amp; \phantom{=} (\frac{x_1}{\sqrt{1!}} * \frac{t_1}{\sqrt{1!}} + \frac{x_0}{\sqrt{1!}}\frac{x_1}{\sqrt{1!}} * \frac{t_0}{\sqrt{1!}}\frac{t_1}{\sqrt{1!}} + \dotsb) + \\
+&amp; \phantom{=} (\frac{x_1^2}{\sqrt{2!}} * \frac{t_1^2}{\sqrt{2!}} + \frac{x_0}{\sqrt{1!}}\frac{x_1^2}{\sqrt{2!}} * \frac{t_0}{\sqrt{1!}}\frac{t_1^2}{\sqrt{2!}} + \dotsb) + \dotsb \\
+&amp; = [1, \frac{x_0}{\sqrt{1!}}, \frac{x_0^2}{\sqrt{2!}}, \dotsc, \frac{x_1}{\sqrt{1!}}, \frac{x_0}{\sqrt{1!}}\frac{x_1}{\sqrt{1!}}, \frac{x_0}{\sqrt{1!}}\frac{x_1^2}{\sqrt{2!}}, \dotsc] \odot \\
+&amp; \phantom{=} [1, \frac{t_0}{\sqrt{1!}}, \frac{t_0^2}{\sqrt{2!}}, \dotsc, \frac{t_1}{\sqrt{1!}}, \frac{t_0}{\sqrt{1!}}\frac{t_1}{\sqrt{1!}}, \frac{t_0}{\sqrt{1!}}\frac{t_1^2}{\sqrt{2!}}, \dotsc] \\
+&amp; = {\phi_{exp}}_{0,1}(x) \odot {\phi_{exp}}_{0,1}(t)
+\end{aligned}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Surprisingly, while $\phi_{exp}(x)$/$\phi_{exp}(t)$ is infinite-dimensional, and therefore conducting the dot product of them is literally impossible, the evaluated result of that dot product is still obtainable, through the computationally feasible alternative (or a shortcut in a sense) $Ker_{\phi_{exp}}(x, t)$.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-connection-to-attention-&quot;&gt;The Connection to Attention &lt;a name=&quot;the_connection_to_attention&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;The attention given a query $q \in \mathbb{R}^m$ over a set of $L$ key-value pairs $\{(k_j, v_j)| j \in \mathbb{Z}, 0 \le j \le L-1, k_j \in \mathbb{R}^m, v_j \in \mathbb{R}^o\}$ is commonly defined as follows:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a = \sum_{j = 0}^{L-1} \frac{ exp(\frac{q \odot k_j}{\sqrt{m}})}{\sum_{l = 0}^{L-1} exp(\frac{q \odot k_l}{\sqrt{m}})} v_j \\
+&amp; \phantom{a} = \sum_{j = 0}^{L-1} \frac{ exp(\underbrace{\hat{q}}_{\frac{q}{\sqrt[4]{m}}} \odot \underbrace{\hat{k}_j}_{\frac{k}{\sqrt[4]{m}}})}{\sum_{l = 0}^{L-1} exp(\hat{q} \odot \hat{k}_l)} v_j 
+\end{aligned}
+\label{eq:basic_attention}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Note that those terms involving exponetial functions just match the definition of \eqref{eq:exponetial_kernel} discussed in the last &lt;a href=&quot;#what_are_kernels&quot;&gt;section&lt;/a&gt;; therefore \eqref{eq:basic_attention} is equivalent to:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_{exp}}(\hat{q}, \hat{k}_j)}{\sum_{l = 0}^{L-1} Ker_{\phi_{exp}}(\hat{q}, \hat{k}_l)} v_j
+\end{aligned}
+\label{eq:exponential_kernel_attention}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;\eqref{eq:exponential_kernel_attention} shows that the attention weights can be viewed as the results returned by the kernel function $Ker_{\phi_{exp}}$ with normalisation; and since there are no constraints on what types of kernels can be used except for having non-negative outputs (attention weights need to be $\ge 0$), it is possible to derive the formula based on different kernels, which yield this general form of attention:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a_{\phi_p} = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_p}(\hat{q}, \hat{k}_j)}{\sum_{l = 0}^{L-1} Ker_{\phi_p}(\hat{q}, \hat{k}_l)} v_j  \\
+&amp; \phantom{a_{\phi_p}} = \sum_{j = 0}^{L-1} \frac{\phi_p(\hat{q}) \odot \phi_p(\hat{k}_j)}{\sum_{l = 0}^{L-1} \phi_p(\hat{q}) \odot \phi_p(\hat{k}_l)} v_j 
+\end{aligned}
+\label{eq:kernel_attention}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;with $\phi_p:\mathbb{R}^m \to \mathbb{R}^n$ being some mapping function which satisfies $\phi_p(x) \odot \phi_p(t) \ge 0$ for any $x$, $t \in \mathbb{R}^m$.&lt;/p&gt;
+
+&lt;h2 id=&quot;fast-attention-&quot;&gt;Fast Attention &lt;a name=&quot;fast_attention&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+
+&lt;p&gt;One of the main advantages of the attention mechanism is its capability for gathering distant information as every part of data being attended to can be accessed directly; however, that property is also a curse due to the fact that its complexity is largely dictated by the range of attention, and it could be rather costly when modelling data containing long-range dependencies. To see that, let us extend the attention definition of \eqref{eq:basic_attention} to the multi-query version written in matrix form (assuming there are $L$ queries):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; A = \underbrace{\Big(\frac{exp(\frac{Q K^T}{\sqrt{m}})}{\big( exp(\frac{Q K^T}{\sqrt{m}})1_L \big) }\Big)}_{= W} V
+\end{aligned}
+\label{eq:basic_attention_in_matrix_form}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $1_L$ is the all-ones column vector of $L$ rows; $diag(.)$ is the diagonal matrix of which the diagonal is equal to its input vector; both the $exp(.)$ and the division are applied elementwise and broadcast if necessary; $Q \in \mathbb{R}^{L*m}$, $K \in \mathbb{R}^{L*m}$, and $V \in \mathbb{R}^{L*o}$ stand for the matrices with each row representing a query, key, and value vector respectively. The analysis of \eqref{eq:basic_attention_in_matrix_form} suggests that the time complexity for obtaining $A$ is dominated by the matrix multiplications of $Q K^T$ and $W V$, which take $O(L^2m+L^2o) = O(L^2*max(m, o))$; while the storage of $Q$, $K$, $V$, and $W$ comprises the main part of the memory consumption, resulting in the space complexity of $O(L*max(m, L, o))$. Consequently, when the dimesion of the size $L$ becomes the largest one (as is usually the case), both of the time and space complexity would be quadratic with respect to $L$, and an increase in $L$ could easily render the computation of \eqref{eq:basic_attention_in_matrix_form} prohibitively expensive.&lt;/p&gt;
+
+&lt;p&gt;So how can we alleviate that cost requirement? Well, having a close look at \eqref{eq:basic_attention_in_matrix_form}, you might notice that the calculation of $Q K^T$ consitutes the major source of the computational demand; therefore its circumvention would be the key to reduce the complexities, and that is where the kernel connection comes into play. Recall that in the last &lt;a href=&quot;#the_connection_to_attention&quot;&gt;section&lt;/a&gt; the general form of attention under the kernel interpretation has been introduced; approaching the multi-query attention from that view, in particular from \eqref{eq:kernel_attention}, yields the following formulation named fast attention:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; A_{\phi_p} = \Big(\frac{(\hat{Q}_{\phi_p} \hat{K}_{\phi_p}^T )}{(\hat{Q}_{\phi_p} \hat{K}_{\phi_p}^T 1_L )} \Big) V \\
+&amp; \phantom{A_{\phi_p}} = \frac{\hat{Q}_{\phi_p} \overbrace{\hat{K}_{\phi_p}^T V}^{= U}}{\hat{Q}_{\phi_p} \underbrace{\hat{K}_{\phi_p}^T 1_L}_{= S}} \\
+&amp; \phantom{A_{\phi_p}} = \frac{\hat{Q}_{\phi_p} U}{\hat{Q}_{\phi_p} S } \\
+\end{aligned}
+\label{eq:dot_attention_in_matrix_form}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;with the i-th row of $\hat{Q}_{\phi_p}$ (denoted by $(\hat{Q}_{\phi_p})_i$) being the output of $\phi_p$ given as input the i-th row of $\frac{Q}{\sqrt[4]{m}}$, and the j-th row of $\hat{K}_{\phi_p}$ (denoted by $(\hat{K}_{\phi_p})_j$) being the output of $\phi_p$ given as input the j-th row of $\frac{K}{\sqrt[4]{m}}$, for every row $i$ in $Q$ and every row $j$ in $K$, respectively. Note that how the calculation of the product $\hat{Q}_{\phi_p} \hat{K}_{\phi_p}^T$ (analogous to the term $Q K^T$ in \eqref{eq:basic_attention_in_matrix_form}) is avoided by the intermediate results of $U$ and $S$ according to the associative property of matrix multiplication enabled by the feature mapping $\phi_p$, and that is where the “fastness” comes from: the computation for $U$ and $S$ is only of a time complexity of $O(Lno+Ln) = O(Lno)$, while their storage requires merely $O(no+n) = O(no)$; furthermore, the evaluation of $A_{\phi_p}$ through $U$ and $S$ is also cheap, taking $O(Lno)$ in time and $O(Lo)$ in space. As a result, \eqref{eq:dot_attention_in_matrix_form} offers a potentially efficient way for conducting attention with the time complexity of $O(Lno)$ and the space complexity of $O(L*max(n, o))$, both of which are just linear with respect to $L$.&lt;/p&gt;
+
+&lt;p&gt;But, if you have noticed the word “potentially”, there is a caveat. The entire discussion about the improvement in efficiency is premised on that $L$ remains the dominant factor in the complexity while the overheads of $\phi_p(.)$ are negligible, which implies \eqref{eq:dot_attention_in_matrix_form} can only be faster if&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;The dimensionality of the output space of $\phi_p(.)$ is less than the number of queries/key-value pairs, i.e. $n \lt L$.&lt;/li&gt;
+  &lt;li&gt;The cost of the evaluation of $\phi_p(\hat{q})$ and that of $\phi_p(\hat{k})$ are ralatively small compared with the one of \eqref{eq:dot_attention_in_matrix_form}.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Therefore the choice of the kernel (and thus its associated $\phi_p$) for producing attention weights really determines the performance of \eqref{eq:dot_attention_in_matrix_form}, and it is possible to end up being (desperately) worse than the original form! For example, the fast attention equivalent for \eqref{eq:basic_attention_in_matrix_form}, which indicates the use of $Ker_{\phi_{exp}}(., .)$, is $A_{\phi_{exp}}$; nonetheless, to evaluate it is completely impractical due to the infinite-dimensional output space of $\phi_{exp}(.)$ (that is, $n = \infty$), as pointed out in the previous &lt;a href=&quot;#what_are_kernels&quot;&gt;section&lt;/a&gt;. In other words, if $A_{\phi_{exp}}$ were to be evaluated, it would require infinite time and space!&lt;/p&gt;
+
+&lt;h2 id=&quot;positive-random-features&quot;&gt;Positive Random Features&lt;/h2&gt;
+&lt;p&gt;It is really disappointing that the fast attention can not be applied to speed up \eqref{eq:basic_attention_in_matrix_form}, and the main obstacle which blows up the complexity is the presence of $\phi_{exp}(.)$. Hence just as what has been done in \eqref{eq:dot_attention_in_matrix_form}, researchers sought to circumvent again that computationally demanding part, and in doing so they have found that actually $Ker_{\phi_{exp}}(\hat{q}, \hat{k})$ can be expressed in terms of the expectation over the standard normal distribution:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; Ker_{\phi_{exp}}(\hat{q}, \hat{k}) = exp(\hat{q} \odot \hat{k}) \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) \\
+&amp; exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) = exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) * \\
+&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2} =} \underbrace{(2\pi)^{-\frac{m}{2}} \int exp(-\frac{\|z - (\hat{q} + \hat{k})\|_2^2}{2}) dz}_{= 1} \\
+&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2})} = (2\pi)^{-\frac{m}{2}} * \\
+&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) =} \int exp(-\|z\|_2^2) exp(z \odot (\hat{q} + \hat{k})) dz \\
+&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2})} = E_{z\sim Normal(0, I)}[exp(z \odot (\hat{q} + \hat{k}))] \\
+&amp; \implies Ker_{\phi_{exp}}(\hat{q}, \hat{k}) = exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) * \\
+&amp; \phantom{\implies Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} E_{z\sim Normal(0, I)}[exp(z \odot (\hat{q} + \hat{k}))]
+\end{aligned}
+\label{eq:kernel_exp_with_expectation}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Then estimating the expectation in \eqref{eq:kernel_exp_with_expectation} via the &lt;em&gt;Monte Carlo method&lt;/em&gt; with random samples $Z = \{z_0,\dotsc, z_i,\dotsc,z_{N-1} | z_i \sim Normal(0, I)\}$ yields:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; Ker_{\phi_{exp}}(\hat{q}, \hat{k}) \approx exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) * \\ 
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \frac{1}{N} \sum_{i=0}^{N-1}exp(z_i \odot (\hat{q} + \hat{k})) \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) * \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \frac{1}{N} \sum_{i=0}^{N-1}exp(z_i \odot \hat{q}) exp(z_i \odot \hat{k}) \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = \underbrace{\begin{aligned} &amp; \Big( \frac{exp(-\frac{\|\hat{q}\|_2^2}{2})}{\sqrt{N}} * \\
+																															&amp; \phantom{\Big(} [exp(z_0 \odot \hat{q}),\dotsc, exp(z_{N-1} \odot \hat{q})] \Big) \end{aligned}}_{= \phi_{Z}(\hat{q})} \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \odot \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \underbrace{\begin{aligned} &amp; \Big( \frac{exp(-\frac{\|\hat{k}\|_2^2}{2})}{\sqrt{N}} * \\
+																															&amp; \phantom{\Big(} [exp(z_0 \odot \hat{k}),\dotsc, exp(z_{N-1} \odot \hat{k})] \Big) \end{aligned}}_{= \phi_{Z}(\hat{k})} \\
+&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = \phi_{Z}(\hat{q}) \odot \phi_{Z}(\hat{k})
+\end{aligned}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;and there you go! a new feature mapping function $\phi_{Z}(.)$ for $Ker_{\phi_{exp}}(\hat{q}, \hat{k})$, which is one realisation of the notion called &lt;em&gt;Positive Random Features&lt;/em&gt;, is attained. As the name suggests, all of the output features of $\phi_{Z}(.)$ are not only positive (just as desired for calculating attention weights), but also derived from random samples; in particular, the dimensionality of its output space is also decided by, or to be specific, equal to, the number of the samples utilised. That indicates through the trade-off between the approximation accuracy and the sample size, conducting the fast attention with $\phi_{Z}(.)$ can always be made affordable, and therefore $\phi_{Z}(.)$ serves as a viable as well as flexible alternative to $\phi_{exp}(.)$ when it comes to performing the fast attention version of \eqref{eq:basic_attention_in_matrix_form}.&lt;/p&gt;
+
+&lt;p&gt;It should also be mentioned that the nature of the uncertainty of &lt;em&gt;Positive Random Features&lt;/em&gt; would inevitably bring about noise, which in turn creates the variance in the attention results and has shown to be harmful to training; so besides having an adequate number of samples, in the paper where this method was proposed other techniques such as &lt;em&gt;the orthogonalisation of random samples&lt;/em&gt; or &lt;em&gt;periodic resampling&lt;/em&gt; were also recommended to mitigate that negative impact. Interested readers are referred to &lt;a href=&quot;https://arxiv.org/abs/2009.14794&quot;&gt;the original paper&lt;/a&gt; for more details.&lt;/p&gt;
+
+&lt;h2 id=&quot;extending-to-autoregressive-attention&quot;&gt;Extending to Autoregressive Attention&lt;/h2&gt;
+
+&lt;p&gt;This is also termed &lt;em&gt;unidirectional attention&lt;/em&gt;, where each query is only allowed to attend to the previous information (excluding/including the current one) based on a given ordering. For instance, \eqref{eq:basic_attention_in_matrix_form} can be turned autoregressive by plugging in the $LT(.)$ operator which returns the lower triangular version of its input matrix:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; A^{ar} = \Big( \frac{ LT(exp(\frac{Q K^T}{\sqrt{m}})) }{ LT(exp(\frac{Q K^T}{\sqrt{m}}))1_L } \Big) V
+\end{aligned}
+\label{eq:basic_autoregressive_attention_in_matrix_form}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where the implicit ordering and autoregressive rule imposed by $LT(.)$ state that $K_j$/$V_j$, the j-th row of $K$/$V$, is available to $Q_i$, the i-th row of $Q$, if $j \le i$. In order to express \eqref{eq:basic_autoregressive_attention_in_matrix_form} in a fast-attention fashion, the trick done in \eqref{eq:dot_attention_in_matrix_form} has to be applied to individual queries separately due to the fact that the attention range of each query is now non-shareable:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; (A^{ar}_{\phi_Z})_i = \sum_{j = 0}^{i} \Big( \frac{(\hat{Q}_{\phi_Z})_i ((\hat{K}_{\phi_Z})_j)^T }{ \sum_{r = 0}^{i} (\hat{Q}_{\phi_Z})_i ((\hat{K}_{\phi_Z})_r)^T } \Big) V_j \\
+&amp; \phantom{(A^{ar}_{\phi_Z})_i} = \frac{(\hat{Q}_{\phi_Z})_i \overbrace{\big( \sum_{j = 0}^{i} ((\hat{K}_{\phi_Z})_j)^T V_j \big)}^{= U^i} }{ (\hat{Q}_{\phi_Z})_i \underbrace{\big(\sum_{r = 0}^{i} ((\hat{K}_{\phi_Z})_r)^T \big)}_{= S^i}  } \\
+&amp; \phantom{(A^{ar}_{\phi_Z})_i} = \frac{ \overbrace{(\hat{Q}_{\phi_Z})_i U^i}^{\hat{U}_{\phi_Z}^i} }{ \underbrace{(\hat{Q}_{\phi_Z})_i S^i}_{\hat{S}_{\phi_Z}^i} } = \frac{\hat{U}_{\phi_Z}^i}{\hat{S}_{\phi_Z}^i}
+\end{aligned}
+\label{eq:dot_autoregressive_attention_in_matrix_form}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Here in \eqref{eq:dot_autoregressive_attention_in_matrix_form} it is assumed that $\phi_{Z}(.)$ is adopted and $(A^{ar}_{\phi_Z})_i$ represents the i-th row of $A^{ar}_{\phi_Z}$, the approximation of $A^{ar}$ obtained via the corresponding fast attention mechanism; furthermore, by conducting a similar analysis as given for \eqref{eq:dot_attention_in_matrix_form}, it can be concluded that for any specific $i$, the time and space complexity are $O(i*no)$ and $O(i*max(n, o))$, which accounts for the iterations required by the summation, respectively.&lt;/p&gt;
+
+&lt;p&gt;One might think that because $0 \le j, r \le i \le L-1$, to obtain a full $A^{ar}_{\phi_Z}$ would requires $O(\frac{L*(L+1)}{2}*no) = O(L^2no)$ in time as well as $O(L^2*max(n, o))$ in space, and thus formulating autoregressive attention this way is no better than its orginal form in terms of computational efficiency; however, if based on the fact that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\begin{aligned}
+\begin{cases}
+U^i = U^{i-1} + ((\hat{K}_{\phi_Z})_i)^T V_i  \\
+S^i = S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T
+\end{cases}
+\end{aligned}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;\eqref{eq:dot_autoregressive_attention_in_matrix_form} is rewritten to&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; (A^{ar}_{\phi_Z})_i = \frac{ (\hat{Q}_{\phi_Z})_i U^i }{  (\hat{Q}_{\phi_Z})_i S^i } \\ 
+&amp; \phantom{(A^{ar}_{\phi_Z})_i} = \frac{ (\hat{Q}_{\phi_Z})_i \big(U^{i-1} + ((\hat{K}_{\phi_Z})_i)^T V_i \big) }{ (\hat{Q}_{\phi_Z})_i \big( S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T \big) }
+\end{aligned}
+\label{eq:cumulative_dot_autoregressive_attention_in_matrix_form}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;with $U^{-1}$ and $S^{-1}$ equal to $0$; then a sequential algorithm can be designed accordingly such that it only takes the time complexity of $O(no)$ and the space complexity of $O(max(n, o))$ to evaluate $(A^{ar}_{\phi_Z})_i$ via the reuse of $U^{i-1}$ and $S^{i-1}$ obtained during the previous computation of $(A^{ar}_{\phi_Z})_{i-1}$, for every $i$. Consequently, the overall complexity linear with respect to $L$ is still achievable.&lt;/p&gt;
+
+&lt;p&gt;Another place where this idea of reuse can be shown applicable is the calculation of the associated gradients with \eqref{eq:dot_autoregressive_attention_in_matrix_form} for back-propagation. Given $\mathcal{L}$ as the single-valued objective for optimisation, the derivation of the gradient formulations similar to \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form} begins with the following concatenation matrix $J_i$ of the size $1$ by $o+1$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; J_i = [\hat{U}_{\phi_Z}^i, \hat{S}_{\phi_Z}^i] \\
+&amp; \phantom{J_i} = (\hat{Q_{\phi_Z}})_i [U^i, S^i] \\
+&amp; \phantom{J_i} = (\hat{Q_{\phi_Z}})_i \big(\sum_{j = 0}^{i} ((\hat{K}_{\phi_Z})_j)^T \underbrace{[V_j, 1]}_{= \tilde{V}_j} \big) \\
+&amp; \phantom{J_i} = (\hat{Q_{\phi_Z}})_i \big(\sum_{j = 0}^{i} ((\hat{K}_{\phi_Z})_j)^T \tilde{V}_j \big)
+\end{aligned}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;with respect to which the gradient of $\mathcal{L}$ is:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \nabla_{J_i} \mathcal{L} = [\nabla_{\hat{U}_{\phi_Z}^i} \mathcal{L}, \nabla_{\hat{S}_{\phi_Z}^i} \mathcal{L}]
+\end{aligned}
+\label{eq:gradient_L_J_i}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Then the three essential gradients can be defined based on \eqref{eq:gradient_L_J_i}, including $\nabla_{(\hat{Q}_{\phi_Z})_i} \mathcal{L}$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \frac{\partial \mathcal{L}}{\partial (\hat{Q}_{\phi_Z})_{i, a}}  = \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} * \frac{\partial J_{i, b}}{\partial (\hat{Q}_{\phi_Z})_{i, a}} \\
+&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\hat{Q}_{\phi_Z})_{i, a}}} = \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} * \big(\sum_{j = 0}^{i} (\tilde{V}_{j, b})^T (\hat{K}_{\phi_Z})_{j, a} \big) \\
+&amp; \implies \nabla_{(\hat{Q}_{\phi_Z})_i} \mathcal{L} = \nabla_{J_i} \mathcal{L} \underbrace{\big(\sum_{j = 0}^{i} (\tilde{V_j})^T (\hat{K}_{\phi_Z})_j \big)}_{U_{\hat{Q}_{\phi_Z}}^i} \\
+&amp; \phantom{\implies \nabla_{(\hat{Q}_{\phi_Z})_i} \mathcal{L}} = \nabla_{J_i} \mathcal{L} \big(U_{\hat{Q}_{\phi_Z}}^{i-1} + (\tilde{V_i})^T (\hat{K}_{\phi_Z})_i \big) 
+\end{aligned}
+\label{eq:gradient_L_hat_Q_phi_Z_i}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;$\nabla_{(\hat{K}_{\phi_Z})_j} \mathcal{L}$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \frac{\partial \mathcal{L}}{\partial (\hat{K}_{\phi_Z})_{j, a}} = \sum_{i=j}^{L-1} \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} * \frac{\partial J_{i, b}}{\partial (\hat{K}_{\phi_Z})_{j, a}} \\
+&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\hat{K}_{\phi_Z})_{j, a}}} = \sum_{i=j}^{L-1} \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} (\hat{Q}_{\phi_Z})_{i, a} \tilde{V}_{j, b} \\
+&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\hat{K}_{\phi_Z})_{j, a}}} = \sum_{b=0}^{o} \tilde{V}_{j, b} * \big( \sum_{i=j}^{L-1}  \frac{\partial \mathcal{L}}{\partial J_{i, b}} (\hat{Q}_{\phi_Z})_{i, a} \big) \\
+&amp; \implies \nabla_{(\hat{K}_{\phi_Z})_j} \mathcal{L} = \tilde{V}_j \underbrace{\big(\sum_{i=j}^{L-1} (\nabla_{J_i} \mathcal{L})^T (\hat{Q}_{\phi_Z})_i \big)}_{= U_{\hat{K}_{\phi_Z}}^{j}} \\
+&amp; \phantom{\implies \nabla_{(\hat{K}_{\phi_Z})_j} \mathcal{L}} = \tilde{V}_j \big(U_{\hat{K}_{\phi_Z}}^{j+1} + (\nabla_{J_j} \mathcal{L})^T (\hat{Q}_{\phi_Z})_j \big)
+\end{aligned}
+\label{eq:gradient_L_hat_K_phi_Z_j}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;and $\nabla_{(\tilde{V}_{\phi_Z})_j} \mathcal{L}$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \frac{\partial \mathcal{L}}{\partial (\tilde{V}_{\phi_Z})_{j, a}} = \sum_{i=j}^{L-1} \frac{\partial \mathcal{L}}{\partial J_{i, a}} * \frac{\partial J_{i, b}}{\partial (\tilde{V}_{\phi_Z})_{j, a}} \\
+&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\tilde{V}_{\phi_Z})_{j, a}}} = \sum_{i=j}^{L-1} \frac{\partial \mathcal{L}}{\partial J_{i, a}} \big( \sum_{b=0}^{n-1} (\hat{Q}_{\phi_Z})_{i, b} (\hat{K}_{\phi_Z})_{j, b} \big) \\
+&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\tilde{V}_{\phi_Z})_{j, a}}} = \sum_{b=0}^{n-1} (\hat{K}_{\phi_Z})_{j, b} \big(\sum_{i=j}^{L-1} (\hat{Q}_{\phi_Z})_{i, b} \frac{\partial \mathcal{L}}{\partial J_{i, a}} \big)  \\
+&amp; \implies \nabla_{(\tilde{V}_{\phi_Z})_j} \mathcal{L} = (\hat{K}_{\phi_Z})_j \underbrace{\big( \sum_{i=j}^{L-1} ((\hat{Q}_{\phi_Z})_i)^T \nabla_{J_i} \mathcal{L} \big)}_{= U_{\tilde{V}_{\phi_Z}}^{j}} \\
+&amp; \phantom{\implies \nabla_{(\tilde{V}_{\phi_Z})_j} \mathcal{L}} = (\hat{K}_{\phi_Z})_j \big(U_{\tilde{V}_{\phi_Z}}^{j+1} + ((\hat{Q}_{\phi_Z})_j)^T \nabla_{J_j} \mathcal{L} \big) 
+
+\end{aligned}
+\label{eq:gradient_L_tilde_V_j}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where the two subscripts of a matrix is used to index the entries of that matrix at locations encoded by (row, column) coordinates; for example, $(\hat{Q}_{\phi_Z})_{i, a}$ refers to the entry of $\hat{Q}_{\phi_Z}$ at the row $i$ and the column $a$. Since \eqref{eq:gradient_L_hat_Q_phi_Z_i}, \eqref{eq:gradient_L_hat_K_phi_Z_j}, and \eqref{eq:gradient_L_tilde_V_j} are expressed as some previous result plus an additonal update, they are certainly eligible for the sequential algorithm suggested for \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form}, albeit there is a subtle distinction: the computational sequence of \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form} should be arranged from the position $0$ to the position $L-1$ (forward) following the autoregressive order, which is the same as the one of \eqref{eq:gradient_L_hat_Q_phi_Z_i}; in contrast, both \eqref{eq:gradient_L_hat_K_phi_Z_j} and \eqref{eq:gradient_L_tilde_V_j} would need to start their sequences at the position $L-1$ and progress down to the position $0$ (backward).&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2009.14794&quot;&gt;Krzysztof Choromanski et al. “Rethinking Attention with Performers”. In:CoRRabs/2009.14794(2020)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2006.16236&quot;&gt;Angelos Katharopoulos et al. “Transformers are RNNs: Fast Autoregressive Transformerswith Linear Attention”. In:CoRRabs/2006.16236 (2020)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Thu, 13 May 2021 00:00:00 +0800</pubDate>
+        <link>/Blogs/note/Attention-and-Kernel.html</link>
+        <guid isPermaLink="true">/Blogs/note/Attention-and-Kernel.html</guid>
+        
+        <category>MachineLearning</category>
+        
+        
+        <category>Note</category>
+        
+      </item>
+    
+      <item>
         <title>From VQVAE to VBVAE</title>
-        <description>&lt;p&gt;Living in the Digital Age, we have seen how the importance of the notion of “digitalisation” in the advance of modern technologies. Arguably the main advantange brought by digitalisation, or quantisation from the perspective of digital signal processing, is the transformation of complicated signals into a form which can be not only processed and stored efficiently, but also robust to noise. Lately, such an idea has also be deployed into the field of machinge learning, and led to a new model of neural networks called &lt;strong&gt;V&lt;/strong&gt;ector &lt;strong&gt;Q&lt;/strong&gt;uantised &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder. While the modelling method has been proven successful in many applications, issues have been observed in my attempt to incorporate it into my recent project, where &lt;strong&gt;VQVAE&lt;/strong&gt; have had difficulty to deal with a large code space. Therefore, a new variant named &lt;strong&gt;V&lt;/strong&gt;ector &lt;strong&gt;B&lt;/strong&gt;inarised &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder, which retains the spirit and benefit of quantisation but does not suffer from the shortcomings of the original &lt;strong&gt;VQVAE&lt;/strong&gt;, is proposed, and in this post the derivation from &lt;strong&gt;VQVAE&lt;/strong&gt; to &lt;strong&gt;VBVAE&lt;/strong&gt; and the intuitions behind it are presented. Note that no thorough and comprehensive experiments have been conducted to support this new concept, so please read with caution;)&lt;/p&gt;
+        <description>&lt;p&gt;Living in the Digital Age, we have witnessed how important that the notion of “digitalisation” is in the advance of modern technologies. Arguably the main advantange brought by digitalisation, or quantisation from the perspective of digital signal processing, is the transformation of complicated signals into a form which can be not only processed and stored efficiently, but also robust to noise. Lately, such an idea has also be deployed into the field of machinge learning, and led to a new model of neural networks called &lt;strong&gt;V&lt;/strong&gt;ector &lt;strong&gt;Q&lt;/strong&gt;uantised &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder. While the modelling method has been proven successful in many applications, issues have been observed in my attempt to incorporate it into my recent project, where &lt;strong&gt;VQVAE&lt;/strong&gt; have had difficulty to deal with a large code space. Therefore, a new variant named &lt;strong&gt;V&lt;/strong&gt;ector &lt;strong&gt;B&lt;/strong&gt;inarised &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder, which retains the spirit and benefit of quantisation but does not suffer from the shortcomings of the original &lt;strong&gt;VQVAE&lt;/strong&gt;, is proposed, and in this post the derivation from &lt;strong&gt;VQVAE&lt;/strong&gt; to &lt;strong&gt;VBVAE&lt;/strong&gt; as well as the intuitions behind it are presented. Note that no thorough and comprehensive experiments have been conducted to support this new concept, so please read with a huge grain of salt. ; )&lt;/p&gt;
 
 &lt;h2 id=&quot;review-vqvae&quot;&gt;Review: &lt;strong&gt;VQVAE&lt;/strong&gt;&lt;/h2&gt;
 &lt;p&gt;For a data point $x$, the objective (or called &lt;strong&gt;E&lt;/strong&gt;vidence &lt;strong&gt;L&lt;/strong&gt;ower &lt;strong&gt;BO&lt;/strong&gt;und in some literature) of a &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder to be maximised is normally written as:&lt;/p&gt;
