@@ -5,8 +5,8 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 06 Jun 2021 19:48:02 +0800</pubDate>
-    <lastBuildDate>Sun, 06 Jun 2021 19:48:02 +0800</lastBuildDate>
+    <pubDate>Sun, 06 Jun 2021 20:02:19 +0800</pubDate>
+    <lastBuildDate>Sun, 06 Jun 2021 20:02:19 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
@@ -296,11 +296,11 @@ S^i = S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T
 \label{eq:gradient_L_tilde_V_j}
 \end{equation} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;where the two subscripts of a matrix is used to index the entries of that matrix at locations encoded by (row, column) coordinates; for example, $(\hat{Q}_{\phi_Z})_{i, a}$ refers to the entry of $\hat{Q}_{\phi_Z}$ at the row $i$ and the column $a$. Since \eqref{eq:gradient_L_hat_Q_phi_Z_i}, \eqref{eq:gradient_L_hat_K_phi_Z_j}, and \eqref{eq:gradient_L_tilde_V_j} are expressed as some previous result plus an additonal update, they are certainly eligible for the sequential algorithm suggested for \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form}, albeit there is a subtle distinction: the computational sequence of \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form} should be arranged from the position $0$ to the position $L-1$ (forward) following the autoregressive order, which is the same as the one of \eqref{eq:gradient_L_hat_Q_phi_Z_i}; in contrast, both \eqref{eq:gradient_L_hat_K_phi_Z_j} and \eqref{eq:gradient_L_tilde_V_j} would need to start their sequences at the position $L-1$ and progress down to the position $0$ (backward).&lt;/p&gt;
+&lt;p&gt;where the two subscripts of a matrix is used to index the entries of that matrix at locations encoded by (row, column) coordinates; for example, $(\hat{Q}_{\phi_Z})_{i, a}$ refers to the entry of $\hat{Q}_{\phi_Z}$ at the row $i$ and the column $a$. Since \eqref{eq:gradient_L_hat_Q_phi_Z_i}, \eqref{eq:gradient_L_hat_K_phi_Z_j}, and \eqref{eq:gradient_L_tilde_V_j} are expressed as some previous result plus an additonal update, they are certainly eligible for the sequential algorithm suggested for \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form}, albeit there is a subtle distinction: the computational sequence of \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form} should be arranged from the position $0$ to the position $L-1$ (forward) following the autoregressive order, which is the same as the one for \eqref{eq:gradient_L_hat_Q_phi_Z_i}; in contrast, both \eqref{eq:gradient_L_hat_K_phi_Z_j} and \eqref{eq:gradient_L_tilde_V_j} would need to start their sequences at the position $L-1$ and progress down to the position $0$ (backward).&lt;/p&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 &lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2009.14794&quot;&gt;Krzysztof Choromanski et al. “Rethinking Attention with Performers”. In:CoRRabs/2009.14794(2020)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2009.14794&quot;&gt;Krzysztof Choromanski et al. “Rethinking Attention with Performers”. In:CoRRabs/2009.14794 (2020)&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2006.16236&quot;&gt;Angelos Katharopoulos et al. “Transformers are RNNs: Fast Autoregressive Transformerswith Linear Attention”. In:CoRRabs/2006.16236 (2020)&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 
