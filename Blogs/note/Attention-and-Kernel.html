@@ -106,7 +106,7 @@
 \label{eq:kernel_definition}
 \end{equation} %]]></script>
 
-<p>Note that $Ker_{\phi}$ is defined as a function taking $x$ and $t$ as its inputs. It suggests that if the evaluation of $Ker_{\phi}$ does not involve the associated feature mapping, then one can obtain the dot product of $\phi(x)$ and $\phi(t)$ without needing to know the explicit forms of those vectors under the mapping, and that is the most common use case when it comes to the application of the concept of kernels. Why? Imagine that $\phi$ is a complicated function which produces vectors of large dimensionality ($n \gg m$); a dot product in the output space of such a $\phi$ requires potentially high complexity of $O(n)$, whereas a cleverly designed $Ker_{\phi}$ might only take the complexity as small as $O(k)$. In other words, even with a very expressive $\phi$ (which incurs the surge in the dimensionality of its output space) the complexity of computing the dot products can still be kept at a manageable level, via the corresponding kernel $Ker_{\phi}$.</p>
+<p>Note that $Ker_{\phi}$ is defined as a function taking $x$ and $t$ as its inputs. It suggests that if the evaluation of $Ker_{\phi}$ does not involve the associated feature mapping, then one can obtain the dot product of $\phi(x)$ and $\phi(t)$ without needing to know the explicit forms of those vectors under the mapping, and that is the most common use case when it comes to the application of the concept of kernels. Why? Imagine that $\phi$ is a complicated function which produces vectors of large dimensionality ($n \gg m$); a dot product in the output space of such a $\phi$ requires potentially high complexity of $O(n)$, whereas a cleverly designed $Ker_{\phi}$ might only take the complexity as small as $O(m)$. That is to say, even with a very expressive $\phi$ (which incurs the surge in the dimensionality of its output space) the complexity of computing the dot products can still be kept at a manageable level, via the corresponding kernel $Ker_{\phi}$.</p>
 
 <p>To demonstrate such exploitation, consider the following kernel:</p>
 
@@ -148,9 +148,10 @@
 & \phantom{=} [1, \frac{t_0}{\sqrt{1!}}, \frac{t_0^2}{\sqrt{2!}}, \dotsc, \frac{t_1}{\sqrt{1!}}, \frac{t_0}{\sqrt{1!}}\frac{t_1}{\sqrt{1!}}, \frac{t_0}{\sqrt{1!}}\frac{t_1^2}{\sqrt{2!}}, \dotsc] \\
 & = {\phi_{exp}}_{0,1}(x) \odot {\phi_{exp}}_{0,1}(t)
 \end{aligned}
+\label{eq:exponetial_kernel_term_0_1_in_taylor_series}
 \end{equation} %]]></script>
 
-<p>Surprisingly, while $\phi_{exp}(x)$/$\phi_{exp}(t)$ is infinite-dimensional, and therefore conducting the dot product of them is literally impossible, the evaluated result of that dot product is still obtainable, through the computationally feasible alternative (or a shortcut in a sense) $Ker_{\phi_{exp}}(x, t)$.</p>
+<p>If \eqref{eq:exponetial_kernel_term_0_1_in_taylor_series} is evident enough for convincing you that $\phi_{exp}(x)$/$\phi_{exp}(t)$ will be infinite-dimensional, then from the conclusion it follows that conducting the direct dot product of them is literally impossible; nonetheless, its kernel alternative $Ker_{\phi_{exp}}(x, t)$ can still output the evaluated result in a computationally feasible way.</p>
 
 <h2 id="the-connection-to-attention-">The Connection to Attention <a name="the_connection_to_attention"></a></h2>
 <p>The attention given a query $q \in \mathbb{R}^m$ over a set of $L$ key-value pairs $\{(k_j, v_j)| j \in \mathbb{Z}, 0 \le j \le L-1, k_j \in \mathbb{R}^m, v_j \in \mathbb{R}^o\}$ is commonly defined as follows:</p>
@@ -159,7 +160,8 @@
 \begin{equation}
 \begin{aligned}
 & a = \sum_{j = 0}^{L-1} \frac{ exp(\frac{q \odot k_j}{\sqrt{m}})}{\sum_{l = 0}^{L-1} exp(\frac{q \odot k_l}{\sqrt{m}})} v_j \\
-& \phantom{a} = \sum_{j = 0}^{L-1} \frac{ exp(\underbrace{\hat{q}}_{\frac{q}{\sqrt[4]{m}}} \odot \underbrace{\hat{k}_j}_{\frac{k}{\sqrt[4]{m}}})}{\sum_{l = 0}^{L-1} exp(\hat{q} \odot \hat{k}_l)} v_j 
+& \phantom{a} = \sum_{j = 0}^{L-1} \frac{ exp(\overbrace{\frac{q}{\sqrt[4]{m}}}^{\hat{q}} \odot \overbrace{\frac{k_j}{\sqrt[4]{m}}}^{\hat{k}_j})}{\sum_{r = 0}^{L-1} exp(\frac{q}{\sqrt[4]{m}} \odot \frac{k_r}{\sqrt[4]{m}})} v_j \\ 
+& \phantom{a} = \sum_{j = 0}^{L-1} \frac{ exp(\hat{q} \odot \hat{k}_j)}{\sum_{r = 0}^{L-1} exp(\hat{q} \odot \hat{k}_r)} v_j 
 \end{aligned}
 \label{eq:basic_attention}
 \end{equation} %]]></script>
@@ -169,7 +171,7 @@
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{equation}
 \begin{aligned}
-& a = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_{exp}}(\hat{q}, \hat{k}_j)}{\sum_{l = 0}^{L-1} Ker_{\phi_{exp}}(\hat{q}, \hat{k}_l)} v_j
+& a = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_{exp}}(\hat{q}, \hat{k}_j)}{\sum_{r = 0}^{L-1} Ker_{\phi_{exp}}(\hat{q}, \hat{k}_r)} v_j
 \end{aligned}
 \label{eq:exponential_kernel_attention}
 \end{equation} %]]></script>
@@ -179,8 +181,8 @@
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{equation}
 \begin{aligned}
-& a_{\phi_p} = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_p}(\hat{q}, \hat{k}_j)}{\sum_{l = 0}^{L-1} Ker_{\phi_p}(\hat{q}, \hat{k}_l)} v_j  \\
-& \phantom{a_{\phi_p}} = \sum_{j = 0}^{L-1} \frac{\phi_p(\hat{q}) \odot \phi_p(\hat{k}_j)}{\sum_{l = 0}^{L-1} \phi_p(\hat{q}) \odot \phi_p(\hat{k}_l)} v_j 
+& a_{\phi_p} = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_p}(\hat{q}, \hat{k}_j)}{\sum_{r = 0}^{L-1} Ker_{\phi_p}(\hat{q}, \hat{k}_r)} v_j  \\
+& \phantom{a_{\phi_p}} = \sum_{j = 0}^{L-1} \frac{\phi_p(\hat{q}) \odot \phi_p(\hat{k}_j)}{\sum_{r = 0}^{L-1} \phi_p(\hat{q}) \odot \phi_p(\hat{k}_r)} v_j 
 \end{aligned}
 \label{eq:kernel_attention}
 \end{equation} %]]></script>
@@ -201,7 +203,7 @@
 
 <p>where $1_L$ is the all-ones column vector of $L$ rows; $diag(.)$ is the diagonal matrix of which the diagonal is equal to its input vector; both the $exp(.)$ and the division are applied elementwise and broadcast if necessary; $Q \in \mathbb{R}^{L*m}$, $K \in \mathbb{R}^{L*m}$, and $V \in \mathbb{R}^{L*o}$ stand for the matrices with each row representing a query, key, and value vector respectively. The analysis of \eqref{eq:basic_attention_in_matrix_form} suggests that the time complexity for obtaining $A$ is dominated by the matrix multiplications of $Q K^T$ and $W V$, which take $O(L^2m+L^2o) = O(L^2*max(m, o))$; while the storage of $Q$, $K$, $V$, and $W$ comprises the main part of the memory consumption, resulting in the space complexity of $O(L*max(m, L, o))$. Consequently, when the dimesion of the size $L$ becomes the largest one (as is usually the case), both of the time and space complexity would be quadratic with respect to $L$, and an increase in $L$ could easily render the computation of \eqref{eq:basic_attention_in_matrix_form} prohibitively expensive.</p>
 
-<p>So how can we alleviate that cost requirement? Well, having a close look at \eqref{eq:basic_attention_in_matrix_form}, you might notice that the calculation of $Q K^T$ consitutes the major source of the computational demand; therefore its circumvention would be the key to reduce the complexities, and that is where the kernel connection comes into play. Recall that in the last <a href="#the_connection_to_attention">section</a> the general form of attention under the kernel interpretation has been introduced; approaching the multi-query attention from that view, in particular from \eqref{eq:kernel_attention}, yields the following formulation named fast attention:</p>
+<p>So how can we alleviate that cost requirement? Well, having a close look at \eqref{eq:basic_attention_in_matrix_form}, you might notice that the calculation of $Q K^T$ consitutes the major source of the computational demand; therefore its circumvention would be the key to reduce the complexities, and that is where the kernel connection comes into play. Recall the general form of attention under the kernel interpretation introduced in the last <a href="#the_connection_to_attention">section</a>; approaching the multi-query attention from that view, in particular from \eqref{eq:kernel_attention}, allows us to define the following formulation named fast attention:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{equation}
