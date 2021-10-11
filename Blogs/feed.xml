@@ -5,9 +5,235 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 08 Jun 2021 20:25:20 +0800</pubDate>
-    <lastBuildDate>Tue, 08 Jun 2021 20:25:20 +0800</lastBuildDate>
+    <pubDate>Mon, 11 Oct 2021 21:39:09 +0800</pubDate>
+    <lastBuildDate>Mon, 11 Oct 2021 21:39:09 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
+    
+      <item>
+        <title>Basic Modular Arithmetic and a Simple Application</title>
+        <description>&lt;p&gt;Speaking of modular arithmetic, the first impression coming to my mind is the terrifying cryptography, and therefore I have long been shy away from it. Inevitably, this topic showed up again during the course of my recent paper reading, but this time it was presented as a technique to define invertible linear functions for integers $\ge 0$. Despite the same fundamental concept as cryptography, that use of modular arithmetic looks much more approachable, emboldening me to write down this post, which contains the overdue study I have finally conducted about modular arithmetic, illustrated by that interesting application.&lt;/p&gt;
+
+&lt;h2 id=&quot;definition-&quot;&gt;Definition &lt;a name=&quot;definition&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Given an integer $a$, one can specify it in terms of a positive integer $n$ by the equation $a = q_a * n + r$, where $q_a$ and $r$ are uniquely defined under the constraints $0 \le r \lt n$ and $r, q_a \in \mathbb{Z}$; in fact, this is just another way of encoding integer division, with $a$ being the dividend, $n$ being the divisor, $q_a$ being the quotient, and $r$ being the remainder. In modular arithmetic, as remainders are of the most interest, that expression is turned further succinct into $a \equiv r \; (mod \; n)$, which states $a$ and $r$ have the same remainder when divided by $n$ ($n$ now has an alternative name: &lt;em&gt;modulus&lt;/em&gt;), regardless of their quotients. By that definition, if there is another integer $b$ satisfying $b = q_b * n + r$, then it can be also expressed as $a \equiv b \; (mod \; n)$.&lt;/p&gt;
+
+&lt;h2 id=&quot;modular-additionsubtraction-&quot;&gt;Modular Addition/Subtraction &lt;a name=&quot;addition_subtraction&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;A natural question arises as to how arithmetical operations can be defined in this context, and let us start with the easy case of addition. Supposing $a \equiv b \; (mod \; n)$ and $c \equiv d \; (mod \; n)$, according to the &lt;a href=&quot;definition&quot;&gt;definition&lt;/a&gt; it follows that:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a = q_a * n + r_{ab} \\
+&amp; b = q_b * n + r_{ab} \\
+&amp; c = q_c * n + r_{cd} \\
+&amp; d = q_d * n + r_{cd}
+\end{aligned}
+\label{eq:a_b_c_d_rewritting}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $0 \le r_{ab}, r_{cd} \lt n$ and $r_{ab}, r_{cd}, q_a, q_b, q_c, q_d \in \mathbb{Z}$. From that the addition of $a$ and $c$ and the addition of $b$ and $d$ can be expressed as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a + c = (q_a + q_c) * n + r_{ab} + r_{cd} \\
+&amp; b + d = (q_b + q_d) * n + r_{ab} + r_{cd} \\
+\end{aligned}
+\label{eq:a_plus_c_b_plus_d}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;and hence it can be concluded that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a + c \equiv r_{ab} + r_{cd} \; (mod \; n) \\
+&amp; b + d \equiv r_{ab} + r_{cd} \; (mod \; n) \\
+&amp; \llap{\implies} a + c \equiv b + d \; (mod \; n)
+\end{aligned}
+\label{modular_addition}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;In connection with substraction, the same argument applies:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a - c = (q_a - q_c) * n + r_{ab} - r_{cd} \\
+&amp; b - d = (q_b - q_d) * n + r_{ab} - r_{cd} \\
+\end{aligned}
+\label{a_minus_c_b_minus_d}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;which yields&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a - c \equiv r_{ab} - r_{cd} \; (mod \; n) \\
+&amp; b - d \equiv r_{ab} - r_{cd} \; (mod \; n) \\
+&amp; \llap{\implies} a - c \equiv b - d \; (mod \; n)
+\end{aligned}
+\label{eq:modular_subtraction}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;h2 id=&quot;multiplication-&quot;&gt;Multiplication &lt;a name=&quot;multiplication&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;Based on \eqref{eq:a_b_c_d_rewritting}, the multiplication of $a$ and $c$, as well as the one of $b$ and $d$, can be expressed as follows:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a * c = (q_a * n + r_{ab}) * (q_c * n + r_{cd}) \\
+&amp; \phantom{a * c} = (q_a * n * q_c * n + r_{ab} * q_c * n + \\
+&amp; \phantom{a * c = (\;} r_{cd} * q_a * n + r_{ab} * r_{cd})
+\end{aligned}
+\label{eq:a_times_c}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; b * d = (q_b * n + r_{ab}) * (q_d * n + r_{cd}) \\
+&amp; \phantom{b * d} = (q_b * n * q_d * n + r_{ab} * q_d * n + \\
+&amp; \phantom{b * d = (\;} r_{cd} * q_b * n + r_{ab} * r_{cd})
+\end{aligned}
+\label{eq:b_times_d}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;and accordingly,&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a * c \equiv r_{ab} * r_{cd} \; (mod \; n) \\
+&amp; b * d \equiv r_{ab} * r_{cd} \; (mod \; n) \\
+&amp; \llap{\implies} a * c \equiv b * d \; (mod \; n)
+\end{aligned}
+\label{eq:modular_multiplication}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;It is worth noting an interesting phenomenon about the progression of remainders under multiplication: if a sequence of remainders defined as $0 = r_0 = (0 * a) \% n, r_1 = (1 * a) \% n, \dotsc, r_k = (k * a) \% n, \dotsc$ is written out ($\%$ stands for the operation of division but with the remainder returned instead), at some point it will return back to $0$, and thus forms a loop repeating forever. While the looping behaviour seems obvious due to the fact that it will eventually occur at $k = n$ ($0 = (n * a) \% n$), there is actually a hidden relationship between $a$, $n$, and how remainders loop; in particular, let us consider the maximum length of such a loop. Since for the progression from $0$ to $0$ to happen, there can not be any inner loop inbetween, or otherwise the succession will be stuck in that inner loop. The absence of inner loops suggests all remainders between two $0$s must be distinct, and therefore the length of a loop, starting from the first $0$ until reaching the remainder before the next $0$, can only be up to $n$, which is the number of different values available for remainders.&lt;/p&gt;
+
+&lt;p&gt;Furthermore, when a remainder sequence containing a loop of a maximum length, it can be rearranged like this:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \underbrace{(0 * a) \% n, (1 * a) \% n, \dotsc, ((n-1) * a) \% n}_{loop \; 0}, \\
+&amp; \underbrace{(n * a) \% n, ((n + 1) * a) \% n, \dotsc, ((2n-1) * a) \% n}_{loop \; 1}, \\
+&amp; \dotsc \\
+&amp; \underbrace{(l * n * a) \% n, \dotsc, (((l+1) * n - 1) * a) \% n}_{loop \; l}, \\
+&amp; \dotsc
+
+\end{aligned}
+\label{eq:remainder_sequence}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $o * a \equiv (l * n + o) * a \; (mod \; n)$ for $0 \le o \lt n$, $0 \le l$ and $o, l \in \mathbb{Z}$. Considering integers from $1$ to $n-1$ as all potential divisors for $n$ which are small than $n$, $loop \; 0$ shows that none of those divisors of $n$ times $a$ can generate a product divisible by $n$, which implies $a$ and $n$ must have no positive common divisors except for the one that is always shared across all numbers: $1$; in other words, their &lt;strong&gt;G&lt;/strong&gt;reatest &lt;strong&gt;C&lt;/strong&gt;ommon &lt;strong&gt;D&lt;/strong&gt;ivisor, $gcd(a, n)$, is equal to 1, and thus they are &lt;em&gt;coprime&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Also it is true the other way around: if $a$ and $n$ are coprime, then the remainder sequence generated by the two numbers will appear similar to \eqref{eq:remainder_sequence}, and hence the length of its $0$-to-$0$ loop reaches the maximum value, $n$.&lt;/p&gt;
+
+&lt;h2 id=&quot;multiplication-by-multiplicative-inverses&quot;&gt;Multiplication by Multiplicative Inverses&lt;/h2&gt;
+&lt;p&gt;In case you wonder why this section is not named “division”, the title used here is just another way to refer to the same operation but as the multiplication by the inverse of a number, rather than the division by that number; however, it is invalid to simply take the reciprocal of an integer as its inverse and conduct the modular multiplication with it, since by definition all operands involved need to be integers. To make the notion of “division” applicable in modular arithmetic, mathematicians define the multiplicative inverse of an integer $a$, which is another integer $a’$, in the context of $(mod \; n)$ to be any integer that satisfies:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; a' * a \equiv 1 \; (mod \; n)
+\end{aligned}
+\label{eq:inverse_definition}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;so that one can perform calculations like $a’ * a * c \equiv 1 * c \equiv c \; (mod \; n)$, just as though dividing $a * c$ by $a$ (when $a \ne 0$) to obtain $c$.&lt;/p&gt;
+
+&lt;p&gt;While \eqref{eq:inverse_definition} successfully translates multiplicative inverses and allows for the realisation of “modular division”, sadly $a’$ does not always exist for every $a$ and $n$ pair unless a certain condition is met. Recall the &lt;a href=&quot;multiplication&quot;&gt;discussion&lt;/a&gt; about the link between $a$ and $n$ being coprime, and the corresponding remainder sequence containing a longest loop of a length $n$; as that loop will go through every possible remainder under the modulus $n$, there must exist entries of $a$ multiplied by some respective integer in that sequence at which the resulting remainder is $1$; as a result, the coprime relationship of $a$ and $n$ is a sufficient condition for $a’$ to exist.&lt;/p&gt;
+
+&lt;p&gt;In addition, it is also a necessary condition: as per \eqref{eq:inverse_definition} $a’$ can not be zero; so if $a’$ exists and $a’ \gt 0$, it follows that&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \underbrace{0 * a'}_{k_0} * a \equiv 0 \; (mod \; n) \\
+&amp; \underbrace{1 * a'}_{k_1} * a \equiv 1 \; (mod \; n) \\
+&amp; \underbrace{2 * a'}_{k_2} * a \equiv 2 \; (mod \; n) \\
+&amp; \vdots \\
+&amp; \underbrace{(n-1) * a'}_{k_{n-1}} * a \equiv n-1 \; (mod \; n)
+\end{aligned}
+\label{eq:derivation_from_positive_a_prime}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;On the other hand, when $a’ \lt 0$ we have&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \underbrace{0 * a'}_{k_0} * a \equiv 0 \; (mod \; n) \\
+&amp; \underbrace{-1 * a'}_{k_1} * a \equiv -1 \equiv n-1 \; (mod \; n) \\
+&amp; \underbrace{-2 * a'}_{k_2} * a \equiv -2 \equiv n-2 \; (mod \; n) \\
+&amp; \vdots \\
+&amp; \underbrace{-(n-1) * a'}_{k_{n-1}} * a \equiv -n+1 \equiv 1 \; (mod \; n)
+\end{aligned}
+\label{eq:derivation_from_negative_a_prime}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Either case suggests every possible remainder given the modulus $n$ can be produced via the modular multiplication of $a$ by some non-negative integer $k_i$, and therefore they all appear in the remainder sequence described in the &lt;a href=&quot;multiplication&quot;&gt;last section&lt;/a&gt;; since that sequence is merely comprised of a continuously repeating remainder loop, the appearance of these remaiders implies they must be the members of the loop. Consequently, the existance of $a’$ leads to a remainder loop of a length $n$, and as shown &lt;a href=&quot;multiplication&quot;&gt;previously&lt;/a&gt;, if the length of such a remainder loop is $n$ (the maximum length for the modulus $n$), $a$ and $n$ are coprime.&lt;/p&gt;
+
+&lt;p&gt;On a side note, there are two relating facts to \eqref{eq:inverse_definition} and the coprime condition: firstly, because $a$ can be viewed as the multiplicative inverse of $a’$, the argument above also applies to $a’$, which means for any $(a, a’)$ pair satisfying \eqref{eq:inverse_definition}, both of them are coprime with $n$ at the same time; secondly, since \eqref{eq:inverse_definition} can be equivalently expressed as $a’ * a = q * n + 1$ for some $q \in \mathbb{Z}$, $a$ coprime with $n$ indicates one can rewrite the equation into the form of Bézout’s identity $a’ * a - q * n = gcd(a, n) = 1$, and obtain $a’$ via the efficient &lt;a href=&quot;https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm&quot;&gt;&lt;em&gt;extended euclidean algorithm&lt;/em&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;invertible-linear-functions-for-integers-ge-0&quot;&gt;Invertible Linear Functions for Integers $\ge 0$&lt;/h2&gt;
+&lt;p&gt;In the general case of real numbers, a linear function is any one of the form $y = f(x) = a*x + b$ with $a, b, x, y \in \mathbb{R}$. Its invertibility is guaranteed as long as $a \ne 0$, and its inverse function can be directly read out as $x = f’(y) = \frac{y - b}{a}$. Easy, right? But how about when $a, b, x, y$ are constrained to be intergers $\ge 0$? Is it possible to define similar invertible functions for that particular scenario?&lt;/p&gt;
+
+&lt;p&gt;It tures out through modular arithmetic it is! Let us assume our integers will not exceed an upperbound integer $n \gt 0$, i.e. $0 \ge a, b, x, y \lt n$; so to define modular arithmetic in this case it is natural to pick $n$ as the modulus, and the following equations are immediately true based on the &lt;a href=&quot;addition_subtraction&quot;&gt;discussion&lt;/a&gt; above:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\begin{cases}
+y \equiv x + b \; (mod \; n) \\
+y - b \equiv x + b - b \equiv x \; (mod \; n) 
+\end{cases}
+\label{eq:invertible_integer_addition_subtraction}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Note that as $0 \le b \lt n$, there are only $n$ possible ways to shift the value of $x$ and $y$, each of which in turn uniquely shift their corresponding remainder to one of the $n$ different remainder choices; so with the range limit $0 \le x, y \lt n$, the equations in \eqref{eq:invertible_integer_addition_subtraction} are in effect two one-to-one remainder mappings, and inverse to each other.&lt;/p&gt;
+
+&lt;p&gt;Next, like the counterpart of real numbers, an extra constraint for $a$ is imposed to make sure its involvement still renders the resulting function invertible. That constraint, as you might have imagined, is that $a$ and $n$ also needs to be coprime, which allows us to exploit the multiplicative inverse of $a$, $a’$, for mapping back and forth between $x$ and $y$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\begin{cases}
+y \equiv a * x \; (mod \; n) \\
+a' * y \equiv a' * a * x \equiv 1 * x \equiv x \; (mod \; n)
+\end{cases}
+\label{eq:invertible_integer_multiplication_division}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Due to $0 \le x, y \lt n$, each result of $a * x \; (mod \; n)$ and $a’ * y \; (mod \; n)$ given different $x$ and $y$ coincides with a unique remainder in the $loop \; 0$ of their respective remainder sequence as \eqref{eq:remainder_sequence}; hence \eqref{eq:invertible_integer_multiplication_division} describes again two one-to-one remainder mappings with one being the inverse of the other.&lt;/p&gt;
+
+&lt;p&gt;Lastly, putting all pieces together, the form of the invertible linear functions for integers $\ge 0$ defined in the context of modular arithmetic appear just as the one for real numbers:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\begin{cases}
+y \equiv a * x + b \; (mod \; n) \\
+x \equiv a' * (y - b) \; (mod \; n)
+\end{cases}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;where $n \gt 0$, $0 \ge a, b, x, y \lt n$, and $a’ * a \equiv 1 \; (mod \; n)$ ($a$ and $a’$ are coprime with $n$)&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://arxiv.org/abs/1905.10347&quot;&gt;Dustin Tran et al. “Discrete Flows: Invertible Generative Models of Discrete Data”. In:CoRRabs/1905.10347 (2019)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Modular_arithmetic&quot;&gt;https://en.wikipedia.org/wiki/Modular_arithmetic&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://ericlippert.com/2013/11/12/math-from-scratch-part-thirteen-multiplicative-inverses/&quot;&gt;https://ericlippert.com/2013/11/12/math-from-scratch-part-thirteen-multiplicative-inverses/&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Tue, 28 Sep 2021 00:00:00 +0800</pubDate>
+        <link>/Blogs/note/Modular-Arithmetics.html</link>
+        <guid isPermaLink="true">/Blogs/note/Modular-Arithmetics.html</guid>
+        
+        <category>NumberTheory</category>
+        
+        
+        <category>Note</category>
+        
+      </item>
     
       <item>
         <title>A Dissection of Attention: Kernel Interpretation</title>
@@ -1039,7 +1265,7 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
       </item>
     
       <item>
-        <title>Uesful Facts about Gaussian Distributions</title>
+        <title>Useful Facts about Gaussian Distributions</title>
         <description>&lt;p&gt;Whenever there is a need to conduct a literature review in the field of machine learning, it seems inevitable to revisit some theorems or algorithms involving Gaussian distributions at some point. This is not only due to the fact that data in many real-world cases do tend to demonstrate themselves (approximately) in this way, but there is also an advantage in that it is analytically friendly, which makes the derivation of closed-form solutions easy. That analytical friendliness, however, sometimes does not hold for me because my lack of knowledge about several handy facts related to Gaussian distributions established by the ingenious minds of mathematicians. Therefore, to stand on the shoulders of giants, it was decided to go through some of them in detail, and this post records my informal and incomplete compilation of &lt;em&gt;Useful Facts about Gaussian Distributions&lt;/em&gt;.&lt;/p&gt;
 
 &lt;h2 id=&quot;preliminary&quot;&gt;Preliminary&lt;/h2&gt;
@@ -1277,7 +1503,7 @@ z
 \label{eq:PDF_ZGivenY}
 \end{equation} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;It is clear that the proportionality relating to Gaussian PDF emerges again, and hence it can be concluded that $Z|Y \sim N(\mu_{Z|y}, \Sigma_{Z|Y})$ for $Z$ and $Y$ consisting of $X$; in other words, any conditional $P(Z|Y)$ which has a joint Gaussian distribution $P(Y, Z) = P(X)$ is also a Gaussian distribution, with a mean $\mu_{Z|y} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1} (y - \mu_Y)$ and a covariance matrix $\Sigma_{Z|Y} = \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{ZZ}^{-1} \Sigma_{YZ}$.&lt;/p&gt;
+&lt;p&gt;It is clear that the proportionality relating to Gaussian PDF emerges again, and hence it can be concluded that $Z|Y \sim N(\mu_{Z|y}, \Sigma_{Z|Y})$ for $Z$ and $Y$ consisting of $X$; in other words, any conditional $P(Z|Y)$ which has a joint Gaussian distribution $P(Y, Z) = P(X)$ is also a Gaussian distribution, with a mean $\mu_{Z|y} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1} (y - \mu_Y)$ and a covariance matrix $\Sigma_{Z|Y} = \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ}$.&lt;/p&gt;
 
 &lt;h4 id=&quot;-2-the-multiplication-of-a-random-vector-of-a-guassian-distribution-by-a-constant-not-equal-to-0-yields-a-random-vector-which-has-a-gaussian-distribution&quot;&gt;&lt;a name=&quot;fact2&quot;&gt;&lt;/a&gt; 2. The multiplication of a random vector of a Guassian distribution by a constant (not equal to 0) yields a random vector which has a Gaussian distribution&lt;/h4&gt;
 
