@@ -5,8 +5,8 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 11 Oct 2021 21:39:09 +0800</pubDate>
-    <lastBuildDate>Mon, 11 Oct 2021 21:39:09 +0800</lastBuildDate>
+    <pubDate>Mon, 11 Oct 2021 22:08:23 +0800</pubDate>
+    <lastBuildDate>Mon, 11 Oct 2021 22:08:23 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
@@ -182,7 +182,7 @@
 &lt;h2 id=&quot;invertible-linear-functions-for-integers-ge-0&quot;&gt;Invertible Linear Functions for Integers $\ge 0$&lt;/h2&gt;
 &lt;p&gt;In the general case of real numbers, a linear function is any one of the form $y = f(x) = a*x + b$ with $a, b, x, y \in \mathbb{R}$. Its invertibility is guaranteed as long as $a \ne 0$, and its inverse function can be directly read out as $x = f’(y) = \frac{y - b}{a}$. Easy, right? But how about when $a, b, x, y$ are constrained to be intergers $\ge 0$? Is it possible to define similar invertible functions for that particular scenario?&lt;/p&gt;
 
-&lt;p&gt;It tures out through modular arithmetic it is! Let us assume our integers will not exceed an upperbound integer $n \gt 0$, i.e. $0 \ge a, b, x, y \lt n$; so to define modular arithmetic in this case it is natural to pick $n$ as the modulus, and the following equations are immediately true based on the &lt;a href=&quot;addition_subtraction&quot;&gt;discussion&lt;/a&gt; above:&lt;/p&gt;
+&lt;p&gt;It tures out through modular arithmetic it is! Let us assume our integers will not exceed an upperbound integer $n \gt 0$, i.e. $0 \le a, b, x, y \lt n$; so to define modular arithmetic in this case it is natural to pick $n$ as the modulus, and the following equations are immediately true based on the &lt;a href=&quot;addition_subtraction&quot;&gt;discussion&lt;/a&gt; above:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
 \begin{cases}
@@ -204,7 +204,7 @@ a' * y \equiv a' * a * x \equiv 1 * x \equiv x \; (mod \; n)
 \label{eq:invertible_integer_multiplication_division}
 \end{equation}&lt;/script&gt;
 
-&lt;p&gt;Due to $0 \le x, y \lt n$, each result of $a * x \; (mod \; n)$ and $a’ * y \; (mod \; n)$ given different $x$ and $y$ coincides with a unique remainder in the $loop \; 0$ of their respective remainder sequence as \eqref{eq:remainder_sequence}; hence \eqref{eq:invertible_integer_multiplication_division} describes again two one-to-one remainder mappings with one being the inverse of the other.&lt;/p&gt;
+&lt;p&gt;with $0 \le a’ \lt n$ to meet the range limit. Due to $0 \le x, y \lt n$, each result of $a * x \; (mod \; n)$ and $a’ * y \; (mod \; n)$ given different $x$ and $y$ coincides with a unique remainder in the $loop \; 0$ of their respective remainder sequence as \eqref{eq:remainder_sequence}; hence \eqref{eq:invertible_integer_multiplication_division} describes again two one-to-one remainder mappings with one being the inverse of the other.&lt;/p&gt;
 
 &lt;p&gt;Lastly, putting all pieces together, the form of the invertible linear functions for integers $\ge 0$ defined in the context of modular arithmetic appear just as the one for real numbers:&lt;/p&gt;
 
@@ -215,7 +215,7 @@ x \equiv a' * (y - b) \; (mod \; n)
 \end{cases}
 \end{equation}&lt;/script&gt;
 
-&lt;p&gt;where $n \gt 0$, $0 \ge a, b, x, y \lt n$, and $a’ * a \equiv 1 \; (mod \; n)$ ($a$ and $a’$ are coprime with $n$)&lt;/p&gt;
+&lt;p&gt;where $0 \le a, a’, b, x, y \lt n$; $a, a’, b, x, y, n \in \mathbb{Z}$; and $a’ * a \equiv 1 \; (mod \; n)$ ($a$ and $a’$ are both coprime with $n$)&lt;/p&gt;
 
 &lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
 &lt;ul&gt;
