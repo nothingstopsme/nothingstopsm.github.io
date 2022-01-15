@@ -5,8 +5,8 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Sun, 16 Jan 2022 00:35:08 +0800</pubDate>
-    <lastBuildDate>Sun, 16 Jan 2022 00:35:08 +0800</lastBuildDate>
+    <pubDate>Sun, 16 Jan 2022 00:43:07 +0800</pubDate>
+    <lastBuildDate>Sun, 16 Jan 2022 00:43:07 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
@@ -240,7 +240,7 @@ P_j(z[i] &gt;= 0|l_j[i], s_j[i]) if\;h[i] = 1 \\
         <link>/Blogs/research/AutoregressiveMoLB.html</link>
         <guid isPermaLink="true">/Blogs/research/AutoregressiveMoLB.html</guid>
         
-        <category>Probability,</category>
+        <category>Probability</category>
         
         <category>MachineLearning</category>
         
@@ -995,7 +995,7 @@ argmax_{h[K]} P_{\text{bi}}(h[K]|v)
         <link>/Blogs/research/VBVAE.html</link>
         <guid isPermaLink="true">/Blogs/research/VBVAE.html</guid>
         
-        <category>Probability,</category>
+        <category>Probability</category>
         
         <category>MachineLearning</category>
         
@@ -1495,7 +1495,7 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
         <link>/Blogs/note/ThermalExpansion.html</link>
         <guid isPermaLink="true">/Blogs/note/ThermalExpansion.html</guid>
         
-        <category>Probability,</category>
+        <category>Probability</category>
         
         <category>Calculus</category>
         
