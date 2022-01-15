@@ -5,9 +5,249 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Mon, 11 Oct 2021 22:08:23 +0800</pubDate>
-    <lastBuildDate>Mon, 11 Oct 2021 22:08:23 +0800</lastBuildDate>
+    <pubDate>Sun, 16 Jan 2022 00:35:08 +0800</pubDate>
+    <lastBuildDate>Sun, 16 Jan 2022 00:35:08 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
+    
+      <item>
+        <title>Priors That Unlock the Potential of VBVAE</title>
+        <description>&lt;p&gt;In my earlier post, a new variant of &lt;strong&gt;V&lt;/strong&gt;ector &lt;strong&gt;Q&lt;/strong&gt;uantised &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder was proposed in an attempt to improve for better gradient estimation and efficient discrete coding. The essential difference is the use of bit-strings rather than integer codes to index vectors in a latent space, and therefore its name &lt;strong&gt;V&lt;/strong&gt;ector &lt;strong&gt;B&lt;/strong&gt;inarised &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder was coined to reflect that distinction. Just as &lt;strong&gt;VQVAE&lt;/strong&gt;, obtaining discrete representation is only the first half of the story, and this post is to complete the full picture by introducing a simple modification to autoregressive priors commonly used with &lt;strong&gt;VQVAE&lt;/strong&gt;, and accordingly establishing similar generative models which takes advantage of &lt;strong&gt;VBVAE&lt;/strong&gt; in handling a huge code space.&lt;/p&gt;
+
+&lt;h2 id=&quot;recap-vbvae&quot;&gt;Recap: &lt;strong&gt;VBVAE&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;The idea of &lt;strong&gt;VBVAE&lt;/strong&gt; originated from the fact that the entire quantisation process (vectors $\implies$ codes $\implies$ embeddings) in &lt;strong&gt;VQVAE&lt;/strong&gt; can be viewed as one full Gibbs step at which samples of the highest probabilities are always picked, and the sampling distributions are governed by a &lt;strong&gt;R&lt;/strong&gt;estricted &lt;strong&gt;B&lt;/strong&gt;oltzmann &lt;strong&gt;M&lt;/strong&gt;achines whose conditional of hidden and visible variables given the other are a categorical distribution (under one-hot encoding) and a gaussian with identity covariance, respectively. Therefore by generalising the configuration of the &lt;strong&gt;RBM&lt;/strong&gt; to have the following energy function $E_{\text{bi}}(v, h)$, as well as the resulting conditionals for $h$ (a random column vector of $K$ binary hidden variables) and $v$ (a random column vector of continuous visible variables):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{cases}
+\begin{aligned}
+&amp; E_{\text{bi}}(v, h) = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h - a^T h \\
+\end{aligned} \\
+\begin{aligned}
+&amp; P_{\text{bi}}(h|v) = \prod_{i=1}^{K} \frac{exp(S(v)[i] * h[i])}{\sum_{\hat{h}[i] \in \{0, 1\}} exp(S(v)[i] * \hat{h}[i])} \\
+&amp; \phantom{P_{\text{bi}}(h|v)} \propto \prod_{i=1}^{K} \sigma(S(v)[i])
+\end{aligned}\\
+\begin{aligned}
+&amp; P_{\text{bi}}(v|h) \propto N(\mu + \Sigma^{0.5} C h, \Sigma)
+\end{aligned}
+\end{cases}
+\label{eq:RGBM}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;with $\mu$ being the mean bias vector of $v$; $\Sigma$ being the diagonal covariance matrix of $v$; $C$ being a matrix of which each column corresponds to an embedding vector; $\sigma$ being the entrywise sigmoid operator; and $S(v)$ defined as $v^T \Sigma^{-0.5} C + a^T$ given the bias vector $a$ of $h$. Then based on the entrywise floor operator $\lfloor\;\rfloor$ a new quantisation function outputting discrete codes in the form of bit-strings, denoted by $Qn_{\text{bi}}$, can be attained:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; Qn_{\text{bi}}(v) \nonumber \\
+&amp; = \mu + \Sigma^{0.5} C
+\begin{bmatrix}
+\lfloor \sigma(S(v)[1]) + 0.5 \rfloor \\
+\vdots \\
+\lfloor \sigma(S(v)[K]) + 0.5 \rfloor
+\end{bmatrix} \nonumber \\
+&amp; = \mu + \Sigma^{0.5} C \lfloor \sigma(S(v)) + 0.5 \rfloor \label{eq:Qn_bi}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;For more detailed explanations and discussions please check this &lt;a href=&quot;./VBVAE.html&quot;&gt;post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;sampling-bit-strings-&quot;&gt;Sampling Bit-strings &lt;a name=&quot;sampling_bit-strings&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;One of the most exciting ways of utilising the codes generated from &lt;strong&gt;VQVAE&lt;/strong&gt; is to fit a probabilistic model (such as autoregressive ones) over that discrete space as an external prior, and set up a generative process via first sampling codes from the learned distribution, and then decoding them with the decoder of &lt;strong&gt;VQVAE&lt;/strong&gt; to obtain target samples. While this is still the case for &lt;strong&gt;VBVAE&lt;/strong&gt;, the discrete space is now encoded in terms of bit-strings as opposed to integer codes, which means our probalistic models need to be capable of producing samples in that form. How can we do that?&lt;/p&gt;
+
+&lt;p&gt;Indeed, one can always treat bit-strings as some integer codes in its binary form, then with a quick conversion between these two discrete descriptions the same modelling techniques for codes from &lt;strong&gt;VQVAE&lt;/strong&gt; can immediately apply; but ironically, that seemingly straightforward approach is rather backward from the perspective of &lt;strong&gt;VBVAE&lt;/strong&gt;, as the return of integer codes brings back the limit on the size of the code space that can be manageable, restricting the power of &lt;strong&gt;VBVAE&lt;/strong&gt; in exploiting the expressiveness of a greater number of codes (in the form of bit-string).&lt;/p&gt;
+
+&lt;p&gt;Thus for making the most out of &lt;strong&gt;VBVAE&lt;/strong&gt; and its bit-string coding, an alternative, named “autoregressive &lt;strong&gt;M&lt;/strong&gt;ixtures of &lt;strong&gt;L&lt;/strong&gt;ogistic distributions for &lt;strong&gt;B&lt;/strong&gt;it-strings”, is proposed based on existing autoregressive models over sequences of codes with a few modifications that turn them into ones over sequences of bit-strings. These changes include:&lt;/p&gt;
+
+&lt;h5 id=&quot;normalisation-&quot;&gt;Normalisation &lt;a name=&quot;normalisation&quot;&gt;&lt;/a&gt;&lt;/h5&gt;
+&lt;p&gt;As the state of a bit ($0$ or $1$) in a bit-string produced by &lt;strong&gt;VBVAE&lt;/strong&gt; is determined by how the input reacts to the associated embedding in terms of dot-product, it can be regarded as a quantised intensity in response to the particular embedding as a filter. That perspective allows us to adopt a common practice of normalisation to transform $h$ to $z$ by shifting and rescaling bit values from a discrete space of $\{0, 1\}$ into a continuous one of $[-1, 1]$, which is often used to prepare quantised intensities like RGB colours for a more balanced value distribution across a desired range&lt;/p&gt;
+
+&lt;h5 id=&quot;bit-strings-to-embeddings&quot;&gt;Bit-strings to Embeddings&lt;/h5&gt;
+&lt;p&gt;The intesity view given &lt;a href=&quot;#normalisation&quot;&gt;above&lt;/a&gt; also implies that entries of bit-strings can be interpreted as channels related to different abstract features; therefore one or several fully-connected layers taking as input normalised bit-strings would be a reasonable choice for embedding them into a continuous vector space, and by doing so to avoid the need of a code book listing every possible code for looking-up.&lt;/p&gt;
+
+&lt;h5 id=&quot;parameterisation-for-molb&quot;&gt;Parameterisation for &lt;strong&gt;MoLB&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;In order to target bit-strings directly, the last layer of autoregressive models for parameterising categorical distributions is replaced with the one for &lt;strong&gt;MoLB&lt;/strong&gt;, a special case of the discretised logistic mixture likelihood introduced in &lt;em&gt;PixelCNN++&lt;/em&gt; (see &lt;a href=&quot;#included_image_Fig1&quot;&gt;Fig1&lt;/a&gt;). The density function of &lt;strong&gt;MoLB&lt;/strong&gt; with $M$ components given a normalised bit-string $z$ is defined as follows (denoting half of the uniform distance between every two consecutive discrete outcomes by $d$, which in this case is $1$):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; P(z[i]|\pi, l[i], s[i]) = \sum_{j = 0}^{M} \pi_j P_j(z[i]|l_j[i], s_j[i]) \\
+&amp; P_j(z[i]|l_j[i], s_j[i]) = \begin{cases}
+\sigma(\frac{-1 + d - l_j[i]}{s_j[i]}),\; if\;z[i] &lt; -1 + d \\
+1 - \sigma(\frac{1 - d - l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+&amp; \phantom{P_j(z[i]|l_j[i], s_j[i]) } = \begin{cases}
+\sigma(\frac{- l_j[i]}{s_j[i]}),\; if\;z[i] &lt; 0 \\
+1 - \sigma(\frac{- l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+&amp; \phantom{P_j(z[i]|l_j[i], s_j[i]) } = \begin{cases}
+1 - \sigma(\frac{l_j[i]}{s_j[i]}),\; if\;z[i] &lt; 0 \\
+\sigma(\frac{l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+&amp; l_j[i] = w_j[i,i] + \sum_{1 \le k &lt; i} w_j[i,k] * z[k]
+\end{aligned}
+\label{eq:MoLB}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $\pi$ is a vector of mixture probabilities for the $M$ component; $l[i]$ and $s[i]$ are the mean and the scale parameter which describes the logistic distribution for $z[i]$; the subscript $j$ is used to indicate which component a parameter is associated with; and $w_j[i,k]$ (subscripted for the mixture component $j$) is the weight of $z[k]$ used in computing $l_j[i]$, the result of a linear combination of all entries preceding $z[i]$, plus a bias term $w_j[i,i]$. Note that if $\pi$, $w$, and $s$ are set to come from the underlying autoregressive model (can be of any type such as &lt;em&gt;PixelCNN&lt;/em&gt; or &lt;em&gt;Transformer&lt;/em&gt;) in an autoregressive &lt;strong&gt;MoLB&lt;/strong&gt; architecture, each bit will also depend on all bit-strings positioned before the one in which that bit resides, and consequently the entire model can been seen acting autoregressive at bit-level.&lt;/p&gt;
+
+&lt;figure&gt;
+	
+  &lt;a name=&quot;included_image_Fig1&quot;&gt;&lt;/a&gt;
+	
+	&lt;img src=&quot;/Blogs/assets/images/2022-01-15-AutoregressiveMoLB/comparison_autoregressive_categorical_dist_vs_autoregressive_MoLB.png&quot; alt=&quot;Fig1: The architecture comparison between an autoregressive model parameterised based on categorical distribution (left), and the one based on MoLB (right)&quot; /&gt;
+	&lt;figcaption&gt;
+	Fig1: The architecture comparison between an autoregressive model parameterised based on categorical distribution (left), and the one based on MoLB (right)
+	&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;further-improvement-incorporating-bit-dependency-into-vbvae&quot;&gt;Further Improvement: Incorporating Bit Dependency into VBVAE&lt;/h2&gt;
+&lt;p&gt;Maybe clever readers like you have already noticed that there is a discrepancy between the way bits in a bit-string are treated in \eqref{eq:MoLB} and in &lt;strong&gt;VBVAE&lt;/strong&gt;: while autoregressive dependency is assumed present between these bits, they are actually generated by random variables designed to be (conditionally) independent! If our external prior model is to be parameterised in congruence with \eqref{eq:MoLB}, why not making the assumption more valid by constructing &lt;strong&gt;VBVAE&lt;/strong&gt; to generate bits accordingly in the first place?&lt;/p&gt;
+
+&lt;p&gt;To that end, let us first derive $P_j(h[i]|l_j[i], s_j[i])$ from \eqref{eq:MoLB} by assigning the probability of $z[i] &amp;lt; 0$ to $h[i] = 0$ and the one of $z[i] &amp;gt;= 0$ to $h[i] = 1$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; P_j(h[i]|l_j[i], s_j[i]) = \begin{cases}
+P_j(z[i] &lt; 0|l_j[i], s_j[i]) if\;h[i] = 0 \\
+P_j(z[i] &gt;= 0|l_j[i], s_j[i]) if\;h[i] = 1 \\
+\end{cases} \\
+&amp; \phantom{P_j(h[i]|l_j[i], s_j[i])} = \begin{cases}
+1 - \sigma(\frac{l_j[i]}{s_j[i]}),\; if\;h[i] = 0 \\
+\sigma(\frac{l_j[i]}{s_j[i]}),\; if\;h[i] = 1
+\end{cases} \\
+&amp; \phantom{P_j(h[i]|l_j[i], s_j[i])} \propto \sigma(\frac{l_j[i]}{s_j[i]}) \\
+&amp; \phantom{P_j(h[i]|l_j[i], s_j[i])} = \sigma(\underbrace{\frac{w_j[i,i]}{s_j[i]}}_{\hat{w}_j[i,i]} + \sum_{1 \le k &lt; i} \underbrace{\frac{w_j[i,k]}{s_j[i]}}_{\hat{w}_j[i,k]} * z[k]) \\
+&amp; \phantom{P_j(h[i]|l_j[i], s_j[i])} = \sigma(\hat{w}_j[i,i] + \sum_{1 \le k &lt; i} \hat{w}_j[i,k] * f_{\text{map}}(h[k])) \\
+\end{aligned}
+\label{eq:conditional_P_j_of_h_i}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;which describes a logistic model for $h[i]$ taking as features its preceding bits with the feature mapping $f_{\text{map}}$. Based on the nature of \eqref{eq:conditional_P_j_of_h_i}, an adaptation named &lt;strong&gt;A&lt;/strong&gt;utoregressive &lt;strong&gt;VBVAE&lt;/strong&gt; is introduced, featuring this tweaked energy function $E_{\text{abi}}(v, h)$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; E_{\text{abi}}(v, h) = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h \\
+&amp; \phantom{E_{\text{abi}}(v, h) =} - \sum_i h[i] \big( A[i, i] + \sum_{1 \le k &lt; i} A[i,k] f_{\text{map}}(h[k]) \big)
+\end{aligned}
+\label{eq:E_abi}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $A[i, k]$ is the weight associated with the pair ($h[i]$, $h[k]$), and $A[i, i]$ is substituted for the i-th entry of original bias vector $a$. Since there are no new terms involving $v$ added in \eqref{eq:E_abi}, the resulting conditional for $v$ remains unchanged ($P_{\text{abi}}(v|h) \propto N(\mu + \Sigma^{0.5} C h, \Sigma)$); however, its conditional for $h$ turns into a form similar to what is seen in \eqref{eq:conditional_P_j_of_h_i}:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{cases}
+\begin{aligned}
+&amp; P_{\text{abi}}(h|v) = P_{\text{abi}}(h[1]|v) \\
+&amp; \phantom{P_{\text{abi}}(h|v) =} * \prod_{i=2} P_{\text{abi}}(h[i]|v, \underbrace{h[1], \dotsc, h[i-1]}_{h_{&lt;i}})
+\end{aligned} \\
+\begin{aligned}
+&amp; P_{\text{abi}}(h[1]|v) \propto exp\Big(h[1] * (v^T \Sigma^{-0.5} C)[1] + h[1] * A[1, 1] \Big) \\
+&amp; \phantom{P_{\text{abi}}(h[1]|v)} = exp\Big(h[1] * \big(\underbrace{(v^T \Sigma^{-0.5} C)[1] + A[1, 0]}_{S(v)[1]} \big) \Big) \\
+&amp; \phantom{P_{\text{abi}}(h[1]|v)} \propto \sigma\big(S(v)[1]\big)
+\end{aligned} \\
+\begin{aligned}
+&amp; P_{\text{abi}}(h[i]|v, h_{&lt;i}) \\
+&amp; \propto exp\Big(h[i] * (v^T \Sigma^{-0.5} C)[i] \\ 
+&amp; \phantom{\, \propto exp\Big(} + h[i] * \big( A[i, i] + \sum_{1 \le k &lt; i} A[i,k] f_{\text{map}}(h[k]) \big) \Big) \\
+&amp; = exp\Big(h[i] \\ 
+&amp; \phantom{= exp\Big(} * \big( \underbrace{(v^T \Sigma^{-0.5} C)[i] + A[i, i]}_{S(v)[i]} + \sum_{1 \le k &lt; i} A[i,k] f_{\text{map}}(h[k]) \big) \Big) \\
+&amp; = exp\Big(h[i] * \big(S(v)[i] + \sum_{1 \le k &lt; i} A[i,k] f_{\text{map}}(h[k]) \big) \Big) \\
+&amp; \propto \sigma\big(S(v)[i] + \sum_{1 \le k &lt; i} A[i,k] f_{\text{map}}(h[k])\big) 
+\end{aligned} \\
+\end{cases}
+\label{eq:conditional_P_abi_of_h}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;which leads to $Qn_{\text{abi}}(v)$, the autoregressive version of \eqref{eq:Qn_bi}:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; Qn_{\text{abi}}(v) \\
+&amp; = \mu \\
+&amp; \phantom{=} + \sum_{i=1}^{K} Qn_{\text{abi}}(v)_i \\ 
+&amp; = \mu \\
+&amp; \phantom{=} + \Sigma^{0.5} C \; one\_hot(1) * \lfloor \sigma\big(\underbrace{\hat{S}(v)[1] + A[1,1]}_{S(v)[1]}\big) + 0.5 \rfloor \\
+&amp; \phantom{=} + \dotsb \\
+&amp; \phantom{=} + \Sigma^{0.5} C \; one\_hot(K) \\ 
+&amp; \phantom{= +} * \lfloor \sigma\big(\underbrace{\hat{S}(v)[k] + A[K,K]}_{S(v)[K]} + \sum_{1 \le k &lt; K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor
+\end{aligned}
+\label{eq:Qn_abi}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $one\_hot(i)$ stands for a column vector of which the only non-zero entry is the i-th one, which contains a value $1$. It should be pointed out that unlike &lt;strong&gt;VQVAE&lt;/strong&gt; and &lt;strong&gt;VBVAE&lt;/strong&gt;, \eqref{eq:Qn_abi} in &lt;strong&gt;AVBVAE&lt;/strong&gt; does not necessarily produce samples with the highest probability (they are only locally optimal); nonetheless, it is still a valid function describing a deterministic way of quantisation, and thus &lt;strong&gt;AVBVAE&lt;/strong&gt; exhibits the same attracting properties possessed by the two predecessors, such as less noise and a simplified training loss owing to the constant &lt;strong&gt;KL&lt;/strong&gt; term.&lt;/p&gt;
+
+&lt;h2 id=&quot;better-resource-efficiency-parameter-sharing-enabled-by-avbvae&quot;&gt;Better Resource Efficiency: Parameter Sharing Enabled by AVBVAE&lt;/h2&gt;
+&lt;p&gt;In addition to modelling consistency, there is a bonus benefit when a &lt;strong&gt;AVBVAE&lt;/strong&gt; and a autoregressive &lt;strong&gt;MoLB&lt;/strong&gt; prior are used together. Recall that all the parameters involved in our quantisation functions are designed to be global; that means the autoregressive relationship in every bit-string generated by a &lt;strong&gt;AVBVAE&lt;/strong&gt;, no matter where they are located in a sequence or what context the are conditioned on, will be overseen by a single dependency model, and hence it should be well sufficient to share autoregressive weights to decrease the number of parameters, and in turns the memory cost of the &lt;strong&gt;MoLB&lt;/strong&gt; part, which would normally takes $O(N * M * K^2)$ for such a prior of $M$ components over sequences of a size ($N$).&lt;/p&gt;
+
+&lt;p&gt;Moreover, this parameter sharing is not just limited within autoregressive &lt;strong&gt;MoLB&lt;/strong&gt; itself; it is also possible to reuse the autoregressive weights from &lt;strong&gt;AVBVAE&lt;/strong&gt; and realise a memory complexity of $O(N * M * K)$! That reduction is based on the observation that the actual code distribution of a &lt;strong&gt;AVBVAE&lt;/strong&gt;, which can be explicitly written out decomposed as follows (let $I(x, y) = 1$ when $x = y$ and $I(x, y) = 0$ when $x \neq y$):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; P_{\text{abi}}(h) \\
+&amp; = \int_v P_{\text{abi}}(\underbrace{\hat{S}(v)}_{=r}) \\ 
+&amp; \phantom{=} * P_{\text{abi}}(h[1]| \underbrace{\hat{S}(v)[1]}_{r[1]}) * \dotsb * P_{\text{abi}}(h[K]| \underbrace{\hat{S}(v)[K]}_{r[K]}, h_{&lt;K}) \\
+&amp; = \int_r P_{\text{abi}}(r) \\ 
+&amp; \phantom{=} * I\Big(h[1], \lfloor \sigma\big(r[1] + A[1,1]\big) + 0.5 \rfloor\Big) \\
+&amp; \phantom{=} * \dotsb \\
+&amp; \phantom{=} * I\Big(h[K], \\
+&amp; \phantom{= * I\Big(} \lfloor \sigma\big(r[K] + A[K,K] + \sum_{1 \le k &lt; K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor\Big) \\
+\end{aligned}
+\label{P_code_of_h}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;suggests that one only needs to model the contribution of uncertainty from $P(r)$ for the reconstruction of the code distribution; consequently, \eqref{eq:MoLB} might be reformulated as such:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; P(z[i]|\pi, l[i], s[i]) = \sum_{j = 0}^{M} \pi_j P_j(z[i]|l_j[i], s_j[i]) \\
+&amp; P_j(z[i]|l_j[i], s_j[i]) = \begin{cases}
+1 - \sigma(\frac{l_j[i]}{s_j[i]}),\; if\;z[i] &lt; 0 \\
+\sigma(\frac{l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+&amp; l_j[i] = r_j[i] + A[i,i] + \sum_{1 \le k &lt; i} A[i,k] * z[i]
+\end{aligned}
+\label{eq:MoLB_lite}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;to approximate the distribution of $r$ through a categorical distribution $\pi$ for mixture components, while reuse the same linear model (which is fixed in \eqref{eq:MoLB_lite}) to allow the computation of losses and the learning process to be conducted in terms of $z$/$h$.&lt;/p&gt;
+
+&lt;figure&gt;
+	
+  &lt;a name=&quot;included_image_Fig2&quot;&gt;&lt;/a&gt;
+	
+	&lt;img src=&quot;/Blogs/assets/images/2022-01-15-AutoregressiveMoLB/autoregressive_MoLB_lite.png&quot; alt=&quot;Fig2: Autoregressive MoLB lite, a low-memory-consumption version of autoregressive MoLB through parameter sharing&quot; /&gt;
+	&lt;figcaption&gt;
+	Fig2: Autoregressive MoLB lite, a low-memory-consumption version of autoregressive MoLB through parameter sharing
+	&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;the-advantages&quot;&gt;The Advantages&lt;/h2&gt;
+&lt;p&gt;As mentioned earlier, the motivation of autoregressive &lt;strong&gt;MoLB&lt;/strong&gt; is to allow the direct distribution modelling over sequences of bits-strings generated by &lt;strong&gt;VBVAE&lt;/strong&gt;, and circumvent the use of code books as well as categorical distributions; hence as the expressiveness of the discrete representation increases, i.e. more bits involved, training an external prior can still be manageble, without being overwhelmed by the demand for memory resources in handling a large code space; moreover, the likely memory requirement of &lt;strong&gt;MoLB&lt;/strong&gt; itself can also be relaxed with the introduction of &lt;strong&gt;AVBVAE&lt;/strong&gt;, where further parameter reduction to a linear complexity with respect to the number of bits is achievable. In other words, when it comes to building a &lt;strong&gt;VBVAE&lt;/strong&gt;/&lt;strong&gt;AVBVAE&lt;/strong&gt;-based generative model, the expressive potential of &lt;strong&gt;VBVAE&lt;/strong&gt;/&lt;strong&gt;AVBVAE&lt;/strong&gt; is better fulfilled via the memory efficiency of autoregressive &lt;strong&gt;MoLB&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Besides, as a special case of the discretised logistic mixture likelihood proposed in &lt;em&gt;PixelCNN++&lt;/em&gt;, &lt;strong&gt;MoLB&lt;/strong&gt; also enjoys the fact that its likelihood function produces denser gradients. That means the learning of a autoregressive &lt;strong&gt;MoLB&lt;/strong&gt; could benefit from stronger training signals, which leads to possibly faster convergence.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1711.00937&quot;&gt;Aäron van den Oord, Oriol Vinyals, and Koray Kavukcuoglu. “Neural Discrete RepresentationLearning”. In:CoRR abs/1711.00937 (2017)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/1701.05517&quot;&gt;Tim Salimans et al. “PixelCNN++: Improving the PixelCNN with Discretized Logistic Mix-ture Likelihood and Other Modifications”. In:CoRRabs/1701.05517 (2017)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        <pubDate>Sat, 15 Jan 2022 00:00:00 +0800</pubDate>
+        <link>/Blogs/research/AutoregressiveMoLB.html</link>
+        <guid isPermaLink="true">/Blogs/research/AutoregressiveMoLB.html</guid>
+        
+        <category>Probability,</category>
+        
+        <category>MachineLearning</category>
+        
+        
+        <category>Research</category>
+        
+      </item>
     
       <item>
         <title>Basic Modular Arithmetic and a Simple Application</title>
@@ -657,10 +897,10 @@ S^i = S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T
 \label{eq:P_h_i}
 \end{equation} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;and that is exactly the expression one would derive for the conditional distribution (hidden given visible) from a special case of &lt;strong&gt;R&lt;/strong&gt;estricted &lt;strong&gt;B&lt;/strong&gt;oltzmann &lt;strong&gt;M&lt;/strong&gt;achines, in which binary hidden variables are grouped together to represent a categorical one; visible variables are set to be independent gaussian with 0 mean and 1 standard deviation; and the corresponding energy function is $E(v, h_i) = \frac{1}{2} \|v \|_2^2 - v^T C h_i - b^T h_i$. Moreover, as such a &lt;strong&gt;RBM&lt;/strong&gt; also suggests $P(v|h_i) = N(C h_i, I)$, \eqref{eq:Qn_special_RBM} essentially depicts $Qn(v)$ as taking one Gibbs step starting from $v$, except that there is no randomness involved: samples at the first half of the step ($v \to h_{max}$) are always the outcomes with highest probability, while samples at the second half of the step ($h_{max} \to e_{max}$) are simply the distribution mean.&lt;/p&gt;
+&lt;p&gt;and that is exactly the expression one would derive for the conditional distribution (hidden given visible) from a special case of &lt;strong&gt;R&lt;/strong&gt;estricted &lt;strong&gt;B&lt;/strong&gt;oltzmann &lt;strong&gt;M&lt;/strong&gt;achines, in which binary hidden variables are grouped together to represent a categorical one; visible variables are continuous with its covariance equal to $I$; and the corresponding energy function is $E(v, h_i) = \frac{1}{2} \|v \|_2^2 - v^T C h_i - b^T h_i$. Moreover, as such a &lt;strong&gt;RBM&lt;/strong&gt; also suggests $P(v|h_i) = N(C h_i, I)$, \eqref{eq:Qn_special_RBM} essentially depicts $Qn(v)$ as taking one Gibbs step starting from $v$, except that there is no randomness involved: samples at the first half of the step ($v \to h_{max}$) are always the outcomes with highest probability, while samples at the second half of the step ($h_{max} \to e_{max}$) are simply the distribution mean.&lt;/p&gt;
 
 &lt;h2 id=&quot;generalising-to-vbvae&quot;&gt;Generalising to VBVAE&lt;/h2&gt;
-&lt;p&gt;The &lt;strong&gt;RBM&lt;/strong&gt; interpretation not only sheds light on how the quantisation function in a &lt;strong&gt;VQVAE&lt;/strong&gt; works, but also suggests that very component needed to compose a quantisation function: A &lt;strong&gt;RBM&lt;/strong&gt; with discrete hidden variables and continuous visible variables. So it is possible to define other forms of qunantisation by introducing different configurations of &lt;strong&gt;RBM&lt;/strong&gt;s which provide the similar functionality, for example, the generic one with independent binary hidden variables and independent guassian visible variables (denoted by $h$ and $v$ respectively as in &lt;a href=&quot;#alternative_interpretatino&quot;&gt;the last section&lt;/a&gt;), whose energy function and conditionals are:&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;RBM&lt;/strong&gt; interpretation not only sheds light on how the quantisation function in a &lt;strong&gt;VQVAE&lt;/strong&gt; works, but also suggests that very component needed to compose a quantisation function: A &lt;strong&gt;RBM&lt;/strong&gt; with discrete hidden variables and continuous visible variables. So it is possible to define other forms of qunantisation by introducing different configurations of &lt;strong&gt;RBM&lt;/strong&gt;s which provide the similar functionality, for example, the generic one with binary hidden and guassian visible variables (denoted by $h$ and $v$ respectively as in &lt;a href=&quot;#alternative_interpretatino&quot;&gt;the previous section&lt;/a&gt;), whose energy function and conditionals are:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
 \begin{equation}
@@ -673,17 +913,17 @@ S^i = S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T
 &amp; \phantom{P_{\text{bi}}(h|v)} = \frac{exp(v^T \Sigma^{-0.5} C h + a^T h)}{\sum_{\hat{h}} exp(v^T \Sigma^{-0.5} C \hat{h} + a^T \hat{h})} \\
 &amp; \phantom{P_{\text{bi}}(h|v)} = \frac{exp((\overbrace{v^T \Sigma^{-0.5} C + a^T}^{= S(v)^T}) h)}{\sum_{\hat{h}} exp((\underbrace{v^T \Sigma^{-0.5} C + a^T}_{= S(v)^T}) \hat{h})} \\
 &amp; \phantom{P_{\text{bi}}(h|v)} = \prod_{m=1}^{K} \frac{exp(S(v)[m] * h[m])}{\sum_{\hat{h}[m] \in \{0, 1\}} exp(S(v)[m] * \hat{h}[m])} \\
-&amp; \phantom{P_{\text{bi}}(h|v)} = \prod_{m=1}^{K} P_{\text{bi}}(h[m]|v)
+&amp; \phantom{P_{\text{bi}}(h|v)} \propto \prod_{m=1}^{K} \sigma(S(v)[m])
 \end{aligned}\\
 \begin{aligned}
 &amp; P_{\text{bi}}(v|h) = \frac{exp(-E_{\text{bi}}(v, h))}{\int_{\hat{v}}exp(-E_{\text{bi}}(\hat{v}, h))} \\ 
-&amp; \phantom{P_{\text{bi}}(v|h)} = N(\mu + \Sigma^{0.5} C h, \Sigma)
+&amp; \phantom{P_{\text{bi}}(v|h)} \propto N(\mu + \Sigma^{0.5} C h, \Sigma)
 \end{aligned}
 \end{cases}
 \label{eq:RGBM}
 \end{equation} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;where $\mu$ is the mean vector; $\Sigma$ is the covariance matrix with all off-diagnal entries equal to 0; $C$ is the same matrix as defined previously; $a$ is the bias vector (which is a free parameter not related to the length of codes, unlike $b$ in \eqref{eq:Qn_special_RBM}); and $S(v) = C \Sigma^{-0.5} v + a$. Also note that under this &lt;strong&gt;RBM&lt;/strong&gt;, $h$ is no longer a one-hot vector but a bit string of which each entry independently contains a bit 1 or a bit 0. With \eqref{eq:RGBM}, a new quantisation function can be defined accordingly:&lt;/p&gt;
+&lt;p&gt;where $\mu$ is the mean vector; $\Sigma$ is the covariance matrix with all off-diagnal entries equal to 0; $C$ is the same matrix as defined previously; $a$ is the bias vector (which is a free parameter not related to the length of codes, unlike $b$ in \eqref{eq:Qn_special_RBM}); and $S(v) = C \Sigma^{-0.5} v + a$. Also note that under this &lt;strong&gt;RBM&lt;/strong&gt;, $h$ is no longer a one-hot vector but a bit string of which each entry contains either a bit 1 or a bit 0. With \eqref{eq:RGBM}, a new quantisation function can be defined accordingly:&lt;/p&gt;
 
 &lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
 \begin{align}
@@ -708,7 +948,7 @@ argmax_{h[K]} P_{\text{bi}}(h[K]|v)
 &amp; = e_{max} \nonumber
 \end{align} %]]&gt;&lt;/script&gt;
 
-&lt;p&gt;with $\sigma(.)$ denoting entrywise the sigmoid function and $\lfloor . \rfloor$ representing entrywise the floor operator. Compared with \eqref{eq:Qn_special_RBM}, the troubling $argmax$ operators, which are the cause of undefined gradients for $Qn$, has disappeared in \eqref{eq:Qn_bi}. While the introduction of floor operators induces another blockage of gradient flows, the same straight-through gradient estimator can still be utilised to send training signals over; in fact, such an estimation becomes more effective and accurate when applied to \eqref{eq:Qn_bi} (see &lt;a href=&quot;#included_image_Fig1&quot;&gt;Fig1&lt;/a&gt;), as not only does the number of nodes along the gradient path affected by the rerouting is reduced, but no parameters are excluded due to the bypass, which means all parameters can receive the training signals generated with respect to the true objective.&lt;/p&gt;
+&lt;p&gt;with $\sigma(.)$ denoting the entrywise sigmoid function and $\lfloor . \rfloor$ representing the entrywise floor operator. Compared with \eqref{eq:Qn_special_RBM}, the troubling $argmax$ operators, which are the cause of undefined gradients for $Qn$, has disappeared in \eqref{eq:Qn_bi}. While the introduction of floor operators induces another blockage of gradient flows, the same straight-through gradient estimator can still be utilised to send training signals over; in fact, such an estimation becomes more effective and accurate when applied to \eqref{eq:Qn_bi} (see &lt;a href=&quot;#included_image_Fig1&quot;&gt;Fig1&lt;/a&gt;), as not only does the number of nodes along the gradient path affected by the rerouting is reduced, but no parameters are excluded due to the bypass, which means all parameters can receive the training signals generated with respect to the true objective.&lt;/p&gt;
 
 &lt;figure&gt;
 	
@@ -736,11 +976,11 @@ argmax_{h[K]} P_{\text{bi}}(h[K]|v)
 
 &lt;h2 id=&quot;the-advantanges-of-vbvae-over-vqvae&quot;&gt;The Advantanges of VBVAE over VQVAE&lt;/h2&gt;
 
-&lt;p&gt;Firstly, as mentioned earlier, all parameters in &lt;strong&gt;VBVAE&lt;/strong&gt; receive (estimate) gradients with respect to \eqref{eq:ELBO_Qn} directly. That allows the removal of additional objectives and regularisers which are essential in &lt;strong&gt;VQVAE&lt;/strong&gt; to the contrary, and thus the consequent change in the optimisation contour caused by those extra terms, which might have a negative impact on achieving the main goal, could be avoided.&lt;/p&gt;
+&lt;p&gt;Firstly, as mentioned earlier, all parameters in &lt;strong&gt;VBVAE&lt;/strong&gt; receive (estimate) gradients with respect to \eqref{eq:ELBO_Qn} directly. That allows the removal of additional objectives and regularisers which are essential in &lt;strong&gt;VQVAE&lt;/strong&gt; to the contrary, so the distortion of the true optimisation contour that those extra terms might bring about could be avoided.&lt;/p&gt;
 
 &lt;p&gt;Secondly, since codes in &lt;strong&gt;VBVAE&lt;/strong&gt; are indexed by bit strings, the number of distinct codes that a codebook is capable of representing can be as large as $2^{|\text{the size of the codebook}|}$; in other words, to model a discrete space containing $K$ codes might only take a codebook of the size $log_2(K)$, rather than $K$ as required in &lt;strong&gt;VQVAE&lt;/strong&gt;.&lt;/p&gt;
 
-&lt;p&gt;Thirdly, instead of \eqref{eq:K_Mean_online_EM} in &lt;strong&gt;VQVAE&lt;/strong&gt;, where individual codes are trained only when being used, in &lt;strong&gt;VBVAE&lt;/strong&gt; the quantisation to any code always involves the entire codebook (as well as $\Sigma$ and $a$), all of which are trained as a result; that implies every update in &lt;strong&gt;VBVAE&lt;/strong&gt; will revise the whole code space, or equivalently, revise every code in it, regardless of the usage of codes, and hence &lt;strong&gt;VBVAE&lt;/strong&gt; is less susceptible to the issue of &lt;em&gt;index collapse&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Thirdly, instead of \eqref{eq:K_Mean_online_EM} in &lt;strong&gt;VQVAE&lt;/strong&gt;, where individual codes are trained only when being used, in &lt;strong&gt;VBVAE&lt;/strong&gt; the quantisation to any code always involves all parameters in the codebook; that implies every update in &lt;strong&gt;VBVAE&lt;/strong&gt; will revise the whole code space, or equivalently, revise every code in it, regardless of which code being used. Hence &lt;strong&gt;VBVAE&lt;/strong&gt; is considered less susceptible to the issue of &lt;em&gt;index collapse&lt;/em&gt;.&lt;/p&gt;
 
 &lt;p&gt;Overall, the efficiency in code use and training suggests the competence of &lt;strong&gt;VBVAE&lt;/strong&gt; for handling large code spaces.&lt;/p&gt;
 
@@ -2256,109 +2496,6 @@ f^*(x) - f^*(y) \le \lVert x - y \rVert_{2}\text{, if } \pi^*(x, y) = 0
         <category>Jekyll</category>
         
         <category>Markdown</category>
-        
-        
-        <category>Note</category>
-        
-      </item>
-    
-      <item>
-        <title>Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</title>
-        <description>&lt;p&gt;I got to know Gumbel distribution when I surveyed papers for my project extension. In addition to its capability to relax the bottleneck of discrete distributions and allow gradients to pass through, I am impressed by that it can really simplify processes of generating discrete samples. Given a discrete distribution of $\lvert C \rvert$ categories, and the probability of each category expressed as follows:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
-P(C_j) = \frac{exp(\text{logit}_j)}{\sum_{i=1}^{\lvert C \rvert}exp(\text{logit}_i)}
-\end{equation}&lt;/script&gt;
-
-&lt;p&gt;where $C_i$ refers to i-th category; then to generate a sample $Sample_c$ from that distribution, we can make use of samples from standard Gumbel distribution (Gumbel distribution with mean $0$, scale $1$):&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation} \label{eq:samplingFromDiscrete}
-Sample_c = argmax_{i \in Z, 1 \leq i \leq \lvert C \rvert} (\text{logit}_i + Sample_{g,i})
-\end{equation}&lt;/script&gt;
-
-&lt;p&gt;where $Sample_{g,i}$ is a sample drawn independently from standard Gumbel distribution for the i-th category.&lt;/p&gt;
-
-&lt;p&gt;The convenience comes from the fact that sampling from standard Gumbel distribution is rather easy, as it has an invertible, closed-form CDF:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align} 
-&amp;p = CDF_{Gumbel}(g) = exp(-exp(-g)) \label{eq:CDFOfGumbel} \\
-&amp;g = CDF_{Gumbel}^{-1}(p) = -ln(-ln(p))
-\end{align} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;As a result, we can get $Sample_{g,i}$ by sampling $u_{i}$ from $Uniform[0, 1]$ and computing $Sample_{g,i} = CDF_{Gumbel}^{-1}(u_{i})$.&lt;/p&gt;
-
-&lt;p&gt;I had always taken \eqref{eq:samplingFromDiscrete} for granted until I saw a reference a few days ago, which explains why \eqref{eq:samplingFromDiscrete} is equivalent to sampling from the original discrete distribution. The proof is not too hard to derive with my limited mathematical knowledge, so here I just write it down using my own words to help me better capture the intuition behind.&lt;/p&gt;
-
-&lt;p&gt;Note that samples generated via \eqref{eq:samplingFromDiscrete} also follow a distribution, which describes the probability of $z_i = logit_i + Sample_{g,i}$ being the largest, for each cateogry $i$. If each $Sample_{g,i}$ is replaced with a random variable $G_i$, then it can be thought of as there are $\lvert C \rvert$ independent random variables $Z_i = logit_i + G_i$, each of which follows a Gumbel distribution with mean $logit_i$ and scale $1$. To show what those probabilities really are, we start from assuming that for some category $j$, $Z_j$ is given to be some $z_j$, and write down the conditional probability of $Z_j = z_j$ being the largest as:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align}
-&amp; P(Z_j \text{ is the largest} \vert Z_j = z_j, logit_{1 .. \lvert C \rvert}) \nonumber \\
-&amp; = \prod_{i = 1, i \neq j}^{\lvert C \rvert}P(logit_i + G_i &lt; z_j) \nonumber \\
-&amp; = \prod_{i = 1, i \neq j}^{\lvert C \rvert}P(G_i &lt; z_j - logit_i) \label{eq:conditionalProbabilityOfzjIsTheLargest}
-\end{align} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Each term in the product of \eqref{eq:conditionalProbabilityOfzjIsTheLargest} is the cumulative probability of standard Gumbel distribution ranging from $-\inf$ to $z_j - logit_i$, which can be expanded using the CDF from \eqref{eq:CDFOfGumbel}:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align}
-&amp; P(Z_j \text{ is the largest} \vert Z_j = z_j, logit_{1 .. \lvert C \rvert}) \nonumber \\
-&amp; = \prod_{i = 1, i \neq j}^{\lvert C \rvert}exp(-exp(-(z_j - logit_i)) \nonumber \\
-&amp; = exp(\sum_{i = 1, i \neq j}^{\lvert C \rvert}-exp(-z_j + logit_i)) \nonumber \\
-&amp; = exp(-exp(-z_j) * \sum_{i = 1, i \neq j}^{\lvert C \rvert}exp(logit_i)) \nonumber \\
-&amp; = exp(-exp(-z_j) * (\sum_{i = 1}^{\lvert C \rvert}exp(logit_i) - exp(logit_j))) \nonumber \\
-&amp; = exp(-exp(-z_j) * (S - exp(logit_j)))
-\end{align} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;where $S = \sum_{i = 1}^{\lvert C \rvert}exp(logit_i)$. With that conditional probability, the target distribution can be obtained by Bayes rule and marginalising out $Z_j$, which
-is also a Gumbel distribution with mean $logit_j$ and scale $1$ (So the PDF of it is $P(Z_j) = exp(-(Z_j - logit_j + exp(-(Z_j - logit_j))))$):&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align}
-&amp; P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert}) \nonumber \\
-&amp; = \int_{-\infty}^{\infty} P(Z_j \text{ is the largest} \vert Z_j, logit_{1 .. \lvert C \rvert}) * P(Z_j) dZ_j \nonumber \\
-&amp; = \int_{-\infty}^{\infty} exp(-exp(-Z_j) * (S - exp(logit_j))) * \nonumber \\
-&amp; \phantom{= \int_{-\infty}^{\infty}} exp(-(Z_j - logit_j + exp(-(Z_j - logit_j)))) dZ_j \nonumber \\
-&amp; = \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S + exp(-Z_j) * exp(logit_j)) * \nonumber \\
-&amp; \phantom{= \int_{-\infty}^{\infty}} exp(-(Z_j - logit_j) - exp(-Z_j) * exp(logit_j)) dZ_j \nonumber \\
-&amp; = exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S - Z_j) dZ_j \label{eq:integralOverZj}
-\end{align} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;The integral part still looks intimidating, but it turns out we can introduce a new variable $\hat{Z_j} = Z_j - ln(S)$ to further simplify \eqref{eq:integralOverZj}:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align}
-&amp; exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S - Z_j) dZ_j \nonumber \\
-&amp; = exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-\hat{Z_j} - ln(S)) * \nonumber \\
-&amp; \phantom{= exp(logit_j) * \int_{-\infty}^{\infty}} S - \hat{Z_j} - ln(S)) d\hat{Z_j} \nonumber \\
-&amp; = \frac{exp(logit_j)}{S} * \int_{-\infty}^{\infty} exp(-(exp(-\hat{Z_j}) + \hat{Z_j})) d\hat{Z_j} \label{eq:integralOverZHatj}
-\end{align} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Note that the integral in \eqref{eq:integralOverZHatj} is equivalent to integrating the PDF of standard Gumbel distribution over its support, so that integral is just 1, and we arrive at:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{align}
-&amp; P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert}) = \frac{exp(logit_j)}{S} \nonumber \\
-&amp; \phantom{P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert})} = \frac{exp(logit_j)}{\sum_{i = 1}^{\lvert C \rvert}exp(logit_i)} \label{eq:finale}
-\end{align} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;As a result, the probability of each category being sampled via \eqref{eq:samplingFromDiscrete} is exactly the same amount of probability assigned to each one by the original discrete distribution.&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Gumbel_distribution&quot;&gt;https://en.wikipedia.org/wiki/Gumbel_distribution&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/&quot;&gt;https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Mon, 27 May 2019 00:00:00 +0800</pubDate>
-        <link>/Blogs/note/Gumbel-Distribution.html</link>
-        <guid isPermaLink="true">/Blogs/note/Gumbel-Distribution.html</guid>
-        
-        <category>MachineLearning</category>
-        
-        <category>Probability</category>
         
         
         <category>Note</category>

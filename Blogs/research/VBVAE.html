@@ -206,10 +206,10 @@
 \label{eq:P_h_i}
 \end{equation} %]]></script>
 
-<p>and that is exactly the expression one would derive for the conditional distribution (hidden given visible) from a special case of <strong>R</strong>estricted <strong>B</strong>oltzmann <strong>M</strong>achines, in which binary hidden variables are grouped together to represent a categorical one; visible variables are set to be independent gaussian with 0 mean and 1 standard deviation; and the corresponding energy function is $E(v, h_i) = \frac{1}{2} \|v \|_2^2 - v^T C h_i - b^T h_i$. Moreover, as such a <strong>RBM</strong> also suggests $P(v|h_i) = N(C h_i, I)$, \eqref{eq:Qn_special_RBM} essentially depicts $Qn(v)$ as taking one Gibbs step starting from $v$, except that there is no randomness involved: samples at the first half of the step ($v \to h_{max}$) are always the outcomes with highest probability, while samples at the second half of the step ($h_{max} \to e_{max}$) are simply the distribution mean.</p>
+<p>and that is exactly the expression one would derive for the conditional distribution (hidden given visible) from a special case of <strong>R</strong>estricted <strong>B</strong>oltzmann <strong>M</strong>achines, in which binary hidden variables are grouped together to represent a categorical one; visible variables are continuous with its covariance equal to $I$; and the corresponding energy function is $E(v, h_i) = \frac{1}{2} \|v \|_2^2 - v^T C h_i - b^T h_i$. Moreover, as such a <strong>RBM</strong> also suggests $P(v|h_i) = N(C h_i, I)$, \eqref{eq:Qn_special_RBM} essentially depicts $Qn(v)$ as taking one Gibbs step starting from $v$, except that there is no randomness involved: samples at the first half of the step ($v \to h_{max}$) are always the outcomes with highest probability, while samples at the second half of the step ($h_{max} \to e_{max}$) are simply the distribution mean.</p>
 
 <h2 id="generalising-to-vbvae">Generalising to VBVAE</h2>
-<p>The <strong>RBM</strong> interpretation not only sheds light on how the quantisation function in a <strong>VQVAE</strong> works, but also suggests that very component needed to compose a quantisation function: A <strong>RBM</strong> with discrete hidden variables and continuous visible variables. So it is possible to define other forms of qunantisation by introducing different configurations of <strong>RBM</strong>s which provide the similar functionality, for example, the generic one with independent binary hidden variables and independent guassian visible variables (denoted by $h$ and $v$ respectively as in <a href="#alternative_interpretatino">the last section</a>), whose energy function and conditionals are:</p>
+<p>The <strong>RBM</strong> interpretation not only sheds light on how the quantisation function in a <strong>VQVAE</strong> works, but also suggests that very component needed to compose a quantisation function: A <strong>RBM</strong> with discrete hidden variables and continuous visible variables. So it is possible to define other forms of qunantisation by introducing different configurations of <strong>RBM</strong>s which provide the similar functionality, for example, the generic one with binary hidden and guassian visible variables (denoted by $h$ and $v$ respectively as in <a href="#alternative_interpretatino">the previous section</a>), whose energy function and conditionals are:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{equation}
@@ -222,17 +222,17 @@
 & \phantom{P_{\text{bi}}(h|v)} = \frac{exp(v^T \Sigma^{-0.5} C h + a^T h)}{\sum_{\hat{h}} exp(v^T \Sigma^{-0.5} C \hat{h} + a^T \hat{h})} \\
 & \phantom{P_{\text{bi}}(h|v)} = \frac{exp((\overbrace{v^T \Sigma^{-0.5} C + a^T}^{= S(v)^T}) h)}{\sum_{\hat{h}} exp((\underbrace{v^T \Sigma^{-0.5} C + a^T}_{= S(v)^T}) \hat{h})} \\
 & \phantom{P_{\text{bi}}(h|v)} = \prod_{m=1}^{K} \frac{exp(S(v)[m] * h[m])}{\sum_{\hat{h}[m] \in \{0, 1\}} exp(S(v)[m] * \hat{h}[m])} \\
-& \phantom{P_{\text{bi}}(h|v)} = \prod_{m=1}^{K} P_{\text{bi}}(h[m]|v)
+& \phantom{P_{\text{bi}}(h|v)} \propto \prod_{m=1}^{K} \sigma(S(v)[m])
 \end{aligned}\\
 \begin{aligned}
 & P_{\text{bi}}(v|h) = \frac{exp(-E_{\text{bi}}(v, h))}{\int_{\hat{v}}exp(-E_{\text{bi}}(\hat{v}, h))} \\ 
-& \phantom{P_{\text{bi}}(v|h)} = N(\mu + \Sigma^{0.5} C h, \Sigma)
+& \phantom{P_{\text{bi}}(v|h)} \propto N(\mu + \Sigma^{0.5} C h, \Sigma)
 \end{aligned}
 \end{cases}
 \label{eq:RGBM}
 \end{equation} %]]></script>
 
-<p>where $\mu$ is the mean vector; $\Sigma$ is the covariance matrix with all off-diagnal entries equal to 0; $C$ is the same matrix as defined previously; $a$ is the bias vector (which is a free parameter not related to the length of codes, unlike $b$ in \eqref{eq:Qn_special_RBM}); and $S(v) = C \Sigma^{-0.5} v + a$. Also note that under this <strong>RBM</strong>, $h$ is no longer a one-hot vector but a bit string of which each entry independently contains a bit 1 or a bit 0. With \eqref{eq:RGBM}, a new quantisation function can be defined accordingly:</p>
+<p>where $\mu$ is the mean vector; $\Sigma$ is the covariance matrix with all off-diagnal entries equal to 0; $C$ is the same matrix as defined previously; $a$ is the bias vector (which is a free parameter not related to the length of codes, unlike $b$ in \eqref{eq:Qn_special_RBM}); and $S(v) = C \Sigma^{-0.5} v + a$. Also note that under this <strong>RBM</strong>, $h$ is no longer a one-hot vector but a bit string of which each entry contains either a bit 1 or a bit 0. With \eqref{eq:RGBM}, a new quantisation function can be defined accordingly:</p>
 
 <script type="math/tex; mode=display">% <![CDATA[
 \begin{align}
@@ -257,7 +257,7 @@ argmax_{h[K]} P_{\text{bi}}(h[K]|v)
 & = e_{max} \nonumber
 \end{align} %]]></script>
 
-<p>with $\sigma(.)$ denoting entrywise the sigmoid function and $\lfloor . \rfloor$ representing entrywise the floor operator. Compared with \eqref{eq:Qn_special_RBM}, the troubling $argmax$ operators, which are the cause of undefined gradients for $Qn$, has disappeared in \eqref{eq:Qn_bi}. While the introduction of floor operators induces another blockage of gradient flows, the same straight-through gradient estimator can still be utilised to send training signals over; in fact, such an estimation becomes more effective and accurate when applied to \eqref{eq:Qn_bi} (see <a href="#included_image_Fig1">Fig1</a>), as not only does the number of nodes along the gradient path affected by the rerouting is reduced, but no parameters are excluded due to the bypass, which means all parameters can receive the training signals generated with respect to the true objective.</p>
+<p>with $\sigma(.)$ denoting the entrywise sigmoid function and $\lfloor . \rfloor$ representing the entrywise floor operator. Compared with \eqref{eq:Qn_special_RBM}, the troubling $argmax$ operators, which are the cause of undefined gradients for $Qn$, has disappeared in \eqref{eq:Qn_bi}. While the introduction of floor operators induces another blockage of gradient flows, the same straight-through gradient estimator can still be utilised to send training signals over; in fact, such an estimation becomes more effective and accurate when applied to \eqref{eq:Qn_bi} (see <a href="#included_image_Fig1">Fig1</a>), as not only does the number of nodes along the gradient path affected by the rerouting is reduced, but no parameters are excluded due to the bypass, which means all parameters can receive the training signals generated with respect to the true objective.</p>
 
 <figure>
 	
@@ -285,11 +285,11 @@ argmax_{h[K]} P_{\text{bi}}(h[K]|v)
 
 <h2 id="the-advantanges-of-vbvae-over-vqvae">The Advantanges of VBVAE over VQVAE</h2>
 
-<p>Firstly, as mentioned earlier, all parameters in <strong>VBVAE</strong> receive (estimate) gradients with respect to \eqref{eq:ELBO_Qn} directly. That allows the removal of additional objectives and regularisers which are essential in <strong>VQVAE</strong> to the contrary, and thus the consequent change in the optimisation contour caused by those extra terms, which might have a negative impact on achieving the main goal, could be avoided.</p>
+<p>Firstly, as mentioned earlier, all parameters in <strong>VBVAE</strong> receive (estimate) gradients with respect to \eqref{eq:ELBO_Qn} directly. That allows the removal of additional objectives and regularisers which are essential in <strong>VQVAE</strong> to the contrary, so the distortion of the true optimisation contour that those extra terms might bring about could be avoided.</p>
 
 <p>Secondly, since codes in <strong>VBVAE</strong> are indexed by bit strings, the number of distinct codes that a codebook is capable of representing can be as large as $2^{|\text{the size of the codebook}|}$; in other words, to model a discrete space containing $K$ codes might only take a codebook of the size $log_2(K)$, rather than $K$ as required in <strong>VQVAE</strong>.</p>
 
-<p>Thirdly, instead of \eqref{eq:K_Mean_online_EM} in <strong>VQVAE</strong>, where individual codes are trained only when being used, in <strong>VBVAE</strong> the quantisation to any code always involves the entire codebook (as well as $\Sigma$ and $a$), all of which are trained as a result; that implies every update in <strong>VBVAE</strong> will revise the whole code space, or equivalently, revise every code in it, regardless of the usage of codes, and hence <strong>VBVAE</strong> is less susceptible to the issue of <em>index collapse</em>.</p>
+<p>Thirdly, instead of \eqref{eq:K_Mean_online_EM} in <strong>VQVAE</strong>, where individual codes are trained only when being used, in <strong>VBVAE</strong> the quantisation to any code always involves all parameters in the codebook; that implies every update in <strong>VBVAE</strong> will revise the whole code space, or equivalently, revise every code in it, regardless of which code being used. Hence <strong>VBVAE</strong> is considered less susceptible to the issue of <em>index collapse</em>.</p>
 
 <p>Overall, the efficiency in code use and training suggests the competence of <strong>VBVAE</strong> for handling large code spaces.</p>
 
