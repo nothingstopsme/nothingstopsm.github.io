@@ -5,8 +5,8 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 20 Jan 2023 15:27:10 +0800</pubDate>
-    <lastBuildDate>Fri, 20 Jan 2023 15:27:10 +0800</lastBuildDate>
+    <pubDate>Fri, 20 Jan 2023 16:00:22 +0800</pubDate>
+    <lastBuildDate>Fri, 20 Jan 2023 16:00:22 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
@@ -891,319 +891,6 @@ x \equiv a' * (y - b) \; (mod \; n)
         <pubDate>Tue, 28 Sep 2021 00:00:00 +0800</pubDate>
         <link>/Blogs/note/Modular-Arithmetics.html</link>
         <guid isPermaLink="true">/Blogs/note/Modular-Arithmetics.html</guid>
-        
-        <category>NumberTheory</category>
-        
-        
-        <category>Note</category>
-        
-      </item>
-    
-      <item>
-        <title>Change of Variables for Probability Distributions</title>
-        <description>&lt;p&gt;In my opinion, almost any generative neural network model could be decomposed into two fundamental components: A prior distribution from which sampling is efficient; plus a mapping function which turns the sample space of that prior into the target space being modelled. Sometimes, the design of a prior weighs more, such that it is capable of describing the target distribution directly without the need of sample mapping (or equivalently, the corresponding mapping function is designated to be identity), as exemplified by &lt;em&gt;PixelCNN&lt;/em&gt;; other times, the focus is on establishing a complex mapping function while the associated prior is kept simple, like the methods adopted in &lt;strong&gt;V&lt;/strong&gt;ariational &lt;strong&gt;A&lt;/strong&gt;uto&lt;strong&gt;E&lt;/strong&gt;ncoder and &lt;strong&gt;G&lt;/strong&gt;enerative &lt;strong&gt;A&lt;/strong&gt;dversarial &lt;strong&gt;N&lt;/strong&gt;etworks. Besides, in the twilight zone between the two strategies above, there is a branch of studies termed &lt;strong&gt;G&lt;/strong&gt;enerative &lt;strong&gt;F&lt;/strong&gt;low as a whole, where either interpretation can be given to the models following that principle. At the core of &lt;strong&gt;GF&lt;/strong&gt; lies the application of &lt;em&gt;“change of variables”&lt;/em&gt;, a technique allowing the transformation from &lt;strong&gt;P&lt;/strong&gt;robability &lt;strong&gt;D&lt;/strong&gt;ensity &lt;strong&gt;F&lt;/strong&gt;unctions/&lt;strong&gt;P&lt;/strong&gt;robability &lt;strong&gt;M&lt;/strong&gt;ass &lt;strong&gt;F&lt;/strong&gt;unctions of one distribution to another. So to your surprise, this post has nothing to with generative models but only provides a review of &lt;em&gt;“change of variables”&lt;/em&gt; in the context of &lt;strong&gt;PDF&lt;/strong&gt;/&lt;strong&gt;PMF&lt;/strong&gt;, in an effort to better brush up on my understanding about it.&lt;/p&gt;
-
-&lt;h2 id=&quot;what-are-kernels-&quot;&gt;What Are Kernels? &lt;a name=&quot;what_are_kernels&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;Since the new interpretation is from the perspective of kernels, please bear with me digressing to that question for a moment, and here is my rather simplified and informal answer: an alternative way to compute the dot product of any two vectors under the associated feature mapping. For example, given a mapping function $\phi:\mathbb{R}^m \to \mathbb{R}^n$, for any two column vectors $x, t \in \mathbb{R}^m$ the kernel $Ker_{\phi}$ (corresponding to $\phi$) will satisfy ($\odot$ stands for the dot product):&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; Ker_{\phi}(x, t) = Ker_{\phi}(t, x) = \phi(x) \odot \phi(t)
-\end{aligned}
-\label{eq:kernel_definition}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Note that $Ker_{\phi}$ is defined as a function taking $x$ and $t$ as its inputs. It suggests that if the evaluation of $Ker_{\phi}$ does not involve the associated feature mapping, then one can obtain the dot product of $\phi(x)$ and $\phi(t)$ without needing to know the explicit forms of those vectors under the mapping, and that is the most common use case when it comes to the application of the concept of kernels. Why? Imagine that $\phi$ is a complicated function which produces vectors of large dimensionality ($n \gg m$); a dot product in the output space of such a $\phi$ requires potentially high complexity of $O(n)$, whereas a cleverly designed $Ker_{\phi}$ might only take the complexity as small as $O(m)$. That is to say, even with a very expressive $\phi$ (which incurs the surge in the dimensionality of its output space) the complexity of computing the dot products can still be kept at a manageable level, via the corresponding kernel $Ker_{\phi}$.&lt;/p&gt;
-
-&lt;p&gt;To demonstrate such exploitation, consider the following kernel:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; Ker_{\phi_{exp}}(x, t) = exp(x \odot t) = \prod_{i=0}^{m-1} exp(x_i * t_i)
-\end{aligned}
-\label{eq:exponetial_kernel}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Each term $exp(x_i * t_i)$ can be expressed in terms of &lt;em&gt;Taylor series&lt;/em&gt; at $x_i * t_i = 0$, which yields&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; exp(x_i * t_i) \\
-&amp; = 1 + \frac{x_i * t_i}{1!} + \frac{(x_i * t_i)^2}{2!} + \frac{(x_i * t_i)^3}{3!} + \dotsb \\
-&amp; = 1 + \frac{x_i}{\sqrt{1!}} * \frac{t_i}{\sqrt{1!}} + \frac{x_i^2}{\sqrt{2!}} * \frac{t_i^2}{\sqrt{2!}} + \frac{x_i^3}{\sqrt{3!}} * \frac{t_i^3}{\sqrt{3!}} + \dotsb \\
-&amp; = [1, \frac{x_i}{\sqrt{1!}}, \frac{x_i^2}{\sqrt{2!}}, \frac{x_i^3}{\sqrt{3!}}, \dotsc] \odot [1, \frac{t_i}{\sqrt{1!}}, \frac{t_i^2}{\sqrt{2!}}, \frac{t_i^3}{\sqrt{3!}}, \dotsc] \\
-&amp; = {\phi_{exp}}_{i}(x) \odot {\phi_{exp}}_{i}(t)
-\end{aligned}
-\label{eq:exponetial_kernel_term_i_in_taylor_series}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;That indicates for $m = 1$, $\phi_{exp}$ in effect produces vectors of infinite dimensions; furthermore, following the same principle of \eqref{eq:exponetial_kernel_term_i_in_taylor_series}, it can be shown that when $m \ge 2$ the dimensionality of the output space can only become “more infinite” (if infinity can really be compared). For instance, below is the case where $m = 2$:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; \prod_{i=0}^{1} exp(x_i * t_i) \\
-&amp; = exp(x_0 * t_0) * exp(x_1 * t_1) \\
-&amp; = (1 + \frac{x_0}{\sqrt{1!}} * \frac{t_0}{\sqrt{1!}} + \frac{x_0^2}{\sqrt{2!}} * \frac{t_0^2}{\sqrt{2!}} + \frac{x_0^3}{\sqrt{3!}} * \frac{t_0^3}{\sqrt{3!}} + \dotsb) * \\
-&amp; \phantom{=} (1 + \frac{x_1}{\sqrt{1!}} * \frac{t_1}{\sqrt{1!}} + \frac{x_1^2}{\sqrt{2!}} * \frac{t_1^2}{\sqrt{2!}} + \frac{x_1^3}{\sqrt{3!}} * \frac{t_1^3}{\sqrt{3!}} + \dotsb) \\
-&amp; = (1 + \frac{x_0}{\sqrt{1!}} * \frac{t_0}{\sqrt{1!}} + \frac{x_0^2}{\sqrt{2!}} * \frac{t_0^2}{\sqrt{2!}} + \dotsb) + \\
-&amp; \phantom{=} (\frac{x_1}{\sqrt{1!}} * \frac{t_1}{\sqrt{1!}} + \frac{x_0}{\sqrt{1!}}\frac{x_1}{\sqrt{1!}} * \frac{t_0}{\sqrt{1!}}\frac{t_1}{\sqrt{1!}} + \dotsb) + \\
-&amp; \phantom{=} (\frac{x_1^2}{\sqrt{2!}} * \frac{t_1^2}{\sqrt{2!}} + \frac{x_0}{\sqrt{1!}}\frac{x_1^2}{\sqrt{2!}} * \frac{t_0}{\sqrt{1!}}\frac{t_1^2}{\sqrt{2!}} + \dotsb) + \dotsb \\
-&amp; = [1, \frac{x_0}{\sqrt{1!}}, \frac{x_0^2}{\sqrt{2!}}, \dotsc, \frac{x_1}{\sqrt{1!}}, \frac{x_0}{\sqrt{1!}}\frac{x_1}{\sqrt{1!}}, \frac{x_0}{\sqrt{1!}}\frac{x_1^2}{\sqrt{2!}}, \dotsc] \odot \\
-&amp; \phantom{=} [1, \frac{t_0}{\sqrt{1!}}, \frac{t_0^2}{\sqrt{2!}}, \dotsc, \frac{t_1}{\sqrt{1!}}, \frac{t_0}{\sqrt{1!}}\frac{t_1}{\sqrt{1!}}, \frac{t_0}{\sqrt{1!}}\frac{t_1^2}{\sqrt{2!}}, \dotsc] \\
-&amp; = {\phi_{exp}}_{0,1}(x) \odot {\phi_{exp}}_{0,1}(t)
-\end{aligned}
-\label{eq:exponetial_kernel_term_0_1_in_taylor_series}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;If \eqref{eq:exponetial_kernel_term_0_1_in_taylor_series} is evident enough for convincing you that $\phi_{exp}(x)$/$\phi_{exp}(t)$ will be infinite-dimensional, then from the conclusion it follows that conducting the direct dot product of them is literally impossible; nonetheless, its kernel alternative $Ker_{\phi_{exp}}(x, t)$ can still output the evaluated result in a computationally feasible way.&lt;/p&gt;
-
-&lt;h2 id=&quot;the-connection-to-attention-&quot;&gt;The Connection to Attention &lt;a name=&quot;the_connection_to_attention&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
-&lt;p&gt;The attention given a query $q \in \mathbb{R}^m$ over a set of $L$ key-value pairs $\{(k_j, v_j)| j \in \mathbb{Z}, 0 \le j \le L-1, k_j \in \mathbb{R}^m, v_j \in \mathbb{R}^o\}$ is commonly defined as follows:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; a = \sum_{j = 0}^{L-1} \frac{ exp(\frac{q \odot k_j}{\sqrt{m}})}{\sum_{l = 0}^{L-1} exp(\frac{q \odot k_l}{\sqrt{m}})} v_j \\
-&amp; \phantom{a} = \sum_{j = 0}^{L-1} \frac{ exp(\overbrace{\frac{q}{\sqrt[4]{m}}}^{\hat{q}} \odot \overbrace{\frac{k_j}{\sqrt[4]{m}}}^{\hat{k}_j})}{\sum_{r = 0}^{L-1} exp(\frac{q}{\sqrt[4]{m}} \odot \frac{k_r}{\sqrt[4]{m}})} v_j \\ 
-&amp; \phantom{a} = \sum_{j = 0}^{L-1} \frac{ exp(\hat{q} \odot \hat{k}_j)}{\sum_{r = 0}^{L-1} exp(\hat{q} \odot \hat{k}_r)} v_j 
-\end{aligned}
-\label{eq:basic_attention}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Note that those terms involving exponetial functions just match the definition of \eqref{eq:exponetial_kernel} discussed in the last &lt;a href=&quot;#what_are_kernels&quot;&gt;section&lt;/a&gt;; therefore \eqref{eq:basic_attention} is equivalent to:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; a = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_{exp}}(\hat{q}, \hat{k}_j)}{\sum_{r = 0}^{L-1} Ker_{\phi_{exp}}(\hat{q}, \hat{k}_r)} v_j
-\end{aligned}
-\label{eq:exponential_kernel_attention}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;\eqref{eq:exponential_kernel_attention} shows that the attention weights can be viewed as the results returned by the kernel function $Ker_{\phi_{exp}}$ with normalisation; and since there are no constraints on what types of kernels can be used except for having non-negative outputs (attention weights need to be $\ge 0$), it is possible to derive the formula based on different kernels, which yield this general form of attention:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; a_{\phi_p} = \sum_{j = 0}^{L-1} \frac{ Ker_{\phi_p}(\hat{q}, \hat{k}_j)}{\sum_{r = 0}^{L-1} Ker_{\phi_p}(\hat{q}, \hat{k}_r)} v_j  \\
-&amp; \phantom{a_{\phi_p}} = \sum_{j = 0}^{L-1} \frac{\phi_p(\hat{q}) \odot \phi_p(\hat{k}_j)}{\sum_{r = 0}^{L-1} \phi_p(\hat{q}) \odot \phi_p(\hat{k}_r)} v_j 
-\end{aligned}
-\label{eq:kernel_attention}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;with $\phi_p:\mathbb{R}^m \to \mathbb{R}^n$ being some mapping function which satisfies $\phi_p(x) \odot \phi_p(t) \ge 0$ for any $x$, $t \in \mathbb{R}^m$.&lt;/p&gt;
-
-&lt;h2 id=&quot;fast-attention-&quot;&gt;Fast Attention &lt;a name=&quot;fast_attention&quot;&gt;&lt;/a&gt;&lt;/h2&gt;
-
-&lt;p&gt;One of the main advantages of the attention mechanism is its capability for gathering distant information as every part of data being attended to can be accessed directly; however, that property is also a curse due to the fact that its complexity is largely dictated by the range of attention, and it could be rather costly when modelling data containing long-range dependencies. To see that, let us extend the attention definition of \eqref{eq:basic_attention} to the multi-query version written in matrix form (assuming there are $L$ queries):&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; A = \underbrace{\Big(\frac{exp(\frac{Q K^T}{\sqrt{m}})}{\big( exp(\frac{Q K^T}{\sqrt{m}})1_L \big) }\Big)}_{= W} V
-\end{aligned}
-\label{eq:basic_attention_in_matrix_form}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;where $1_L$ is the all-ones column vector of $L$ rows; $diag(.)$ is the diagonal matrix of which the diagonal is equal to its input vector; both the $exp(.)$ and the division are applied elementwise and broadcast if necessary; $Q \in \mathbb{R}^{L*m}$, $K \in \mathbb{R}^{L*m}$, and $V \in \mathbb{R}^{L*o}$ stand for the matrices with each row representing a query, key, and value vector respectively. The analysis of \eqref{eq:basic_attention_in_matrix_form} suggests that the time complexity for obtaining $A$ is dominated by the matrix multiplications of $Q K^T$ and $W V$, which take $O(L^2m+L^2o) = O(L^2*max(m, o))$; while the storage of $Q$, $K$, $V$, and $W$ comprises the main part of the memory consumption, resulting in the space complexity of $O(L*max(m, L, o))$. Consequently, when the dimesion of the size $L$ becomes the largest one (as is usually the case), both of the time and space complexity would be quadratic with respect to $L$, and an increase in $L$ could easily render the computation of \eqref{eq:basic_attention_in_matrix_form} prohibitively expensive.&lt;/p&gt;
-
-&lt;p&gt;So how can we alleviate that cost requirement? Well, having a close look at \eqref{eq:basic_attention_in_matrix_form}, you might notice that the calculation of $Q K^T$ consitutes the major source of the computational demand; therefore its circumvention would be the key to reduce the complexities, and that is where the kernel connection comes into play. Recall the general form of attention under the kernel interpretation introduced in the last &lt;a href=&quot;#the_connection_to_attention&quot;&gt;section&lt;/a&gt;; approaching the multi-query attention from that view, in particular from \eqref{eq:kernel_attention}, allows us to define the following formulation named fast attention:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; A_{\phi_p} = \Big(\frac{(\hat{Q}_{\phi_p} \hat{K}_{\phi_p}^T )}{(\hat{Q}_{\phi_p} \hat{K}_{\phi_p}^T 1_L )} \Big) V \\
-&amp; \phantom{A_{\phi_p}} = \frac{\hat{Q}_{\phi_p} \overbrace{\hat{K}_{\phi_p}^T V}^{= U}}{\hat{Q}_{\phi_p} \underbrace{\hat{K}_{\phi_p}^T 1_L}_{= S}} \\
-&amp; \phantom{A_{\phi_p}} = \frac{\hat{Q}_{\phi_p} U}{\hat{Q}_{\phi_p} S } \\
-\end{aligned}
-\label{eq:dot_attention_in_matrix_form}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;with the i-th row of $\hat{Q}_{\phi_p}$ (denoted by $(\hat{Q}_{\phi_p})_i$) being the output of $\phi_p$ given as input the i-th row of $\frac{Q}{\sqrt[4]{m}}$, and the j-th row of $\hat{K}_{\phi_p}$ (denoted by $(\hat{K}_{\phi_p})_j$) being the output of $\phi_p$ given as input the j-th row of $\frac{K}{\sqrt[4]{m}}$, for every row $i$ in $Q$ and every row $j$ in $K$, respectively. Note that how the calculation of the product $\hat{Q}_{\phi_p} \hat{K}_{\phi_p}^T$ (analogous to the term $Q K^T$ in \eqref{eq:basic_attention_in_matrix_form}) is avoided by the intermediate results of $U$ and $S$ according to the associative property of matrix multiplication enabled by the feature mapping $\phi_p$, and that is where the “fastness” comes from: the computation for $U$ and $S$ is only of a time complexity of $O(Lno+Ln) = O(Lno)$, while their storage requires merely $O(no+n) = O(no)$; furthermore, the evaluation of $A_{\phi_p}$ through $U$ and $S$ is also cheap, taking $O(Lno)$ in time and $O(Lo)$ in space. As a result, \eqref{eq:dot_attention_in_matrix_form} offers a potentially efficient way for conducting attention with the time complexity of $O(Lno)$ and the space complexity of $O(L*max(n, o))$, both of which are just linear with respect to $L$.&lt;/p&gt;
-
-&lt;p&gt;But, if you have noticed the word “potentially”, there is a caveat. The entire discussion about the improvement in efficiency is premised on that $L$ remains the dominant factor in the complexity while the overheads of $\phi_p(.)$ are negligible, which implies \eqref{eq:dot_attention_in_matrix_form} can only be faster if&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;The dimensionality of the output space of $\phi_p(.)$ is less than the number of queries/key-value pairs, i.e. $n \lt L$.&lt;/li&gt;
-  &lt;li&gt;The cost of the evaluation of $\phi_p(\hat{q})$ and that of $\phi_p(\hat{k})$ are ralatively small compared with the one of \eqref{eq:dot_attention_in_matrix_form}.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;Therefore the choice of the kernel (and thus its associated $\phi_p$) for producing attention weights really determines the performance of \eqref{eq:dot_attention_in_matrix_form}, and it is possible to end up being (desperately) worse than the original form! For example, the fast attention equivalent for \eqref{eq:basic_attention_in_matrix_form}, which indicates the use of $Ker_{\phi_{exp}}(., .)$, is $A_{\phi_{exp}}$; nonetheless, to evaluate it is completely impractical due to the infinite-dimensional output space of $\phi_{exp}(.)$ (that is, $n = \infty$), as pointed out in the previous &lt;a href=&quot;#what_are_kernels&quot;&gt;section&lt;/a&gt;. In other words, if $A_{\phi_{exp}}$ were to be evaluated, it would require infinite time and space!&lt;/p&gt;
-
-&lt;h2 id=&quot;positive-random-features&quot;&gt;Positive Random Features&lt;/h2&gt;
-&lt;p&gt;It is really disappointing that the fast attention can not be applied to speed up \eqref{eq:basic_attention_in_matrix_form}, and the main obstacle which blows up the complexity is the presence of $\phi_{exp}(.)$. Hence just as what has been done in \eqref{eq:dot_attention_in_matrix_form}, researchers sought to circumvent again that computationally demanding part, and in doing so they have found that actually $Ker_{\phi_{exp}}(\hat{q}, \hat{k})$ can be expressed in terms of the expectation over the standard normal distribution:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; Ker_{\phi_{exp}}(\hat{q}, \hat{k}) = exp(\hat{q} \odot \hat{k}) \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) \\
-&amp; exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) = exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) * \\
-&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2} =} \underbrace{(2\pi)^{-\frac{m}{2}} \int exp(-\frac{\|z - (\hat{q} + \hat{k})\|_2^2}{2}) dz}_{= 1} \\
-&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2})} = (2\pi)^{-\frac{m}{2}} * \\
-&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2}) =} \int exp(-\|z\|_2^2) exp(z \odot (\hat{q} + \hat{k})) dz \\
-&amp; \phantom{exp(\frac{\| \hat{q} + \hat{k} \|_2^2}{2})} = E_{z\sim Normal(0, I)}[exp(z \odot (\hat{q} + \hat{k}))] \\
-&amp; \implies Ker_{\phi_{exp}}(\hat{q}, \hat{k}) = exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) * \\
-&amp; \phantom{\implies Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} E_{z\sim Normal(0, I)}[exp(z \odot (\hat{q} + \hat{k}))]
-\end{aligned}
-\label{eq:kernel_exp_with_expectation}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Then estimating the expectation in \eqref{eq:kernel_exp_with_expectation} via the &lt;em&gt;Monte Carlo method&lt;/em&gt; with random samples $Z = \{z_0,\dotsc, z_i,\dotsc,z_{N-1} | z_i \sim Normal(0, I)\}$ yields:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; Ker_{\phi_{exp}}(\hat{q}, \hat{k}) \approx exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) * \\ 
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \frac{1}{N} \sum_{i=0}^{N-1}exp(z_i \odot (\hat{q} + \hat{k})) \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = exp(-\frac{\|\hat{q}\|_2^2}{2}) exp(-\frac{\|\hat{k}\|_2^2}{2}) * \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \frac{1}{N} \sum_{i=0}^{N-1}exp(z_i \odot \hat{q}) exp(z_i \odot \hat{k}) \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = \underbrace{\begin{aligned} &amp; \Big( \frac{exp(-\frac{\|\hat{q}\|_2^2}{2})}{\sqrt{N}} * \\
-																															&amp; \phantom{\Big(} [exp(z_0 \odot \hat{q}),\dotsc, exp(z_{N-1} \odot \hat{q})] \Big) \end{aligned}}_{= \phi_{Z}(\hat{q})} \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \odot \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k}) =} \underbrace{\begin{aligned} &amp; \Big( \frac{exp(-\frac{\|\hat{k}\|_2^2}{2})}{\sqrt{N}} * \\
-																															&amp; \phantom{\Big(} [exp(z_0 \odot \hat{k}),\dotsc, exp(z_{N-1} \odot \hat{k})] \Big) \end{aligned}}_{= \phi_{Z}(\hat{k})} \\
-&amp; \phantom{Ker_{\phi_{exp}}(\hat{q}, \hat{k})} = \phi_{Z}(\hat{q}) \odot \phi_{Z}(\hat{k})
-\end{aligned}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;and there you go! a new feature mapping function $\phi_{Z}(.)$ for $Ker_{\phi_{exp}}(\hat{q}, \hat{k})$, which is one realisation of the notion called &lt;em&gt;Positive Random Features&lt;/em&gt;, is attained. As the name suggests, all of the output features of $\phi_{Z}(.)$ are not only positive (just as desired for calculating attention weights), but also derived from random samples; in particular, the dimensionality of its output space is also decided by, or to be specific, equal to, the number of the samples utilised. That indicates through the trade-off between the approximation accuracy and the sample size, conducting the fast attention with $\phi_{Z}(.)$ can always be made affordable, and therefore $\phi_{Z}(.)$ serves as a viable as well as flexible alternative to $\phi_{exp}(.)$ when it comes to performing the fast attention version of \eqref{eq:basic_attention_in_matrix_form}.&lt;/p&gt;
-
-&lt;p&gt;It should also be mentioned that the nature of the uncertainty of &lt;em&gt;Positive Random Features&lt;/em&gt; would inevitably bring about noise, which in turn creates the variance in the attention results and has shown to be harmful to training; so besides having an adequate number of samples, in the paper where this method was proposed other techniques such as &lt;em&gt;the orthogonalisation of random samples&lt;/em&gt; or &lt;em&gt;periodic resampling&lt;/em&gt; were also recommended to mitigate that negative impact. Interested readers are referred to &lt;a href=&quot;https://arxiv.org/abs/2009.14794&quot;&gt;the original paper&lt;/a&gt; for more details.&lt;/p&gt;
-
-&lt;h2 id=&quot;extending-to-autoregressive-attention&quot;&gt;Extending to Autoregressive Attention&lt;/h2&gt;
-
-&lt;p&gt;This is also termed &lt;em&gt;unidirectional attention&lt;/em&gt;, where each query is only allowed to attend to the previous information (excluding/including the current one) based on a given ordering. For instance, \eqref{eq:basic_attention_in_matrix_form} can be turned autoregressive by plugging in the $LT(.)$ operator which returns the lower triangular version of its input matrix:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; A^{ar} = \Big( \frac{ LT(exp(\frac{Q K^T}{\sqrt{m}})) }{ LT(exp(\frac{Q K^T}{\sqrt{m}}))1_L } \Big) V
-\end{aligned}
-\label{eq:basic_autoregressive_attention_in_matrix_form}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;where the implicit ordering and autoregressive rule imposed by $LT(.)$ state that $K_j$/$V_j$, the j-th row of $K$/$V$, is available to $Q_i$, the i-th row of $Q$, if $j \le i$. In order to express \eqref{eq:basic_autoregressive_attention_in_matrix_form} in a fast-attention fashion, the trick done in \eqref{eq:dot_attention_in_matrix_form} has to be applied to individual queries separately due to the fact that the attention range of each query is now non-shareable:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; (A^{ar}_{\phi_Z})_i = \sum_{j = 0}^{i} \Big( \frac{(\hat{Q}_{\phi_Z})_i ((\hat{K}_{\phi_Z})_j)^T }{ \sum_{r = 0}^{i} (\hat{Q}_{\phi_Z})_i ((\hat{K}_{\phi_Z})_r)^T } \Big) V_j \\
-&amp; \phantom{(A^{ar}_{\phi_Z})_i} = \frac{(\hat{Q}_{\phi_Z})_i \overbrace{\big( \sum_{j = 0}^{i} ((\hat{K}_{\phi_Z})_j)^T V_j \big)}^{= U^i} }{ (\hat{Q}_{\phi_Z})_i \underbrace{\big(\sum_{r = 0}^{i} ((\hat{K}_{\phi_Z})_r)^T \big)}_{= S^i}  } \\
-&amp; \phantom{(A^{ar}_{\phi_Z})_i} = \frac{ \overbrace{(\hat{Q}_{\phi_Z})_i U^i}^{\hat{U}_{\phi_Z}^i} }{ \underbrace{(\hat{Q}_{\phi_Z})_i S^i}_{\hat{S}_{\phi_Z}^i} } = \frac{\hat{U}_{\phi_Z}^i}{\hat{S}_{\phi_Z}^i}
-\end{aligned}
-\label{eq:dot_autoregressive_attention_in_matrix_form}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Here in \eqref{eq:dot_autoregressive_attention_in_matrix_form} it is assumed that $\phi_{Z}(.)$ is adopted and $(A^{ar}_{\phi_Z})_i$ represents the i-th row of $A^{ar}_{\phi_Z}$, the approximation of $A^{ar}$ obtained via the corresponding fast attention mechanism; furthermore, by conducting a similar analysis as given for \eqref{eq:dot_attention_in_matrix_form}, it can be concluded that for any specific $i$, the time and space complexity are $O(i*no)$ and $O(i*max(n, o))$, which accounts for the iterations required by the summation, respectively.&lt;/p&gt;
-
-&lt;p&gt;One might think that because $0 \le j, r \le i \le L-1$, to obtain a full $A^{ar}_{\phi_Z}$ would requires $O(\frac{L*(L+1)}{2}*no) = O(L^2no)$ in time as well as $O(L^2*max(n, o))$ in space, and thus formulating autoregressive attention this way is no better than its orginal form in terms of computational efficiency; however, if based on the fact that&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
-\begin{aligned}
-\begin{cases}
-U^i = U^{i-1} + ((\hat{K}_{\phi_Z})_i)^T V_i  \\
-S^i = S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T
-\end{cases}
-\end{aligned}
-\end{equation}&lt;/script&gt;
-
-&lt;p&gt;\eqref{eq:dot_autoregressive_attention_in_matrix_form} is rewritten to&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; (A^{ar}_{\phi_Z})_i = \frac{ (\hat{Q}_{\phi_Z})_i U^i }{  (\hat{Q}_{\phi_Z})_i S^i } \\ 
-&amp; \phantom{(A^{ar}_{\phi_Z})_i} = \frac{ (\hat{Q}_{\phi_Z})_i \big(U^{i-1} + ((\hat{K}_{\phi_Z})_i)^T V_i \big) }{ (\hat{Q}_{\phi_Z})_i \big( S^{i-1} + ((\hat{K}_{\phi_Z})_i)^T \big) }
-\end{aligned}
-\label{eq:cumulative_dot_autoregressive_attention_in_matrix_form}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;with $U^{-1}$ and $S^{-1}$ equal to $0$; then a sequential algorithm can be designed accordingly such that it only takes the time complexity of $O(no)$ and the space complexity of $O(max(n, o))$ to evaluate $(A^{ar}_{\phi_Z})_i$ via the reuse of $U^{i-1}$ and $S^{i-1}$ obtained during the previous computation of $(A^{ar}_{\phi_Z})_{i-1}$, for every $i$. Consequently, the overall complexity linear with respect to $L$ is still achievable.&lt;/p&gt;
-
-&lt;p&gt;Another place where this idea of reuse can be shown applicable is the calculation of the associated gradients with \eqref{eq:dot_autoregressive_attention_in_matrix_form} for back-propagation. Given $\mathcal{L}$ as the single-valued objective for optimisation, the derivation of the gradient formulations similar to \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form} begins with the following concatenation matrix $J_i$ of the size $1$ by $o+1$:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; J_i = [\hat{U}_{\phi_Z}^i, \hat{S}_{\phi_Z}^i] \\
-&amp; \phantom{J_i} = (\hat{Q_{\phi_Z}})_i [U^i, S^i] \\
-&amp; \phantom{J_i} = (\hat{Q_{\phi_Z}})_i \big(\sum_{j = 0}^{i} ((\hat{K}_{\phi_Z})_j)^T \underbrace{[V_j, 1]}_{= \tilde{V}_j} \big) \\
-&amp; \phantom{J_i} = (\hat{Q_{\phi_Z}})_i \big(\sum_{j = 0}^{i} ((\hat{K}_{\phi_Z})_j)^T \tilde{V}_j \big)
-\end{aligned}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;with respect to which the gradient of $\mathcal{L}$ is:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; \nabla_{J_i} \mathcal{L} = [\nabla_{\hat{U}_{\phi_Z}^i} \mathcal{L}, \nabla_{\hat{S}_{\phi_Z}^i} \mathcal{L}]
-\end{aligned}
-\label{eq:gradient_L_J_i}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;Then the three essential gradients can be defined based on \eqref{eq:gradient_L_J_i}, including $\nabla_{(\hat{Q}_{\phi_Z})_i} \mathcal{L}$:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; \frac{\partial \mathcal{L}}{\partial (\hat{Q}_{\phi_Z})_{i, a}}  = \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} * \frac{\partial J_{i, b}}{\partial (\hat{Q}_{\phi_Z})_{i, a}} \\
-&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\hat{Q}_{\phi_Z})_{i, a}}} = \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} * \big(\sum_{j = 0}^{i} (\tilde{V}_{j, b})^T (\hat{K}_{\phi_Z})_{j, a} \big) \\
-&amp; \implies \nabla_{(\hat{Q}_{\phi_Z})_i} \mathcal{L} = \nabla_{J_i} \mathcal{L} \underbrace{\big(\sum_{j = 0}^{i} (\tilde{V_j})^T (\hat{K}_{\phi_Z})_j \big)}_{U_{\hat{Q}_{\phi_Z}}^i} \\
-&amp; \phantom{\implies \nabla_{(\hat{Q}_{\phi_Z})_i} \mathcal{L}} = \nabla_{J_i} \mathcal{L} \big(U_{\hat{Q}_{\phi_Z}}^{i-1} + (\tilde{V_i})^T (\hat{K}_{\phi_Z})_i \big) 
-\end{aligned}
-\label{eq:gradient_L_hat_Q_phi_Z_i}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;$\nabla_{(\hat{K}_{\phi_Z})_j} \mathcal{L}$:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; \frac{\partial \mathcal{L}}{\partial (\hat{K}_{\phi_Z})_{j, a}} = \sum_{i=j}^{L-1} \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} * \frac{\partial J_{i, b}}{\partial (\hat{K}_{\phi_Z})_{j, a}} \\
-&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\hat{K}_{\phi_Z})_{j, a}}} = \sum_{i=j}^{L-1} \sum_{b=0}^{o} \frac{\partial \mathcal{L}}{\partial J_{i, b}} (\hat{Q}_{\phi_Z})_{i, a} \tilde{V}_{j, b} \\
-&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\hat{K}_{\phi_Z})_{j, a}}} = \sum_{b=0}^{o} \tilde{V}_{j, b} * \big( \sum_{i=j}^{L-1}  \frac{\partial \mathcal{L}}{\partial J_{i, b}} (\hat{Q}_{\phi_Z})_{i, a} \big) \\
-&amp; \implies \nabla_{(\hat{K}_{\phi_Z})_j} \mathcal{L} = \tilde{V}_j \underbrace{\big(\sum_{i=j}^{L-1} (\nabla_{J_i} \mathcal{L})^T (\hat{Q}_{\phi_Z})_i \big)}_{= U_{\hat{K}_{\phi_Z}}^{j}} \\
-&amp; \phantom{\implies \nabla_{(\hat{K}_{\phi_Z})_j} \mathcal{L}} = \tilde{V}_j \big(U_{\hat{K}_{\phi_Z}}^{j+1} + (\nabla_{J_j} \mathcal{L})^T (\hat{Q}_{\phi_Z})_j \big)
-\end{aligned}
-\label{eq:gradient_L_hat_K_phi_Z_j}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;and $\nabla_{(\tilde{V}_{\phi_Z})_j} \mathcal{L}$:&lt;/p&gt;
-
-&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
-\begin{equation}
-\begin{aligned}
-&amp; \frac{\partial \mathcal{L}}{\partial (\tilde{V}_{\phi_Z})_{j, a}} = \sum_{i=j}^{L-1} \frac{\partial \mathcal{L}}{\partial J_{i, a}} * \frac{\partial J_{i, b}}{\partial (\tilde{V}_{\phi_Z})_{j, a}} \\
-&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\tilde{V}_{\phi_Z})_{j, a}}} = \sum_{i=j}^{L-1} \frac{\partial \mathcal{L}}{\partial J_{i, a}} \big( \sum_{b=0}^{n-1} (\hat{Q}_{\phi_Z})_{i, b} (\hat{K}_{\phi_Z})_{j, b} \big) \\
-&amp; \phantom{\frac{\partial \mathcal{L}}{\partial (\tilde{V}_{\phi_Z})_{j, a}}} = \sum_{b=0}^{n-1} (\hat{K}_{\phi_Z})_{j, b} \big(\sum_{i=j}^{L-1} (\hat{Q}_{\phi_Z})_{i, b} \frac{\partial \mathcal{L}}{\partial J_{i, a}} \big)  \\
-&amp; \implies \nabla_{(\tilde{V}_{\phi_Z})_j} \mathcal{L} = (\hat{K}_{\phi_Z})_j \underbrace{\big( \sum_{i=j}^{L-1} ((\hat{Q}_{\phi_Z})_i)^T \nabla_{J_i} \mathcal{L} \big)}_{= U_{\tilde{V}_{\phi_Z}}^{j}} \\
-&amp; \phantom{\implies \nabla_{(\tilde{V}_{\phi_Z})_j} \mathcal{L}} = (\hat{K}_{\phi_Z})_j \big(U_{\tilde{V}_{\phi_Z}}^{j+1} + ((\hat{Q}_{\phi_Z})_j)^T \nabla_{J_j} \mathcal{L} \big) 
-
-\end{aligned}
-\label{eq:gradient_L_tilde_V_j}
-\end{equation} %]]&gt;&lt;/script&gt;
-
-&lt;p&gt;where the two subscripts of a matrix is used to index the entries of that matrix at locations encoded by (row, column) coordinates; for example, $(\hat{Q}_{\phi_Z})_{i, a}$ refers to the entry of $\hat{Q}_{\phi_Z}$ at the row $i$ and the column $a$. Since \eqref{eq:gradient_L_hat_Q_phi_Z_i}, \eqref{eq:gradient_L_hat_K_phi_Z_j}, and \eqref{eq:gradient_L_tilde_V_j} are expressed as some previous result plus an additonal update, they are certainly eligible for the sequential algorithm suggested for \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form}, albeit there is a subtle distinction: the computational sequence of \eqref{eq:cumulative_dot_autoregressive_attention_in_matrix_form} should be arranged from the position $0$ to the position $L-1$ (forward) following the autoregressive order, which is the same as the one for \eqref{eq:gradient_L_hat_Q_phi_Z_i}; in contrast, both \eqref{eq:gradient_L_hat_K_phi_Z_j} and \eqref{eq:gradient_L_tilde_V_j} would need to start their sequences at the position $L-1$ and progress down to the position $0$ (backward).&lt;/p&gt;
-
-&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
-&lt;ul&gt;
-  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2009.14794&quot;&gt;Krzysztof Choromanski et al. “Rethinking Attention with Performers”. In:CoRRabs/2009.14794 (2020)&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://arxiv.org/abs/2006.16236&quot;&gt;Angelos Katharopoulos et al. “Transformers are RNNs: Fast Autoregressive Transformerswith Linear Attention”. In:CoRRabs/2006.16236 (2020)&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-</description>
-        <pubDate>Sun, 15 Aug 2021 00:00:00 +0800</pubDate>
-        <link>/Blogs/note/Change-of-Variables.html</link>
-        <guid isPermaLink="true">/Blogs/note/Change-of-Variables.html</guid>
-        
-        <category>Calculus,</category>
-        
-        <category>Probability,</category>
         
         <category>NumberTheory</category>
         
@@ -2941,6 +2628,279 @@ E(\text{Money returned}) = 51.62 - 50 = 1.62
         <category>Fun</category>
         
         <category>Probability</category>
+        
+        
+        <category>Note</category>
+        
+      </item>
+    
+      <item>
+        <title>Intuitions behind Wasserstein GAN</title>
+        <description>&lt;p&gt;Since the appearance of Generative Adversarial Network, aka GAN, a large number of variants have been proposed in attempts to improve the training dynamics, and Wasserstein GAN (WGAN) is one of them. The reason I would like to make a note of it is because in my last project, this type of GAN, specifically, WGAN-GP, was the only one working among several types and architectures I had tried. Honestly, most of time I just pick a model and try it to see if it works; but since WGAN has proven its success in my own case, I think it is time to deepen my understanding about it. There have already been abundant discussions and explanations about WGAN on the Internet, so here I simply write down some informal interpretation of my own.&lt;/p&gt;
+
+&lt;h2 id=&quot;wasserstein-distance&quot;&gt;Wasserstein Distance&lt;/h2&gt;
+&lt;p&gt;The central idea of WGAN is to replace the means of measuring the similarity between two distributions with the one called Wasserstein Distance (WD), which is defined as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned} 
+&amp; WD_2[P, Q] = \inf_{\pi} \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi(x, y) dx dy \\
+&amp; where
+\begin{cases}
+P(x) = \int_{y \in \text{support}_Q} \pi(x, y) dy \\
+Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
+\end{cases}
+\end{aligned}
+\label{eq:WD2}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Note that the distance between every pair of $x$ and $y$ in \eqref{eq:WD2} is defined via 2-norm. The use of other metrics is also possible, but for the consistency with later discussion 2-norm is specifically adopted.&lt;/p&gt;
+
+&lt;p&gt;$\pi$ can be viewed as a transport plan which depicts how one can shift around the densities in one distribution so that the resultant distribution matches the other one. This interpretation comes from the fact that $\pi$ satisfies the &lt;em&gt;where&lt;/em&gt; condition: for any point $x’ \in \text{support}_P$, if from every point $y’ \in \text{support}_Q$ the amount of density described by $\pi(x = x’, y = y’)$ is moved to $x’$, then the density of $P(x = x’)$ can be obtained. Hence, by applying such a transport plan the entire distribution $P$ can be constructed from the distribution $Q$, and vice versa.&lt;/p&gt;
+
+&lt;p&gt;There are many possible transport plans to meet the &lt;em&gt;where&lt;/em&gt; condition, so in order to tell which one is preferable, a cost is designed to serve the purpose. From my point of view, the best way to interpret this cost is to follow the idea of &lt;a href=&quot;https://en.wikipedia.org/wiki/Earth_mover%27s_distance&quot;&gt;Earth mover’s distance&lt;/a&gt;: considering there are several piles of dirt at different locations, and certain amounts of dirt from each pile is going to be moved to other locations, how can we quantify the effort required to complete this job? Well, one way to summarise the overall effort, or cost, of such transport is to calculate the sum of each amount of dirt to be moved times the corresponding distance to be travelled. By analogy, $\pi(x, y)$ describes amounts of density to be moved between every pair of points $x$ and $y$; if the definition of distance between two points is set to be 2-norm, then \eqref{eq:WD2} is equivalent to computing such costs across all transport plans and finding the lowest one. As a result, WD between two distributions $P$ and $Q$ indicates the minimum effort demanded to make them identical; and the larger this value is, the more dissimilar these two distributions are.&lt;/p&gt;
+
+&lt;p&gt;It might look like WD is just another criterion for comparing distributions, but it indeed stands out from other distance measures due to its smoothness property. In the paper where WGAN is introduced, the authors used a simple example to illustrate this advantage. Supposed two distributions $P$ and $Q_{\theta}$ are defined as follows:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned}
+&amp; P(x, y) =
+\begin{cases}
+1,&amp; x = 0, 0 \leq y \leq 1 \\
+0,&amp; otherwise
+\end{cases} \\
+&amp; Q_{\theta}(x, y) =
+\begin{cases}
+1,&amp; x = \theta, 0 \leq y \leq 1 \\
+0,&amp; otherwise
+\end{cases} 
+\end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $Q_{\theta}$ is a parametric distribution with $\theta$ being its parameter. In that case, Kullback Leibler divergence (KL), reverse KL, and Jensen-Shannon divergence (JS) can be explicted computed:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned}
+KL[P \lVert Q_{\theta}] &amp; = \int P(x, y) ln(\frac{P(x, y)}{Q_{\theta}(x, y)}) dx dy \\
+&amp; = [\int P(x, y) ln(P(x, y)) dx dy] \\
+&amp; \phantom{=} - [\int P(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
+&amp; = 
+\begin{cases}
+0,&amp; \theta = 0 \\
+\infty,&amp; \theta \neq 0
+\end{cases} \\
+KL[Q_{\theta} \lVert P] &amp; = \int Q_{\theta}(x, y) ln(\frac{Q_{\theta}(x, y)}{P(x, y)}) dx dy \\
+&amp; = [\int Q_{\theta}(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
+&amp; \phantom{=} - [\int Q_{\theta}(x, y) ln(P(x, y)) dx dy] \\
+&amp; = 
+\begin{cases}
+0,&amp; \theta = 0 \\
+\infty,&amp; \theta \neq 0
+\end{cases} \\
+JS[P \lVert Q_{\theta}] &amp; = 0.5 * KL[P \lVert 0.5 * (P + Q) ] \\
+&amp; \phantom{=} + 0.5 * KL[Q \lVert 0.5 * (P + Q)] \\
+&amp; = 0.5 * [\int P(x, y) ln(P(x, y)) dx dy] \\ 
+&amp; \phantom{=} - 0.5 * [\int P(x, y) ln(0.5 * (P(x, y) + Q_{\theta}(x, y))) dx dy] \\
+&amp; \phantom{=} + 0.5 * [\int Q_{\theta}(x, y) ln(Q_{\theta}(x, y)) dx dy] \\
+&amp; \phantom{=} - 0.5 * [\int Q_{\theta}(x, y) ln(0.5 * (P(x, y) + Q_{\theta}(x, y))) dx dy] \\
+&amp; = -0.5 * (-ln(2)) \\
+&amp; \phantom{=} - 0.5 * \int P(x, y) * ln(P(x, y) + Q_{\theta}(x, y)) dx dy \\
+&amp; \phantom{=} -0.5 * (-ln(2)) \\
+&amp; \phantom{=} - 0.5 * \int Q_{\theta}(x, y) * ln((P(x, y) + Q_{\theta}(x, y))) dx dy \\
+&amp; =
+\begin{cases}
+ln(2) - ln(2) = 0, &amp; \theta = 0 \\
+ln(2),&amp; \theta \neq 0
+\end{cases} \\
+\end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;All three distance measures lead to a discontinuous drop at $\theta = 0$; moreover , KL and reverse KL give a numerically unstable result of $\infty$ when $\theta \neq 0$.&lt;/p&gt;
+
+&lt;p&gt;On the other hand, with the definition of $WD_2$, the minimum cost of adjusting $Q_{\theta}$ to match $P$ can be achived by moving the distribution $Q_{\theta}$ a distance of $\lvert \theta \rvert$ along x-axis towards $0$, and that results in:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;WD_2[P, Q_{\theta}] = \lvert \theta \rvert * 1 = \lvert \theta \rvert&lt;/script&gt;
+
+&lt;p&gt;Clearly, $WD_2$ demonstrates better smoothness and continuousness. Note that this property is rather important when such distance measures are used as objectives of optimisation via gradient descent. For example, in the particular case above the respective gradients of 4 distances w.r.t $\theta$ are:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned}
+&amp; \nabla_{\theta} KL[P \lVert Q_{\theta}] = 
+\begin{cases}
+undefined,&amp; \theta = 0\\
+0,&amp; \theta \neq 0
+\end{cases} \\
+&amp; \nabla_{\theta} KL[Q_{\theta} \lVert P] =
+\begin{cases}
+undefined,&amp; \theta = 0\\
+0,&amp; \theta \neq 0
+\end{cases} \\
+&amp; \nabla_{\theta} JS[P \lVert Q_{\theta}] =
+\begin{cases}
+undefined,&amp; \theta = 0\\
+0,&amp; \theta \neq 0
+\end{cases} \\
+&amp; \nabla_{\theta} WD_2[P, Q_{\theta}]
+\begin{cases}
+undefined,&amp; \theta = 0\\
+-1,&amp; \theta &lt; 0 \\
+1,&amp; \theta &gt; 0 
+\end{cases}
+\end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;It can been seen that optimisation via gradient descent in that case will not work with KL, reverse KL and JS due to lack of gradient information; but it is still possible to reach the optimum $\theta$ through the gradient of $WD_2$.&lt;/p&gt;
+
+&lt;h2 id=&quot;wgan&quot;&gt;WGAN&lt;/h2&gt;
+&lt;p&gt;Standard GANs are known for its unstable and difficult training process, and some researches have suggested that it might be due to the objective it uses, which leads to the minimisation of JS distance between model distribution and data distribution. As pointed out in the previous &lt;a href=&quot;#dir0&quot;&gt;section&lt;/a&gt;, JS sometime can be problematic in problems of optimisation, while other measures of good properties, such as WD, might be better choices for construction of GAN. Therefore, the inventors of WGAN tried to bring WD (particularly, $WD_2$) into and GAN architecture, resulting in a new objective (given $Q$ is a model distribution and $P$ is the data distribution which needs to be modelled):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \min_{Q} WD_2[P, Q] = \\
+&amp; \phantom{min_Q} \min_{Q} \inf_{\pi} \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi(x, y) dx dy \\
+&amp; \phantom{min_Q} where
+\begin{cases}
+P(x) = \int_{y \in \text{support}_Q} \pi(x, y) dy \\
+Q(y) = \int_{x \in \text{support}_P} \pi(x, y) dx
+\end{cases}
+\end{aligned}
+\label{eq:WGANGoal}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;In contrast to implicit minimisation of the JS distance between $P$ and $Q$ in standard GANs, \eqref{eq:WGANGoal} explicitly expresses the goal of reducing $WD_2$. That seems to make the objective quite different from the one of standard GANs, since it does not directly correspond to a minimax game anymore; in addition, the calculation of \eqref{eq:WGANGoal} involves finding a $\pi$ which satisfies both infimum and the &lt;em&gt;where&lt;/em&gt; condition, which makes the whole equation looks rather intimidating. Fortunately, it turns out that \eqref{eq:WGANGoal} can be transformed into its dual form according to the theorem of Kantorovich-Rubinstein Duality:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation} 
+\min_{Q} WD_2[P, Q] = \min_{Q} \sup_{f, \lVert f \rVert_L \le 1} E_{x \sim P}[f(x)] - E_{y \sim Q}[f(y)] 
+\label{eq:WGANDualGoal}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;where $\lVert f \rVert_L$ stands for a Lipschitz constant of $f$ under norm-2 metric. If a neural network of enough capacity with parameter set $\phi$ is used to model $f$ such that supremum can be reached; and samples of $Q$ are generated via mapping each sample $z$ from a known distribution $Z$ with another neural network $g$ parameterized by $\theta$, then \eqref{eq:WGANDualGoal} can be rewritten as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\min_{Q} WD_2[P, Q] = \min_{\theta} \max_{\phi} E_{x \sim P}[f_{\phi}(x)] - E_{z \sim Z}[f_{\phi}(g_\theta(z))] 
+\label{eq:WGANPraticalGoal}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;It can be seen from \eqref{eq:WGANPraticalGoal} that a new minimax game between a generator of $g_{\theta}$ and a critic $f_{\phi}$ emerges: the generator is optimised to produce samples from a better Q which reduce $WD_2$, while the job of the critic is to compute the $WD_2$ of the current $Q$ and the data distribution $P$ through maximisation of the objective.&lt;/p&gt;
+
+&lt;p&gt;Arguably, the most important part which allows us to be able to perform minimax optimisation is the conversion from the original problem into its dual form, with the help of Kantorovich-Rubinstein Duality. While one could go through a solid mathematical derivation to explain how this conversion works, here I would simply like to provide some intuitions based on my understanding about this dual form from the aspect of Lipschitz continuity.&lt;/p&gt;
+
+&lt;p&gt;As expounded in &lt;a href=&quot;https://en.wikipedia.org/wiki/Lipschitz_continuity&quot;&gt;here&lt;/a&gt;, Lipschitz continuity is basically a notion to represent how fast a function $f:X \to W$ can change, described by a number $K \ge 0$ called Lipschitz constant which satisfies:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned}
+&amp; d_W(f(x_1) - f(x_2)) \le K * d_X(x_1, x_2), \\
+&amp; \forall x_1, x_2 \in X
+\end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;where $d_X$ and $d_W$ are two metrics for the space $X$ and $W$ respectively. With that definition, the $\lVert f \rVert_L \le 1$ appearing in \eqref{eq:WGANDualGoal} can be expressed more precisely as:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; \lVert f(x) - f(y) \rVert_2 = \lvert f(x) - f(y) \vert \le 1 * \lVert x - y \rVert_2 \\
+&amp; \implies -\lVert x - y \rVert_2 \le f(x) - f(y) \le \lVert x - y \rVert_2, \\
+&amp; \forall x, y \in \text{support}_Q \cup \text{support}_P
+\end{aligned}
+\label{eq:lipschitz1Norm2}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;The first equality in \eqref{eq:lipschitz1Norm2} comes from the fact that $f$ is a real-valued function.&lt;/p&gt;
+
+&lt;p&gt;Now back to the definition of $WD_2$. Supposing an optimal transport plan $\pi^*$, which is one of the solutions to \eqref{eq:WD2}, is given, then it can be rewritten as (&lt;em&gt;where&lt;/em&gt; condition is omitted):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+WD_2[P, Q] = \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi^*(x, y) dx dy
+\label{eq:WD2OptimalPI}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;The combination of \eqref{eq:lipschitz1Norm2} and \eqref{eq:WD2OptimalPI} yields the following inequality:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+&amp; \int_{x \in \text{support}_P, y \in \text{support}_Q} (f(x) - f(y)) \pi^*(x, y) dx dy \nonumber \\
+&amp; \le \int_{x \in \text{support}_P, y \in \text{support}_Q} \lVert x - y \rVert_{2} \pi^*(x, y) dx dy \nonumber \\ 
+&amp; \implies \int_{x \in \text{support}_P, y \in \text{support}_Q} (f(x) - f(y)) \pi^*(x, y) dx dy \nonumber \\
+&amp; \phantom{\implies} \le WD_2[P, Q] \label{eq:WD2LowerBound}
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Note that \eqref{eq:WD2LowerBound} has suggested when the two sides of the equation are equal: if some function $f^*$ satisfies $f^*(x) - f^*(y) = \lVert x - y \rVert_{2}$ for every pair $x$, $y$ in the transport plan described by $\pi^*$, i.e. $\pi^*(x, y) \ne 0$, then it can be concluded that:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{aligned}
+&amp; \int_{x \in \text{support}_P, y \in \text{support}_Q} (f^*(x) - f^*(y)) \pi^*(x, y) dx dy \\
+&amp; = \int_{x \in \text{support}_P, y \in \text{support}_Q, \pi^*(x, y) \ne 0} (f^*(x) - f^*(y)) \pi^*(x, y) dx dy \\
+&amp; \phantom{=} + \int_{x \in \text{support}_P, y \in \text{support}_Q, \pi^*(x, y) = 0} (f^*(x) - f^*(y)) \pi^*(x, y) dx dy \\
+&amp; = \int_{x \in \text{support}_P, y \in \text{support}_Q, \pi^*(x, y) \ne 0} \lVert x - y \rVert_{2} \pi^*(x, y) dx dy + 0 \\
+&amp; = WD_2[P, Q]
+\end{aligned} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Since $WD_2[P, Q]$ represents the upper bound of \eqref{eq:WD2LowerBound}, and it has been shown that such upper bound can be reached with $f^*$. That implies the following equation holds under the assumption that the parameterised form of $f$, $f_{\phi}$, can express any f whose $\lVert f \rVert_L \le 1$, including $f^*$:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; WD_2[P, Q] \\
+&amp; = \max_{\phi} \int_{x \in \text{support}_P, y \in \text{support}_Q} (f_{\phi}(x) - f_{\phi}(y)) \pi^*(x, y) dx dy
+\end{aligned}
+\label{eq:maximisationWRTPhi}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;Interestingly, \eqref{eq:maximisationWRTPhi} can be further simplified through the derivation below&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\begin{aligned}
+&amp; WD_2[P, Q] \\
+&amp; = \max_{\phi} \int_{x \in \text{support}_P, y \in \text{support}_Q} f_{\phi}(x) * \pi^*(x, y) dx dy \\
+&amp; \phantom{= \max_{\phi}} - \int_{x \in \text{support}_P, y \in \text{support}_Q} f_{\phi}(y) * \pi^*(x, y) dx dy \\
+&amp; = \max_{\phi} \int_{x \in \text{support}_P} f_{\phi}(x) * P(x) dx \\
+&amp; \phantom{= \max_{\phi}} - \int_{y \in \text{support}_Q} f_{\phi}(y) * Q(y) dy \\
+&amp; = \max_{\phi} E_{x \sim P}[f_{\phi}(x)] - E_{y \sim Q}[f_{\phi}(y)]
+\end{aligned}
+\label{eq:WD2DualForm}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;It turns out that there is no need to know what the exact $\pi^*$ is in order to compute $WD_2[P, Q]$, and that is why the minimisation of \eqref{eq:WGANGoal} can be achieved by solving \eqref{eq:WGANDualGoal}.&lt;/p&gt;
+
+&lt;h2 id=&quot;geometric-interpretation-of-eqrefeqwd2dualform&quot;&gt;Geometric Interpretation of \eqref{eq:WD2DualForm}&lt;/h2&gt;
+&lt;p&gt;Inspired by the idea of high-dimensional data visualisation, I have found it helpful to approach \eqref{eq:WD2DualForm} with this geometric interpretation. Although I have to emphasise that this is only my personal understanding, which is rather informal and might be theoretically inaccurate.&lt;/p&gt;
+
+&lt;p&gt;The essence of Wasserstein Distance is to describe how far two distributions are separate. If a set of samples are used to represent the corresponding distribution from which they are generated, such a distance can also be viewed as the degree of separation between two groups of sample points on average. One way to estimate this average distance is to compute it directly in the space of supports of distributions, as seen in \eqref{eq:WD2}; the other way is to project samples onto a space of few dimensions, and then do the estimation in that reduced space. \eqref{eq:WD2DualForm}, where $f$ can be viewed as a projection function brining every data point onto the real line, is in a sense analogous to the latter approach.&lt;/p&gt;
+
+&lt;p&gt;The use of projection is rather common in tasks such as high-dimensional data visualisation. The type of projection is specifically selected so that information of interest is retained after projection, and hence the result lie in a more meaningful and representative space. So what information is preserved through the projection introduced in \eqref{eq:WD2DualForm}? Well, note that that projection is described by some function $f^*$ which can maximise \eqref{eq:WD2DualForm} and satisfies ($\pi^*$ is the joint distribution describing the optimal transport plan corresponding to $f^*$):&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{cases}
+\lVert f^* \rVert_L \le 1 \\
+f^*(x) - f^*(y) = \lVert x - y \rVert_{2}\text{, if } \pi^*(x, y) \ne 0  \\
+f^*(x) - f^*(y) \le \lVert x - y \rVert_{2}\text{, if } \pi^*(x, y) = 0 
+\end{cases}&lt;/script&gt;
+
+&lt;p&gt;That suggests that $f^*$ preserves the distances of pairs of points in the optimal transport plan, while distances between other points are allowed to decrease (resulting in information loss to some extent). Since pairs in the plan most likely contain data points from two respective distributions for the purpose of density matching, such preservation of distance information leads to a phenomenon where projected points from one distribution tend to stay the same distances away from those coming from the other distribution; in other words, the projection gives rise to two clusters with similiar degree of separation as the original distributions have, and each cluster corresponds to one distribution, respectively.&lt;/p&gt;
+
+&lt;figure&gt;
+	
+	&lt;img src=&quot;/Blogs/assets/images/2019-06-11-WassersteinGAN/GeometricInterpretationOfWD2.png&quot; alt=&quot;An illustration of the projection $f^*$&quot; /&gt;
+	&lt;figcaption&gt;
+	An illustration of the projection $f^*$
+	&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Just as what projection benefits in tasks of high-dimensional data visualisation, $f^*$ also gives advantage in terms of the calculation of $WD_2$. It can be seen from \eqref{eq:WD2DualForm} that $WD_2$ becomes the distance between the means of two resulting clusters of projected points. That implies distributions being compared are in a sense better described after the projection, as one single piece of statistics (mean) is representative enough to reflect the relative location of an entire cluster.&lt;/p&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Lipschitz_continuity&quot;&gt;https://en.wikipedia.org/wiki/Lipschitz_continuity&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html&quot;&gt;https://lilianweng.github.io/lil-log/2017/08/20/from-GAN-to-WGAN.html&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://proceedings.mlr.press/v70/arjovsky17a.html&quot;&gt;Martin Arjovsky, Soumith Chintala, and Leon Bottou. Wasserstein Generative Adversarial Networks. In: Proceedings of the 34th International Conference on Machine Learning. Ed. by Doina Precup and Yee Whye Teh. Vol. 70. Proceedings of Machine Learning Research. International Convention Centre, Sydney, Australia: PMLR, June 2017, pp. 214223.&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+</description>
+        <pubDate>Tue, 11 Jun 2019 00:00:00 +0800</pubDate>
+        <link>/Blogs/note/WassersteinGAN.html</link>
+        <guid isPermaLink="true">/Blogs/note/WassersteinGAN.html</guid>
+        
+        <category>MachineLearning</category>
+        
+        <category>GAN</category>
         
         
         <category>Note</category>
