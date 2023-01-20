@@ -138,7 +138,7 @@
 
 <p>Indeed, one can always treat bit-strings as some integer codes in its binary form, then with a quick conversion between these two discrete descriptions the same modelling techniques for codes from <strong>VQVAE</strong> can immediately apply; but ironically, that seemingly straightforward approach is rather backward from the perspective of <strong>VBVAE</strong>, as the return of integer codes brings back the limit on the size of the code space that can be manageable, restricting the power of <strong>VBVAE</strong> in exploiting the expressiveness of a greater number of codes (in the form of bit-string).</p>
 
-<p>Thus for making the most out of <strong>VBVAE</strong> and its bit-string coding, an alternative, named “autoregressive <strong>M</strong>ixtures of <strong>L</strong>ogistic distributions for <strong>B</strong>it-strings”, is proposed based on existing autoregressive models over sequences of codes with a few modifications that turn them into ones over sequences of bit-strings. These changes include:</p>
+<p>Thus for making the most out of <strong>VBVAE</strong> and its bit-string coding, an alternative, named “autoregressive <strong>M</strong>ixtures <em>o</em>f <strong>L</strong>ogistic distributions for <strong>B</strong>it-strings”, is proposed based on existing autoregressive models over sequences of codes with a few modifications that turn them into ones over sequences of bit-strings. These changes include:</p>
 
 <h5 id="normalisation-">Normalisation <a name="normalisation"></a></h5>
 <p>As the state of a bit ($0$ or $1$) in a bit-string produced by <strong>VBVAE</strong> is determined by how the input reacts to the associated embedding in terms of dot-product, it can be regarded as a quantised intensity in response to the particular embedding as a filter. That perspective allows us to adopt a common practice of normalisation to transform $h$ to $z$ by shifting and rescaling bit values from a discrete space of $\{0, 1\}$ into a continuous one of $[-1, 1]$, which is often used to prepare quantised intensities like RGB colours for a more balanced value distribution across a desired range</p>
@@ -227,7 +227,7 @@ P_j(z[i] >= 0|l_j[i], s_j[i]) if\;h[i] = 1 \\
 \end{aligned} \\
 \begin{aligned}
 & P_{\text{abi}}(h[1]|v) \propto exp\Big(h[1] * (v^T \Sigma^{-0.5} C)[1] + h[1] * A[1, 1] \Big) \\
-& \phantom{P_{\text{abi}}(h[1]|v)} = exp\Big(h[1] * \big(\underbrace{(v^T \Sigma^{-0.5} C)[1] + A[1, 0]}_{S(v)[1]} \big) \Big) \\
+& \phantom{P_{\text{abi}}(h[1]|v)} = exp\Big(h[1] * \big(\underbrace{(v^T \Sigma^{-0.5} C)[1] + A[1, 1]}_{S(v)[1]} \big) \Big) \\
 & \phantom{P_{\text{abi}}(h[1]|v)} \propto \sigma\big(S(v)[1]\big)
 \end{aligned} \\
 \begin{aligned}
@@ -252,10 +252,10 @@ P_j(z[i] >= 0|l_j[i], s_j[i]) if\;h[i] = 1 \\
 & = \mu \\
 & \phantom{=} + \sum_{i=1}^{K} Qn_{\text{abi}}(v)_i \\ 
 & = \mu \\
-& \phantom{=} + \Sigma^{0.5} C \; one\_hot(1) * \lfloor \sigma\big(\underbrace{\hat{S}(v)[1] + A[1,1]}_{S(v)[1]}\big) + 0.5 \rfloor \\
+& \phantom{=} + \Sigma^{0.5} C \; one\_hot(1) * \lfloor \sigma\big(\underbrace{S(v)[1] + A[1,1]}_{\hat{S}(v)[1]}\big) + 0.5 \rfloor \\
 & \phantom{=} + \dotsb \\
 & \phantom{=} + \Sigma^{0.5} C \; one\_hot(K) \\ 
-& \phantom{= +} * \lfloor \sigma\big(\underbrace{\hat{S}(v)[k] + A[K,K]}_{S(v)[K]} + \sum_{1 \le k < K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor
+& \phantom{= +} * \lfloor \sigma\big(\underbrace{S(v)[K] + A[K,K]}_{\hat{S}(v)[K]} + \sum_{1 \le k < K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor
 \end{aligned}
 \label{eq:Qn_abi}
 \end{equation} %]]></script>

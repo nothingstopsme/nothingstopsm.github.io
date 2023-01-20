@@ -5,8 +5,8 @@
     <description></description>
     <link>/Blogs/</link>
     <atom:link href="/Blogs/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 20 Jan 2023 16:00:22 +0800</pubDate>
-    <lastBuildDate>Fri, 20 Jan 2023 16:00:22 +0800</lastBuildDate>
+    <pubDate>Sat, 21 Jan 2023 00:14:16 +0800</pubDate>
+    <lastBuildDate>Sat, 21 Jan 2023 00:14:16 +0800</lastBuildDate>
     <generator>Jekyll v3.8.6</generator>
     
       <item>
@@ -478,7 +478,7 @@
 
 &lt;p&gt;Indeed, one can always treat bit-strings as some integer codes in its binary form, then with a quick conversion between these two discrete descriptions the same modelling techniques for codes from &lt;strong&gt;VQVAE&lt;/strong&gt; can immediately apply; but ironically, that seemingly straightforward approach is rather backward from the perspective of &lt;strong&gt;VBVAE&lt;/strong&gt;, as the return of integer codes brings back the limit on the size of the code space that can be manageable, restricting the power of &lt;strong&gt;VBVAE&lt;/strong&gt; in exploiting the expressiveness of a greater number of codes (in the form of bit-string).&lt;/p&gt;
 
-&lt;p&gt;Thus for making the most out of &lt;strong&gt;VBVAE&lt;/strong&gt; and its bit-string coding, an alternative, named “autoregressive &lt;strong&gt;M&lt;/strong&gt;ixtures of &lt;strong&gt;L&lt;/strong&gt;ogistic distributions for &lt;strong&gt;B&lt;/strong&gt;it-strings”, is proposed based on existing autoregressive models over sequences of codes with a few modifications that turn them into ones over sequences of bit-strings. These changes include:&lt;/p&gt;
+&lt;p&gt;Thus for making the most out of &lt;strong&gt;VBVAE&lt;/strong&gt; and its bit-string coding, an alternative, named “autoregressive &lt;strong&gt;M&lt;/strong&gt;ixtures &lt;em&gt;o&lt;/em&gt;f &lt;strong&gt;L&lt;/strong&gt;ogistic distributions for &lt;strong&gt;B&lt;/strong&gt;it-strings”, is proposed based on existing autoregressive models over sequences of codes with a few modifications that turn them into ones over sequences of bit-strings. These changes include:&lt;/p&gt;
 
 &lt;h5 id=&quot;normalisation-&quot;&gt;Normalisation &lt;a name=&quot;normalisation&quot;&gt;&lt;/a&gt;&lt;/h5&gt;
 &lt;p&gt;As the state of a bit ($0$ or $1$) in a bit-string produced by &lt;strong&gt;VBVAE&lt;/strong&gt; is determined by how the input reacts to the associated embedding in terms of dot-product, it can be regarded as a quantised intensity in response to the particular embedding as a filter. That perspective allows us to adopt a common practice of normalisation to transform $h$ to $z$ by shifting and rescaling bit values from a discrete space of $\{0, 1\}$ into a continuous one of $[-1, 1]$, which is often used to prepare quantised intensities like RGB colours for a more balanced value distribution across a desired range&lt;/p&gt;
@@ -567,7 +567,7 @@ P_j(z[i] &gt;= 0|l_j[i], s_j[i]) if\;h[i] = 1 \\
 \end{aligned} \\
 \begin{aligned}
 &amp; P_{\text{abi}}(h[1]|v) \propto exp\Big(h[1] * (v^T \Sigma^{-0.5} C)[1] + h[1] * A[1, 1] \Big) \\
-&amp; \phantom{P_{\text{abi}}(h[1]|v)} = exp\Big(h[1] * \big(\underbrace{(v^T \Sigma^{-0.5} C)[1] + A[1, 0]}_{S(v)[1]} \big) \Big) \\
+&amp; \phantom{P_{\text{abi}}(h[1]|v)} = exp\Big(h[1] * \big(\underbrace{(v^T \Sigma^{-0.5} C)[1] + A[1, 1]}_{S(v)[1]} \big) \Big) \\
 &amp; \phantom{P_{\text{abi}}(h[1]|v)} \propto \sigma\big(S(v)[1]\big)
 \end{aligned} \\
 \begin{aligned}
@@ -592,10 +592,10 @@ P_j(z[i] &gt;= 0|l_j[i], s_j[i]) if\;h[i] = 1 \\
 &amp; = \mu \\
 &amp; \phantom{=} + \sum_{i=1}^{K} Qn_{\text{abi}}(v)_i \\ 
 &amp; = \mu \\
-&amp; \phantom{=} + \Sigma^{0.5} C \; one\_hot(1) * \lfloor \sigma\big(\underbrace{\hat{S}(v)[1] + A[1,1]}_{S(v)[1]}\big) + 0.5 \rfloor \\
+&amp; \phantom{=} + \Sigma^{0.5} C \; one\_hot(1) * \lfloor \sigma\big(\underbrace{S(v)[1] + A[1,1]}_{\hat{S}(v)[1]}\big) + 0.5 \rfloor \\
 &amp; \phantom{=} + \dotsb \\
 &amp; \phantom{=} + \Sigma^{0.5} C \; one\_hot(K) \\ 
-&amp; \phantom{= +} * \lfloor \sigma\big(\underbrace{\hat{S}(v)[k] + A[K,K]}_{S(v)[K]} + \sum_{1 \le k &lt; K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor
+&amp; \phantom{= +} * \lfloor \sigma\big(\underbrace{S(v)[K] + A[K,K]}_{\hat{S}(v)[K]} + \sum_{1 \le k &lt; K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor
 \end{aligned}
 \label{eq:Qn_abi}
 \end{equation} %]]&gt;&lt;/script&gt;
