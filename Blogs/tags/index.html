@@ -1,399 +1,674 @@
-<html>
+
+
+<html data-theme="dark">
   <head>
-      
-  <head>
+
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	
-
-<!-- CSS -->
-
-  <link rel="stylesheet" href="/Blogs/assets/css/main.css">
-  <link rel="canonical" href="/Blogs/tags/">
-  <link rel="alternate" type="application/rss+xml" title="" href="/Blogs/feed.xml">
-
-<!-- Google font -->
-
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open Sans">
-
-<!-- font awesome -->
-
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-	
-	<title>Tags</title>
-
-	
-
-
-</head>
-
-
   
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
 
 
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Tags
+</title>
+  
   </head>
+
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
+
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
+    
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
+
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
   
+<span class="right-menu">
+<input type="checkbox" id="tag-menu" />
+<label for="tag-menu">
+<i class="fas fa-tags"></i>&nbsp;&#x25BE;
+</label>
+<!--<a href=""><i class="fas fa-tags"></i>&nbsp;&#x25BE;</a>-->
+<ul>
 
-<header class="post-header">
-	<center><div class="page-title">Tags&nbsp;<i class="fas fa-tags"></i></div>
-		
-</header>
+<li><a href="#Calculus">Calculus</a></li>
 
-<div class="wrapper">
-	<div class="post-content">
-		<section class="post-tags">
-    
-    
-    
-    
-    
-    <a class="post-tags-item" href="#machinelearning">MachineLearning</a>
-    
-    <a class="post-tags-item" href="#probability">Probability</a>
-    
-    <a class="post-tags-item" href="#jekyll">Jekyll</a>
-    
-    <a class="post-tags-item" href="#markdown">Markdown</a>
-    
-    <a class="post-tags-item" href="#gan">GAN</a>
-    
-    <a class="post-tags-item" href="#fun">Fun</a>
-    
-    <a class="post-tags-item" href="#calculus">Calculus</a>
-    
-    <a class="post-tags-item" href="#numbertheory">NumberTheory</a>
-    
-    
-    
-    
+<li><a href="#Fun">Fun</a></li>
 
-</section>
+<li><a href="#GAN">GAN</a></li>
 
-<hr>
+<li><a href="#Jekyll">Jekyll</a></li>
 
-    
-    
-    <h2 id="machinelearning">MachineLearning</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Gumbel-Distribution.html">
-			Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</a><span class="date"><time datetime="27 May 2019"> - 27 May 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/WassersteinGAN.html">
-			Intuitions behind Wasserstein GAN</a><span class="date"><time datetime="11 June 2019"> - 11 June 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/LabelSmoothing.html">
-			Looking into Label Smoothing</a><span class="date"><time datetime="09 March 2020"> - 09 March 2020</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/research/VBVAE.html">
-			From VQVAE to VBVAE</a><span class="date"><time datetime="18 January 2021"> - 18 January 2021</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Attention-and-Kernel.html">
-			A Dissection of Attention: Kernel Interpretation</a><span class="date"><time datetime="13 May 2021"> - 13 May 2021</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/research/AutoregressiveMoLB.html">
-			Priors That Unlock the Potential of VBVAE</a><span class="date"><time datetime="15 January 2022"> - 15 January 2022</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Variational-Diffusion-Model.html">
-			From VAE, Hierarchical VAE, to Variational Diffusion Model</a><span class="date"><time datetime="20 January 2023"> - 20 January 2023</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="probability">Probability</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Gumbel-Distribution.html">
-			Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</a><span class="date"><time datetime="27 May 2019"> - 27 May 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/WinningLotteries.html">
-			The Probability of Winning a Lottery</a><span class="date"><time datetime="22 November 2019"> - 22 November 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/LabelSmoothing.html">
-			Looking into Label Smoothing</a><span class="date"><time datetime="09 March 2020"> - 09 March 2020</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Gaussian-Distribution.html">
-			Useful Facts about Gaussian Distributions</a><span class="date"><time datetime="07 August 2020"> - 07 August 2020</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/ThermalExpansion.html">
-			Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</a><span class="date"><time datetime="25 October 2020"> - 25 October 2020</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/research/VBVAE.html">
-			From VQVAE to VBVAE</a><span class="date"><time datetime="18 January 2021"> - 18 January 2021</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/research/AutoregressiveMoLB.html">
-			Priors That Unlock the Potential of VBVAE</a><span class="date"><time datetime="15 January 2022"> - 15 January 2022</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Variational-Diffusion-Model.html">
-			From VAE, Hierarchical VAE, to Variational Diffusion Model</a><span class="date"><time datetime="20 January 2023"> - 20 January 2023</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="jekyll">Jekyll</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/JekyllMarkdownSyntaxReference.html">
-			Jekyll Markdown Syntax Reference</a><span class="date"><time datetime="27 May 2019"> - 27 May 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="markdown">Markdown</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/JekyllMarkdownSyntaxReference.html">
-			Jekyll Markdown Syntax Reference</a><span class="date"><time datetime="27 May 2019"> - 27 May 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="gan">GAN</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/WassersteinGAN.html">
-			Intuitions behind Wasserstein GAN</a><span class="date"><time datetime="11 June 2019"> - 11 June 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="fun">Fun</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/WinningLotteries.html">
-			The Probability of Winning a Lottery</a><span class="date"><time datetime="22 November 2019"> - 22 November 2019</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="calculus">Calculus</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/ThermalExpansion.html">
-			Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</a><span class="date"><time datetime="25 October 2020"> - 25 October 2020</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
-    
-    <h2 id="numbertheory">NumberTheory</h2>
-		
-    
-    <ul>
-        
-        
-        
-        
-        <li>
-				<a href="/Blogs/note/Modular-Arithmetics.html">
-			Basic Modular Arithmetic and a Simple Application</a><span class="date"><time datetime="28 September 2021"> - 28 September 2021</time></span>
-        </li>
-				<p></p>
-        
-        
-        
-        
-        
-    </ul>
-    
+<li><a href="#MachineLearning">MachineLearning</a></li>
 
-	</div>
+<li><a href="#Markdown">Markdown</a></li>
+
+<li><a href="#NumberTheory">NumberTheory</a></li>
+
+<li><a href="#Probability">Probability</a></li>
+
+<li><a href="#Research">Research</a></li>
+
+</ul>
+</span>
+
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+
+    <h1 id="Calculus">Calculus</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/ThermalExpansion/"> Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>25.Oct.2020</time>
+  </span>
+  
+  
 </div>
 
-<footer>
-
-<footer class="site-footer">
-
-
-	<center>
-			
-	<a class="tab-link" href="/Blogs/archive/">Archive</a> /
-	<a class="tab-link" href="/Blogs/category/">Category</a> / 
-	<a class="tab-link" href="/Blogs/tags/">Tags</a> 
-
-	
-	</center>
+      </li>
     
+    </ul>
 
-</footer>
+    <h1 id="Fun">Fun</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/WinningLotteries/"> The Probability of Winning a Lottery</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>22.Nov.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="GAN">GAN</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/WassersteinGAN/"> Intuitions behind Wasserstein GAN</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>11.Jun.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="Jekyll">Jekyll</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/JekyllMarkdownSyntaxReference/">JekyllMarkdownSyntaxReference</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>27.May.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="MachineLearning">MachineLearning</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Variational-Diffusion-Model/"> From VAE, Hierarchical VAE, to Variational Diffusion Model</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>20.Jan.2023</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/AutoregressiveMoLB/"> Priors That Unlock the Potential of VBVAE</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>15.Jan.2022</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Attention-and-Kernel/"> A Dissection of Attention: Kernel Interpretation</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>13.May.2021</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/VBVAE/"> From VQVAE to VBVAE</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>18.Jan.2021</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/LabelSmoothing/"> Looking into Label Smoothing</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>09.Mar.2020</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/WassersteinGAN/"> Intuitions behind Wasserstein GAN</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>11.Jun.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Gumbel-Distribution/"> Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>27.May.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="Markdown">Markdown</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/JekyllMarkdownSyntaxReference/">JekyllMarkdownSyntaxReference</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>27.May.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="NumberTheory">NumberTheory</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Modular-Arithmetics/"> Basic Modular Arithmetic and a Simple Application</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>28.Sep.2021</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="Probability">Probability</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Variational-Diffusion-Model/"> From VAE, Hierarchical VAE, to Variational Diffusion Model</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>20.Jan.2023</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/AutoregressiveMoLB/"> Priors That Unlock the Potential of VBVAE</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>15.Jan.2022</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/VBVAE/"> From VQVAE to VBVAE</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>18.Jan.2021</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/ThermalExpansion/"> Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>25.Oct.2020</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Gaussian-Distribution/"> Useful Facts about Gaussian Distributions</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>07.Aug.2020</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/LabelSmoothing/"> Looking into Label Smoothing</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>09.Mar.2020</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/WinningLotteries/"> The Probability of Winning a Lottery</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>22.Nov.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/Gumbel-Distribution/"> Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>27.May.2019</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
+
+    <h1 id="Research">Research</h1>
+    <ul>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/AutoregressiveMoLB/"> Priors That Unlock the Potential of VBVAE</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>15.Jan.2022</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+      <li style="margin-bottom: 2rem;">
+        <big><a href="/Blogs/posts/VBVAE/"> From VQVAE to VBVAE</a></big>
+        <div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>18.Jan.2021</time>
+  </span>
+  
+  
+</div>
+
+      </li>
+    
+    </ul>
 
 
-</footer>
+  </article>
+</main>
+
+</body>
 </html>

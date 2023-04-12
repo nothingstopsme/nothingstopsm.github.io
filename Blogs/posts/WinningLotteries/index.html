@@ -1,0 +1,457 @@
+
+
+<html data-theme="dark">
+  <head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+
+
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+The Probability of Winning a Lottery
+</title>
+  
+  </head>
+
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
+
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
+    
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
+
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>The Probability of Winning a Lottery</h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>22.Nov.2019</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Fun
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Probability
+  </span>
+  
+  
+</div>
+
+
+
+<p>For some time I have been reading an interesting book, in which the author analysed real-world events in our daily life from the perspective of statistics and probability. One of its topics, which you might have guessed, is gambling, and there is a section discussing about the strategy of playing a lottery. I have always heard that the chance of winning the top prize of a lottery is less the one of being struck by lightning (at least for the lottery held in Taiwan), so I have not bothered to pay even slight attention to it. Nonetheless, after having read that section describing a statistically reasonable approach to decide the timing of buying lottery tickets, I started wondering maybe winning a prize does not have to be all on the off chance.</p>
+<p>The <em>statistically reasonable approach</em> is actually pretty simple: it is to calculate the expectation of money returned per ticket. Taking one of the major lotteries in Taiwan for example, the game is to pick 6 different numbers from 1 to 49, and based on how many your numbers match the randomly-drawn winner numbers, different prizes will be awarded. The smallest prize in that game is a fixed reward of 400 NTDs, which requires exactly 3 matches on your ticket. The probability of winning that reward is:</p>
+<p>$$
+\begin{align}
+&P(\text{Smallest Reward})= \frac{Count(\text{winning cases})}{Count(\text{all outcomes})} \nonumber \\
+&\phantom{P(\text{Smallest Reward})} = \frac{C_{3}^{6} * C_{3}^{49 - 6}}{C_{6}^{49}} \nonumber \\
+&\phantom{P(\text{Smallest Reward})} = 0.01765
+\end{align}
+$$</p>
+<p>Since each ticket costs 50 NTDs, given that <strong>only the smallest prize is offered</strong>, the expectation of money returned for every ticket bought will be:</p>
+<p>$$
+\begin{align}
+&E_\text{Smallest Reward}(\text{Money returned}) \nonumber \\
+& = P(\text{Smallest Reward}) * 400\, – 1 * 50 \nonumber \\
+& = -42.94
+\end{align}
+$$</p>
+<p>That expectation indicates on average players are destined to lose 42.94 NTDs for every ticket they buy, and there is nothing we can do to change our fate because every factor in the calculation is fixed. However, it does not mean no silver linings can be found when playing lotteries, and they lie in the prizes of which the size can grow.</p>
+<p>For example, in the lottery mentioned above, the size of the top prize is determined without an upper bound by a certain portion of the total wager collected through selling tickets. As it will be accumulated from one draw to another if winners of it are not found, the total amount of money can occasionally become huge.</p>
+<p>To win that top prize, one needs to have all six numbers matching the drawing result, and that makes the probability drop to:</p>
+<p>$$
+\begin{align}
+&P(\text{Top prize})= \frac{Count(\text{winning cases})}{Count(\text{all outcomes})} \nonumber \\
+&\phantom{P(\text{Top prize})} = \frac{1}{C_{6}^{49}} \nonumber \\
+&\phantom{P(\text{Top prize})} = \frac{1}{13983816}
+\end{align}
+$$</p>
+<p>Let X be the variable representing the changeble amount of money, then the same calculation of expectation can be applied <strong>as far as the top prize is concerned</strong>:</p>
+<p>$$
+\begin{align}
+&E_\text{Top prize}(\text{Money returned}) \nonumber \\
+& = P(\text{Top prize}) * X\, – 1 * 50 \nonumber \\
+& = \frac{X}{13983816} – 1 * 50
+\end{align}
+$$</p>
+<p>Now that X can grow unlimitedly, seeing that expectation go above 0 becomes possible. So how large X has to be? It can be answered by plugging the expression above into the following inequality:</p>
+<p>$$
+\begin{align}
+&E_\text{Top prize}(\text{Money returned}) > 0 \nonumber \\
+&\Rightarrow \frac{X}{13983816} – 1 * 50 > 0 \nonumber \\
+&\Rightarrow X > 50 * 13983816 = 699190800 \label{eq:threshold}
+\end{align}
+$$</p>
+<p>So in this specific case, when the top prize is over the threshold of 699,190,800 NTDs, statistically there would be a certain amount of money gain for every ticket bought. A good timing to try one's luck.</p>
+<p>Finally, one thing needs to be added is that the analysis discussed above only focuses on winning one particular type of prize. In terms of the <em>true</em> money returned on average, the calculation has to incorporate all possible prizes. To illustrate that, below is the table containing, alongside the probabilities, the prize detail copied from one of history records of the aforementioned lottery.</p>
+<table>
+<thead>
+<tr>
+<th>Prize</th>
+<th style="text-align: left;">Money (NTDs)</th>
+<th style="text-align: left;">Probability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td style="text-align: left;">400</td>
+<td style="text-align: left;">0.017650403866870102</td>
+</tr>
+<tr>
+<td>2</td>
+<td style="text-align: left;">400</td>
+<td style="text-align: left;">0.012314235255955885</td>
+</tr>
+<tr>
+<td>3</td>
+<td style="text-align: left;">1,000</td>
+<td style="text-align: left;">0.0012314235255955885</td>
+</tr>
+<tr>
+<td>4</td>
+<td style="text-align: left;">2,000</td>
+<td style="text-align: left;">0.000968619724401408</td>
+</tr>
+<tr>
+<td><ins>5</ins></td>
+<td style="text-align: left;">11,856</td>
+<td style="text-align: left;">4.505208020471665e-05</td>
+</tr>
+<tr>
+<td><ins>6</ins></td>
+<td style="text-align: left;">60,026</td>
+<td style="text-align: left;">1.84498995124077e-05</td>
+</tr>
+<tr>
+<td><ins>7</ins></td>
+<td style="text-align: left;">3,065,656</td>
+<td style="text-align: left;">4.29067430521111e-07</td>
+</tr>
+<tr>
+<td><ins>Top</ins></td>
+<td style="text-align: left;">468,588,622</td>
+<td style="text-align: left;">7.151123842018516e-08</td>
+</tr>
+</tbody>
+</table>
+<p>where prize names not being underlined indicate the sizes of the corresponding prizes are fixed.</p>
+<p>Interestingly, the top prize only reached 468,588,622 NTDs at that time, but the expected money returned over all prizes already amounted to:</p>
+<p>$$
+\begin{equation}
+E(\text{Money returned}) = 51.62 - 50 = 1.62
+\end{equation}
+$$</p>
+<p>That implies it is actually easier to see a lottery game of a positive expectation of money returned than \eqref{eq:threshold} suggests. While it could be very bothersome to constantly keep track of changes in the size of all prizes so as to make better estimation, for those assiduous and avid players, unlike me, it probably would not be a problem at all.</p>
+<h2 class="reference-title">References</h2>
+<ul>
+<li><a href="https://books.google.com.tw/books/about/Statistics_Hacks.html?id=93eaAgAAQBAJ&amp;redir_esc=y">Bruce Frey, "Statistics Hacks: Tips &amp; Tools for Measuring the World and Beating the Odds", O'Reilly Media, Inc. ©2006, ISBN:0596101643</a></li>
+</ul>
+
+</br></br></br></br>
+
+  </article>
+</main>
+
+</body>
+</html>

@@ -1,0 +1,542 @@
+
+
+<html data-theme="dark">
+  <head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+
+
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Priors That Unlock the Potential of &lt;abbr title=&quot;Vector Binarised Variational AutoEncoder&quot;&gt;VBVAE&lt;/abbr&gt;
+</title>
+  
+  </head>
+
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
+
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
+    
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
+
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>Priors That Unlock the Potential of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr></h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>15.Jan.2022</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Probability
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;MachineLearning
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Research
+  </span>
+  
+  
+</div>
+
+
+
+<p>In my earlier post, a new variant of <strong>V</strong>ector <strong>Q</strong>uantised <strong>V</strong>ariational <strong>A</strong>uto<strong>E</strong>ncoder was proposed in an attempt to improve for better gradient estimation and efficient discrete coding. The essential difference is the use of bit-strings rather than integer codes to index vectors in a latent space, and therefore its name <strong>V</strong>ector <strong>B</strong>inarised <strong>V</strong>ariational <strong>A</strong>uto<strong>E</strong>ncoder was coined to reflect that distinction. Just as <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr>, obtaining discrete representation is only the first half of the story, and this post is to complete the full picture by introducing a simple modification to autoregressive priors commonly used with <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr>, and accordingly establishing similar generative models which takes advantage of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> in handling a huge code space.</p>
+<h2>Recap: <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr></h2>
+<p>The idea of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> originated from the fact that the entire quantisation process (vectors $\implies$ codes $\implies$ embeddings) in <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr> can be viewed as one full Gibbs step at which samples of the highest probabilities are always picked, and the sampling distributions are governed by a <strong>R</strong>estricted <strong>B</strong>oltzmann <strong>M</strong>achines whose conditional of hidden and visible variables given the other are a categorical distribution (under one-hot encoding) and a gaussian with identity covariance, respectively. Therefore by generalising the configuration of the <abbr title="Restricted Boltzmann Machines">RBM</abbr> to have the following energy function $E_{\text{bi}}(v, h)$, as well as the resulting conditionals for $h$ (a random column vector of $K$ binary hidden variables) and $v$ (a random column vector of continuous visible variables):</p>
+<p>$$
+\begin{equation}
+\begin{cases}
+\begin{aligned}
+& E_{\text{bi}}(v, h) = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h - a^T h \\
+\end{aligned} \\
+\begin{aligned}
+& P_{\text{bi}}(h|v) = \prod_{i=1}^{K} \frac{exp(S(v)[i] * h[i])}{\sum_{\hat{h}[i] \in \{0, 1\}} exp(S(v)[i] * \hat{h}[i])} \\
+& \phantom{P_{\text{bi}}(h|v)} \propto \prod_{i=1}^{K} \sigma(S(v)[i])
+\end{aligned}\\
+\begin{aligned}
+& P_{\text{bi}}(v|h) \propto N(\mu + \Sigma^{0.5} C h, \Sigma)
+\end{aligned}
+\end{cases}
+\label{eq:RGBM}
+\end{equation}
+$$</p>
+<p>with $\mu$ being the mean bias vector of $v$; $\Sigma$ being the diagonal covariance matrix of $v$; $C$ being a matrix of which each column corresponds to an embedding vector; $\sigma$ being the entrywise sigmoid operator; and $S(v)$ defined as $v^T \Sigma^{-0.5} C + a^T$ given the bias vector $a$ of $h$. Then based on the entrywise floor operator $\lfloor\;\rfloor$ a new quantisation function outputting discrete codes in the form of bit-strings, denoted by $Qn_{\text{bi}}$, can be attained:</p>
+<p>$$
+\begin{align}
+& Qn_{\text{bi}}(v) \nonumber \\
+& = \mu + \Sigma^{0.5} C
+\begin{bmatrix}
+\lfloor \sigma(S(v)[1]) + 0.5 \rfloor \\
+\vdots \\
+\lfloor \sigma(S(v)[K]) + 0.5 \rfloor
+\end{bmatrix} \nonumber \\
+& = \mu + \Sigma^{0.5} C \lfloor \sigma(S(v)) + 0.5 \rfloor \label{eq:Qn_bi}
+\end{align}
+$$</p>
+<p>For more detailed explanations and discussions please check this <a href="./VBVAE">post</a>.</p>
+<h2 id="sampling_bit-strings">Sampling Bit-strings</h2>
+<p>One of the most exciting ways of utilising the codes generated from <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr> is to fit a probabilistic model (such as autoregressive ones) over that discrete space as an external prior, and set up a generative process via first sampling codes from the learned distribution, and then decoding them with the decoder of <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr> to obtain target samples. While this is still the case for <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>, the discrete space is now encoded in terms of bit-strings as opposed to integer codes, which means our probalistic models need to be capable of producing samples in that form. How can we do that?</p>
+<p>Indeed, one can always treat bit-strings as some integer codes in its binary form, then with a quick conversion between these two discrete descriptions the same modelling techniques for codes from <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr> can immediately apply; but ironically, that seemingly straightforward approach is rather backward from the perspective of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>, as the return of integer codes brings back the limit on the size of the code space that can be manageable, restricting the power of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> in exploiting the expressiveness of a greater number of codes (in the form of bit-string).</p>
+<p>Thus for making the most out of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> and its bit-string coding, an alternative, named "autoregressive <strong>M</strong>ixtures <em>o</em>f <strong>L</strong>ogistic distributions for <strong>B</strong>it-strings", is proposed based on existing autoregressive models over sequences of codes with a few modifications that turn them into ones over sequences of bit-strings. These changes include:</p>
+<h3 id="normalisation">Normalisation</h3>
+<p>As the state of a bit ($0$ or $1$) in a bit-string produced by <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> is determined by how the input reacts to the associated embedding in terms of dot-product, it can be regarded as a quantised intensity in response to the particular embedding as a filter. That perspective allows us to adopt a common practice of normalisation to transform $h$ to $z$ by shifting and rescaling bit values from a discrete space of $\{0, 1\}$ into a continuous one of $[-1, 1]$, which is often used to prepare quantised intensities like RGB colours for a more balanced value distribution across a desired range</p>
+<h3>Bit-strings to Embeddings</h3>
+<p>The intesity view given <a href="#normalisation">above</a> also implies that entries of bit-strings can be interpreted as channels related to different abstract features; therefore one or several fully-connected layers taking as input normalised bit-strings would be a reasonable choice for embedding them into a continuous vector space, and by doing so to avoid the need of a code book listing every possible code for looking-up.</p>
+<h3>Parameterisation for <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr></h3>
+<p>In order to target bit-strings directly, the last layer of autoregressive models for parameterising categorical distributions is replaced with the one for <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr>, a special case of the discretised logistic mixture likelihood introduced in <em>PixelCNN++</em> (see <a href="#included_image_Fig1">Figure 1</a>). The density function of <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> with $M$ components given a normalised bit-string $z$ is defined as follows (denoting half of the uniform distance between every two consecutive discrete outcomes by $d$, which in this case is $1$):</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& P(z[i]|\pi, l[i], s[i]) = \sum_{j = 0}^{M} \pi_j P_j(z[i]|l_j[i], s_j[i]) \\
+& P_j(z[i]|l_j[i], s_j[i]) = \begin{cases}
+\sigma(\frac{-1 + d - l_j[i]}{s_j[i]}),\; if\;z[i] < -1 + d \\
+1 - \sigma(\frac{1 - d - l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+& \phantom{P_j(z[i]|l_j[i], s_j[i]) } = \begin{cases}
+\sigma(\frac{- l_j[i]}{s_j[i]}),\; if\;z[i] < 0 \\
+1 - \sigma(\frac{- l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+& \phantom{P_j(z[i]|l_j[i], s_j[i]) } = \begin{cases}
+1 - \sigma(\frac{l_j[i]}{s_j[i]}),\; if\;z[i] < 0 \\
+\sigma(\frac{l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+& l_j[i] = w_j[i,i] + \sum_{1 \le k < i} w_j[i,k] * z[k]
+\end{aligned}
+\label{eq:MoLB}
+\end{equation}
+$$</p>
+<p>where $\pi$ is a vector of mixture probabilities for the $M$ component; $l[i]$ and $s[i]$ are the mean and the scale parameter which describes the logistic distribution for $z[i]$; the subscript $j$ is used to indicate which component a parameter is associated with; and $w_j[i,k]$ (subscripted for the mixture component $j$) is the weight of $z[k]$ used in computing $l_j[i]$, the result of a linear combination of all entries preceding $z[i]$, plus a bias term $w_j[i,i]$. Note that if $\pi$, $w$, and $s$ are set to come from the underlying autoregressive model (can be of any type such as <em>PixelCNN</em> or <em>Transformer</em>) in an autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> architecture, each bit will also depend on all bit-strings positioned before the one in which that bit resides, and consequently the entire model can been seen acting autoregressive at bit-level.</p>
+<p id="included_image_Fig1">
+<figure><img alt="comparison_autoregressive_categorical_dist_vs_autoregressive_MoLB.png" src="/Blogs/static/main/images/AutoregressiveMoLB/comparison_autoregressive_categorical_dist_vs_autoregressive_MoLB.png" /><figcaption>The architecture comparison between an autoregressive model parameterised based on categorical distribution (left), and the one based on <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> (right)</figcaption>
+</figure></p>
+<h2>Further Improvement: Incorporating Bit Dependency into <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr></h2>
+<p>Maybe clever readers like you have already noticed that there is a discrepancy between the way bits in a bit-string are treated in $\eqref{eq:MoLB}$ and in <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>: while autoregressive dependency is assumed present between these bits, they are actually generated by random variables designed to be (conditionally) independent! If our external prior model is to be parameterised in congruence with $\eqref{eq:MoLB}$, why not making the assumption more valid by constructing <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> to generate bits accordingly in the first place?</p>
+<p>To that end, let us first derive $P_j(h[i]|l_j[i], s_j[i])$ from $\eqref{eq:MoLB}$ by assigning the probability of $z[i] < 0$ to $h[i] = 0$ and the one of $z[i] >= 0$ to $h[i] = 1$:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& P_j(h[i]|l_j[i], s_j[i]) = \begin{cases}
+P_j(z[i] < 0|l_j[i], s_j[i]),\; if\;h[i] = 0 \\
+P_j(z[i] >= 0|l_j[i], s_j[i]),\; if\;h[i] = 1 \\
+\end{cases} \\
+& \phantom{P_j(h[i]|l_j[i], s_j[i])} = \begin{cases}
+1 - \sigma(\frac{l_j[i]}{s_j[i]}),\; if\;h[i] = 0 \\
+\sigma(\frac{l_j[i]}{s_j[i]}),\; if\;h[i] = 1
+\end{cases} \\
+& \phantom{P_j(h[i]|l_j[i], s_j[i])} \propto \sigma(\frac{l_j[i]}{s_j[i]}) \\
+& \phantom{P_j(h[i]|l_j[i], s_j[i])} = \sigma(\underbrace{\frac{w_j[i,i]}{s_j[i]}}_{\hat{w}_j[i,i]} + \sum_{1 \le k < i} \underbrace{\frac{w_j[i,k]}{s_j[i]}}_{\hat{w}_j[i,k]} * z[k]) \\
+& \phantom{P_j(h[i]|l_j[i], s_j[i])} = \sigma(\hat{w}_j[i,i] + \sum_{1 \le k < i} \hat{w}_j[i,k] * f_{\text{map}}(h[k])) \\
+\end{aligned}
+\label{eq:conditional_P_j_of_h_i}
+\end{equation}
+$$</p>
+<p>which describes a logistic model for $h[i]$ taking as features its preceding bits with the feature mapping $f_{\text{map}}$. Based on the nature of $\eqref{eq:conditional_P_j_of_h_i}$, an adaptation named <strong>A</strong>utoregressive <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> is introduced, featuring this tweaked energy function $E_{\text{abi}}(v, h)$:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& E_{\text{abi}}(v, h) = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h \\
+& \phantom{E_{\text{abi}}(v, h) =} - \sum_i h[i] \big( A[i, i] + \sum_{1 \le k < i} A[i,k] f_{\text{map}}(h[k]) \big)
+\end{aligned}
+\label{eq:E_abi}
+\end{equation}
+$$</p>
+<p>where $A[i, k]$ is the weight associated with the pair ($h[i]$, $h[k]$), and $A[i, i]$ is substituted for the i-th entry of original bias vector $a$. Since there are no new terms involving $v$ added in $\eqref{eq:E_abi}$, the resulting conditional for $v$ remains unchanged ($P_{\text{abi}}(v|h) \propto N(\mu + \Sigma^{0.5} C h, \Sigma)$); however, its conditional for $h$ turns into a form similar to what is seen in $\eqref{eq:conditional_P_j_of_h_i}$:</p>
+<p>$$
+\begin{equation}
+\begin{cases}
+\begin{aligned}
+& P_{\text{abi}}(h|v) = P_{\text{abi}}(h[1]|v) \\
+& \phantom{P_{\text{abi}}(h|v) =} * \prod_{i=2} P_{\text{abi}}(h[i]|v, \underbrace{h[1], \dotsc, h[i-1]}_{h_{< i}})
+\end{aligned} \\
+\begin{aligned}
+& P_{\text{abi}}(h[1]|v) \propto exp\Big(h[1] * (v^T \Sigma^{-0.5} C)[1] + h[1] * A[1, 1] \Big) \\
+& \phantom{P_{\text{abi}}(h[1]|v)} = exp\Big(h[1] * \big(\underbrace{(v^T \Sigma^{-0.5} C)[1] + A[1, 1]}_{S(v)[1]} \big) \Big) \\
+& \phantom{P_{\text{abi}}(h[1]|v)} \propto \sigma\big(S(v)[1]\big)
+\end{aligned} \\
+\begin{aligned}
+& P_{\text{abi}}(h[i]|v, h_{< i}) \\
+& \propto exp\Big(h[i] * (v^T \Sigma^{-0.5} C)[i] \\ 
+& \phantom{\, \propto exp\Big(} + h[i] * \big( A[i, i] + \sum_{1 \le k < i} A[i,k] f_{\text{map}}(h[k]) \big) \Big) \\
+& = exp\Big(h[i] \\ 
+& \phantom{= exp\Big(} * \big( \underbrace{(v^T \Sigma^{-0.5} C)[i] + A[i, i]}_{S(v)[i]} + \sum_{1 \le k < i} A[i,k] f_{\text{map}}(h[k]) \big) \Big) \\
+& = exp\Big(h[i] * \big(S(v)[i] + \sum_{1 \le k < i} A[i,k] f_{\text{map}}(h[k]) \big) \Big) \\
+& \propto \sigma\big(S(v)[i] + \sum_{1 \le k < i} A[i,k] f_{\text{map}}(h[k])\big) 
+\end{aligned} \\
+\end{cases}
+\label{eq:conditional_P_abi_of_h}
+\end{equation}
+$$</p>
+<p>which leads to $Qn_{\text{abi}}(v)$, the autoregressive version of $\eqref{eq:Qn_bi}$:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& Qn_{\text{abi}}(v) \\
+& = \mu \\
+& \phantom{=} + \sum_{i=1}^{K} Qn_{\text{abi}}(v)_i \\ 
+& = \mu \\
+& \phantom{=} + \Sigma^{0.5} C \; one\_hot(1) * \lfloor \sigma\big(\underbrace{S(v)[1] + A[1,1]}_{\hat{S}(v)[1]}\big) + 0.5 \rfloor \\
+& \phantom{=} + \dotsb \\
+& \phantom{=} + \Sigma^{0.5} C \; one\_hot(K) \\ 
+& \phantom{= +} * \lfloor \sigma\big(\underbrace{S(v)[K] + A[K,K]}_{\hat{S}(v)[K]} + \sum_{1 \le k < K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor
+\end{aligned}
+\label{eq:Qn_abi}
+\end{equation}
+$$</p>
+<p>where $one\_hot(i)$ stands for a column vector of which the only non-zero entry is the i-th one, which contains a value $1$. It should be pointed out that unlike <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr> and <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>, $\eqref{eq:Qn_abi}$ in <abbr title="Autoregressive VBVAE">AVBVAE</abbr> does not necessarily produce samples with the highest probability (they are only locally optimal); nonetheless, it is still a valid function describing a deterministic way of quantisation, and thus <abbr title="Autoregressive VBVAE">AVBVAE</abbr> exhibits the same attracting properties possessed by the two predecessors, such as less noise and a simplified training loss owing to the constant <abbr title="short for Kullback–Leibler divergence">KL</abbr> term.</p>
+<h2>Better Resource Efficiency: Parameter Sharing Enabled by <abbr title="Autoregressive VBVAE">AVBVAE</abbr></h2>
+<p>In addition to modelling consistency, there is a bonus benefit when a <abbr title="Autoregressive VBVAE">AVBVAE</abbr> and a autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> prior are used together. Recall that all the parameters involved in our quantisation functions are designed to be global; that means the autoregressive relationship in every bit-string generated by a <abbr title="Autoregressive VBVAE">AVBVAE</abbr>, no matter where they are located in a sequence or what context the are conditioned on, will be overseen by a single dependency model, and hence it should be well sufficient to share autoregressive weights to decrease the number of parameters, and in turns the memory cost of the <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> part, which would normally takes $O(N * M * K^2)$ for such a prior of $M$ components over sequences of a size ($N$).</p>
+<p>Moreover, this parameter sharing is not just limited within autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> itself; it is also possible to reuse the autoregressive weights from <abbr title="Autoregressive VBVAE">AVBVAE</abbr> and realise a memory complexity of $O(N * M * K)$! That reduction is based on the observation that the actual code distribution of a <abbr title="Autoregressive VBVAE">AVBVAE</abbr>, which can be explicitly written out decomposed as follows (let $I(x, y) = 1$ when $x = y$ and $I(x, y) = 0$ when $x \neq y$):</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& P_{\text{abi}}(h) \\
+& = \int_v P_{\text{abi}}(\underbrace{\hat{S}(v)}_{=r}) \\ 
+& \phantom{=} * P_{\text{abi}}(h[1]| \underbrace{\hat{S}(v)[1]}_{r[1]}) * \dotsb * P_{\text{abi}}(h[K]| \underbrace{\hat{S}(v)[K]}_{r[K]}, h_{< K}) \\
+& = \int_r P_{\text{abi}}(r) \\ 
+& \phantom{=} * I\Big(h[1], \lfloor \sigma\big(r[1] + A[1,1]\big) + 0.5 \rfloor\Big) \\
+& \phantom{=} * \dotsb \\
+& \phantom{=} * I\Big(h[K], \\
+& \phantom{= * I\Big(} \lfloor \sigma\big(r[K] + A[K,K] + \sum_{1 \le k < K} A[K,k] f_{\text{map}}(h[k])\big) + 0.5 \rfloor\Big) \\
+\end{aligned}
+\label{P_code_of_h}
+\end{equation}
+$$</p>
+<p>suggests that one only needs to model the contribution of uncertainty from $P(r)$ for the reconstruction of the code distribution; consequently, $\eqref{eq:MoLB}$ might be reformulated as such:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& P(z[i]|\pi, l[i], s[i]) = \sum_{j = 0}^{M} \pi_j P_j(z[i]|l_j[i], s_j[i]) \\
+& P_j(z[i]|l_j[i], s_j[i]) = \begin{cases}
+1 - \sigma(\frac{l_j[i]}{s_j[i]}),\; if\;z[i] < 0 \\
+\sigma(\frac{l_j[i]}{s_j[i]}),\; otherwise
+\end{cases} \\
+& l_j[i] = r_j[i] + A[i,i] + \sum_{1 \le k < i} A[i,k] * z[i]
+\end{aligned}
+\label{eq:MoLB_lite}
+\end{equation}
+$$</p>
+<p>to approximate the distribution of $r$ through a categorical distribution $\pi$ for mixture components, while reuse the same linear model (which is fixed in $\eqref{eq:MoLB_lite}$) to allow the computation of losses and the learning process to be conducted in terms of $z$/$h$.</p>
+<p id="included_image_Fig2">
+<figure><img alt="autoregressive_MoLB_lite.png" src="/Blogs/static/main/images/AutoregressiveMoLB/autoregressive_MoLB_lite.png" /><figcaption>Autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> lite, a low-memory-consumption version of autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> through parameter sharing</figcaption>
+</figure></p>
+<h2>The Advantages</h2>
+<p>As mentioned earlier, the motivation of autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> is to allow the direct distribution modelling over sequences of bits-strings generated by <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>, and circumvent the use of code books as well as categorical distributions; hence as the expressiveness of the discrete representation increases, i.e. more bits involved, training an external prior can still be manageble, without being overwhelmed by the demand for memory resources in handling a large code space; moreover, the likely memory requirement of <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> itself can also be relaxed with the introduction of <abbr title="Autoregressive VBVAE">AVBVAE</abbr>, where further parameter reduction to a linear complexity with respect to the number of bits is achievable. In other words, when it comes to building a <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>/<abbr title="Autoregressive VBVAE">AVBVAE</abbr>-based generative model, the expressive potential of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>/<abbr title="Autoregressive VBVAE">AVBVAE</abbr> is better fulfilled via the memory efficiency of autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr>.</p>
+<p>Besides, as a special case of the discretised logistic mixture likelihood proposed in <em>PixelCNN++</em>, <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> also enjoys the fact that its likelihood function produces denser gradients. That means the learning of a autoregressive <abbr title="Mixtures of Logistic distributions for Bit-strings">MoLB</abbr> could benefit from stronger training signals, which leads to possibly faster convergence.</p>
+<h2 class="reference-title">References</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/1711.00937">A&#x00E4;ron van den Oord, Oriol Vinyals, and Koray Kavukcuoglu. “Neural Discrete RepresentationLearning”. In:CoRR abs/1711.00937 (2017)</a></li>
+<li><a href="https://arxiv.org/abs/1701.05517">Tim Salimans et al. “PixelCNN++: Improving the PixelCNN with Discretized Logistic Mix-ture Likelihood and Other Modifications”. In:CoRRabs/1701.05517 (2017)</a></li>
+</ul>
+
+</br></br></br></br>
+
+  </article>
+</main>
+
+</body>
+</html>

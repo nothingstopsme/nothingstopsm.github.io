@@ -1,159 +1,389 @@
-<!DOCTYPE html>
-<html>
+
+
+<html data-theme="dark">
   <head>
-      
-  <head>
+
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	
-	<script type="text/javascript"
-	        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
-
-	<script type="text/x-mathjax-config">
-		MathJax.Hub.Config({
-		tex2jax: {
-		inlineMath: [['$','$'], ['\\(','\\)']],
-		processEscapes: true},
-		jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
-		extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
-		TeX: {
-		extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
-		equationNumbers: {
-		autoNumber: "AMS"
-		}
-		}
-		});
-		</script>
-	
-
-<!-- CSS -->
-
-  <link rel="stylesheet" href="/Blogs/assets/css/main.css">
-  <link rel="canonical" href="/Blogs/note/Gaussian-Distribution.html">
-  <link rel="alternate" type="application/rss+xml" title="" href="/Blogs/feed.xml">
-
-<!-- Google font -->
-
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open Sans">
-
-<!-- font awesome -->
-
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-	
-	<title>Useful Facts about Gaussian Distributions</title>
-
-	
-
-
-</head>
-
-
   
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
 
 
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Useful Facts about Gaussian Distributions
+</title>
+  
   </head>
 
-  <body>
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
 
-
-  <div class="wrapper">
-          <header class="post-header">
-
-    <center><div class="post-title" itemprop="name headline">Useful Facts about Gaussian Distributions</div>
-
-		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="07 Aug 2020" itemprop="datePublished">Aug 7 2020</time>
-
-		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Chao</span>
-        
-		<br>
-		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
-	</div>
-
-        
-        <div class="post-tags">
-        
-		<a class="post-tags-item" href="/Blogs/tags/">Probability</a>
-        
-	</div>
-    </center>
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
     
-</header>
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
 
-<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-<div class="post-content">
-    <center>
-	
-    </center>
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>Useful Facts about Gaussian Distributions</h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>07.Aug.2020</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Probability
+  </span>
+  
+  
 </div>
 
 
 
-
-<div class="post-content" itemprop="articleBody">
-    <p>Whenever there is a need to conduct a literature review in the field of machine learning, it seems inevitable to revisit some theorems or algorithms involving Gaussian distributions at some point. This is not only due to the fact that data in many real-world cases do tend to demonstrate themselves (approximately) in this way, but there is also an advantage in that it is analytically friendly, which makes the derivation of closed-form solutions easy. That analytical friendliness, however, sometimes does not hold for me because my lack of knowledge about several handy facts related to Gaussian distributions established by the ingenious minds of mathematicians. Therefore, to stand on the shoulders of giants, it was decided to go through some of them in detail, and this post records my informal and incomplete compilation of <em>Useful Facts about Gaussian Distributions</em>.</p>
-
-<h2 id="preliminary">Preliminary</h2>
+<p>Whenever there is a need to conduct a literature review in the field of machine learning, it seems inevitable to revisit some theorems or algorithms involving Gaussian distributions at some point. This is not only due to the fact that data in many real-world cases do tend to demonstrate themselves (approximately) in this way, but there is also an advantage in that it is analytically friendly, which makes the derivation of closed-form solutions easy. That analytical friendliness, however, sometimes does not hold for me because my lack of knowledge about several handy facts related to Gaussian distributions established by the ingenious minds of mathematicians. Therefore, to stand on the shoulders of giants, it was decided to go through some of them in detail, and this post records my informal and incomplete compilation of <em>Useful Facts about Gaussian Distributions</em>.</p>
+<h2>Preliminary</h2>
 <p>Before delving into the main contents, recall that the probability density function (PDF) of a Gaussian distribution $N(\mu, \Sigma)$ for a random vector $X$ of a size $d$ by $1$ (so in multivariate form) is defined as:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(X = x) = \frac{1}{\sqrt{2 \pi * det(\Sigma)}} exp(-\frac{1}{2} (x - \mu)^{T} \Sigma^{-1} (x - \mu)) \\ 
 \end{aligned}
 \label{eq:PDFOfGaussian}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>with the mean vector $\mu$ of a size $d$ by $1$ and the covariance matrix $\Sigma$ of a size $d$ by $d$. Since the integral of a PDF must be equal to 1, integrating \eqref{eq:PDFOfGaussian} with respect to $x$ would gives:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \int_x \frac{1}{\sqrt{2 \pi * det(\Sigma)}} * exp(-\frac{1}{2} (x - \mu)^{T} \Sigma^{-1} (x - \mu)) dx \\
 & = \frac{1}{\sqrt{2 \pi * det(\Sigma)}} * \int_x exp(-\frac{1}{2} (x - \mu)^{T} \Sigma^{-1} (x - \mu)) dx \\
 & = 1
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>and that implies:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & \int_x exp(-\frac{1}{2} (x - \mu)^{T} \Sigma^{-1} (x - \mu)) dx = \sqrt{det(2 \pi * \Sigma)}
 \end{aligned}
 \label{eq:integralOfUnnormalisedPDFOfGaussian}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>So the term $\sqrt{det(2 \pi * \Sigma)}$ actually plays the role of the normaliser in this PDF, and by removing it the unnormalised version of \eqref{eq:PDFOfGaussian} can be obtained:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(X = x) \propto exp(-\frac{1}{2} (x - \mu)^{T} \Sigma^{-1} (x - \mu))
 \end{aligned}
 \label{eq:unnormalisedPDFOfGaussian}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>Note that \eqref{eq:unnormalisedPDFOfGaussian} provides a convenient way of determining whether there is a Gaussian distribution: if a PDF of a random vector $X$ is said to be proportional to some function $f(x)$ for all $X = x$, where $f(x)$ is of the form of $exp(-\frac{1}{2} (x - \mu)^{T} \Sigma^{-1} (x - \mu))$, then without knowing the exact expression, what distribution does that PDF describe? $N(\mu, \Sigma)$!!</p>
-
-<h2 id="facts">Facts</h2>
-
-<h4 id="1-the-marginals-and-conditionals-of-a-joint-guassian-distribution-are-both-gaussian-distributions">1. The marginals and conditionals of a joint Guassian distribution are both Gaussian distributions</h4>
-
+<h2>Facts</h2>
+<h3>The marginals and conditionals of a joint Guassian distribution are both Gaussian distributions</h3>
 <p>Specifically, given a random column vector $X$ composed of two sub vectors $Y$ and $Z$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & X = \begin{bmatrix}
 Y \\
 Z
 \end{bmatrix}
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>and $X \sim N(\mu, \Sigma)$, the unnormalised version of Gaussian PDF, $f(x) \propto P(X = x)$, can be written as:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & f(x) = exp \big( -\frac{1}{2} (
 \begin{bmatrix}
@@ -164,13 +394,11 @@ z
 y \\
 z
 \end{bmatrix}- \mu) \big)
-\end{aligned} %]]></script>
-
-<p>in which $x$ is split into $\begin{bmatrix}y \\ z \end{bmatrix}$.</p>
-
+\end{aligned}
+$$</p>
+<p>in which $x$ is split into $\begin{bmatrix}y \\\\ z \end{bmatrix}$.</p>
 <p>That quadratic term can be further expanded using block multiplication:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & f(x) = exp \big( -\frac{1}{2} 
@@ -191,11 +419,10 @@ z - \mu_Z
 & \phantom{f(x) = exp \Big(-\frac{1}{2}} + z_c^T M_{ZY} y_c + z_c^T M_{ZZ} z_c \big) \Big)
 \end{aligned}
 \label{eq:blockMultiplicationOfF_x}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>where</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \mu = \begin{bmatrix}
 \mu_Y \\
@@ -208,39 +435,33 @@ z - \mu_Z
 M_{YY} & M_{YZ} \\
 M_{ZY} & M_{ZZ}
 \end{bmatrix}
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>To be able to continue the derivation, a trick devised by smart mathematicians needs to introduced here, which states if the symmetric matrix $\Sigma$ is also put into the block form similarly:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \Sigma = 
 \begin{bmatrix}
 \Sigma_{YY} & \Sigma_{YZ} \\
 \Sigma_{ZY} & \Sigma_{ZZ}
 \end{bmatrix}
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>then</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & M_{YY} = \Sigma_{YY}^{-1} + \Sigma_{YY}^{-1} \Sigma_{YZ} ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} \Sigma_{ZY} \Sigma_{YY}^{-1} \\
 & M_{YZ} = -\Sigma_{YY}^{-1} \Sigma_{YZ} ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} \\
 & M_{ZY} = M_{YZ}^T = - ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} \Sigma_{ZY} \Sigma_{YY}^{-1} \\
 & M_{ZZ} = ( \Sigma_{ZZ}^{-1} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} \\
-\end{aligned} %]]></script>
-
-<p>That statement is actually not hard to prove (although it is quite amazing to me that mathematicians could come up with this block form in the first place):</p>
-<ul>
-  <li>One can set up a matrix $M$ as described, and do matrix multiplication to show $M \Sigma = I$</li>
-  <li>Since $\Sigma$ is symmetric, $(M \Sigma)^T = \Sigma M^T = I$, which implies $M = M (\Sigma M^T) = (M \Sigma) M^T = M^T$ ($M$ is symmetric)</li>
-  <li>As $M \Sigma = \Sigma M = I$, $M$ is $\Sigma^{-1}$</li>
-</ul>
-
+\end{aligned}
+$$</p>
+<p>That statement is actually not hard to prove (although it is quite amazing to me that mathematicians could come up with this block form in the first place): 
+* One can set up a matrix $M$ as described, and do matrix multiplication to show $M \Sigma = I$
+* Since $\Sigma$ is symmetric, $(M \Sigma)^T = \Sigma M^T = I$, which implies $M = M (\Sigma M^T) = (M \Sigma) M^T = M^T$ ($M$ is symmetric)
+* As $M \Sigma = \Sigma M = I$, $M$ is $\Sigma^{-1}$</p>
 <p>With this trick (and substituting $y_c^T M_{YZ} z_c$ for $z_c^T M_{ZY} y_c$), \eqref{eq:blockMultiplicationOfF_x} can be expanded to:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & f(x) \nonumber \\
 & = exp \Big( -\frac{1}{2} \big( \nonumber \\
@@ -255,42 +476,38 @@ M_{ZY} & M_{ZZ}
 & \phantom{=} + z_c^T ( \Sigma_{ZZ}^{-1} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} z_c \big) \nonumber \\ 
 & \phantom{=} \Big) \nonumber \\
 & = exp( -\frac{1}{2} y_c^T \Sigma_{YY}^{-1} y_c ) * exp(g(z_c, y_c)) \label{eq:twoTermsOfF_x}
-\end{align} %]]></script>
-
-<p>where</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{align}
+$$</p>
+<p>where </p>
+<p>$$
 \begin{aligned}
 & g(z_c, y_c) \\
 & = -\frac{1}{2} (z_c - \Sigma_{ZY} \Sigma_{YY}^{-1} y_c)^T ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} (z_c - \Sigma_{ZY} \Sigma_{YY}^{-1} y_c)
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>Note that in \eqref{eq:twoTermsOfF_x}, $f(x)$ is rearranged into two terms, only one of which ($exp(g(z_c, y_c))$) involves $z$. That gives an advantage of simplifying the integration when $z$ is marginalised out of the PDF $P(X = x) \propto f(x)$ to obtain $P(Y = y)$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(Y = y) = \int_z P(X = x) dz \\
 & \phantom{P(y)} \propto \int_z f(x) dz = exp(-\frac{1}{2} y_c^T \Sigma_{YY}^{-1} y_c) \int_z exp( g(z_c, y_c) ) dz
 \end{aligned}
 \label{eq:unsimplifiedPDF_Y}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>The integral term in \eqref{eq:unsimplifiedPDF_Y}, if expanded, shows the exactly the same form as discussed in \eqref{eq:integralOfUnnormalisedPDFOfGaussian}, and therefore the result of that integration is known immediately:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \int_z exp( g(z_c, y_c) ) dz \\
 & = \int_z exp \big( \\
 & \phantom{\int_z} -\frac{1}{2} (z_c - \Sigma_{ZY} \Sigma_{YY}^{-1} y_c)^T ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} (z_c - \Sigma_{ZY} \Sigma_{YY}^{-1} y_c) \\
 & \phantom{\int_z exp} \big) dz \\
-& = \int_z exp(-\frac{1}{2} (z - \mu_{ZY} )^T ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} (z - \mu_{ZY})) dz \\
+& = \int_z exp(-\frac{1}{2} (z - \mu_{Zy} )^T ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} (z - \mu_{Zy})) dz \\
 & = \sqrt{det(2 \pi (\Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} ))} 
-\end{aligned} %]]></script>
-
-<p>where $\mu_{ZY} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1} y_c$. It is surprising that after integration, not only does $z$ disappear (which is just the purpose of marginalisation), but terms related to $y$ are also gone. So the integral turns out to be a constant with respect to $y$, which allows of further simpliying \eqref{eq:unsimplifiedPDF_Y} to:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{aligned}
+$$</p>
+<p>where $\mu_{Zy} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1} y_c$. It is surprising that after integration, not only does $z$ disappear (which is just the purpose of marginalisation), but terms related to $y$ are also gone. So the integral turns out to be a constant with respect to $y$, which allows of further simpliying \eqref{eq:unsimplifiedPDF_Y} to:</p>
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(Y = y) \\
@@ -298,13 +515,11 @@ M_{ZY} & M_{ZZ}
 & \propto exp(-\frac{1}{2} (y - \mu_Y)^T \Sigma_{YY}^{-1} (y - \mu_Y))
 \end{aligned}
 \label{eq:PDF_Y}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>Seeing something familiar? Yes, the proportionality in \eqref{eq:PDF_Y} corresponds to the PDF of $N(\mu_Y, \Sigma_{YY})$, as per \eqref{eq:unnormalisedPDFOfGaussian}. Since $Y$ can be any vector whose entries are collected from $X$, that demonstrates any marginal $P(Y)$ of a Gaussian distribution $P(X)$ is also a Gaussian distribution, with a mean $\mu_Y$ and a covariance matrix $\Sigma_{YY}$.</p>
-
 <p>How about conditionals? Well, with $P(Y, Z) = P(X)$ and $P(Y)$ being defined, the probability of $Z$ given $Y$ can be derived from the definition:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & P(Z = z|Y = y) = \frac{P(Y = y, Z = z)}{P(Y = y)} = \frac{P(X = x = 
 \begin{bmatrix}
@@ -318,50 +533,42 @@ z
 & = exp\big( \\
 & \phantom{\propto} -\frac{1}{2} (z_c - \Sigma_{ZY} \Sigma_{YY}^{-1} y_c)^T ( \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ} )^{-1} (z_c - \Sigma_{ZY} \Sigma_{YY}^{-1} y_c)\\
 & \phantom{\propto} \big) \\
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>Let $\mu_{Z|y} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1}y_c = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1}(y - \mu_Y)$ and $\Sigma_{Z|Y} = \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ}$; $P(Z|Y)$ can be expressed in a neater way as:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(Z = z|Y = y) \propto exp(-\frac{1}{2} (z - \mu_{Z|y})^T \Sigma_{Z|Y}^{-1}(z - \mu_{Z|y}))
 \end{aligned}
 \label{eq:PDF_ZGivenY}
-\end{equation} %]]></script>
-
-<p>It is clear that the proportionality relating to Gaussian PDF emerges again, and hence it can be concluded that $Z|Y \sim N(\mu_{Z|y}, \Sigma_{Z|Y})$ for $Z$ and $Y$ consisting of $X$; in other words, any conditional $P(Z|Y)$ which has a joint Gaussian distribution $P(Y, Z) = P(X)$ is also a Gaussian distribution, with a mean $\mu_{Z|y} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1} (y - \mu_Y)$ and a covariance matrix $\Sigma_{Z|Y} = \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ}$.</p>
-
-<h4 id="-2-the-multiplication-of-a-random-vector-of-a-guassian-distribution-by-a-constant-not-equal-to-0-yields-a-random-vector-which-has-a-gaussian-distribution"><a name="fact2"></a> 2. The multiplication of a random vector of a Guassian distribution by a constant (not equal to 0) yields a random vector which has a Gaussian distribution</h4>
-
+\end{equation}
+$$</p>
+<p>It is clear that the proportionality relating to Gaussian PDF emerges again, and hence it can be concluded that $Z|Y = y \sim N(\mu_{Z|y}, \Sigma_{Z|Y})$ for $Z$ and $Y$ consisting of $X$; in other words, any conditional $P(Z|Y = y)$ which has a joint Gaussian distribution $P(Y, Z) = P(X)$ is also a Gaussian distribution, with a mean $\mu_{Z|y} = \mu_Z + \Sigma_{ZY} \Sigma_{YY}^{-1} (y - \mu_Y)$ and a covariance matrix $\Sigma_{Z|Y} = \Sigma_{ZZ} - \Sigma_{ZY} \Sigma_{YY}^{-1} \Sigma_{YZ}$.</p>
+<h3 id="fact2">The multiplication of a random vector of a Guassian distribution by a constant $\neq 0$ yields a random vector which has a Gaussian distribution</h3>
 <p>Suppose $X$ is a random vector of a Gaussian distribution $N(\mu, \Sigma)$. Multiplying $X$ by a constant $s \neq 0$ gives a new random vector $W = s*X$; or reversely one can map $W$ to $X$ with the relation $X = W / s$. As a result, $P(W)$ can be derived from $P(X)$ using the technique of <strong>Change of Variables</strong>:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(W = w) = P(X = x) * \lvert det(\frac{dx}{ds}) \rvert \\
 & \propto exp((\frac{w}{s} - \mu)^T \Sigma^{-1} (\frac{w}{s} - \mu)) * \lvert \frac{1}{s} \rvert^D \\
 & \propto exp((w - \frac{\mu}{s})^T \frac{1}{s^2}\Sigma^{-1} (w - \frac{\mu}{s})) * \lvert \frac{1}{s} \rvert^D
 \end{aligned}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>where $D$ stands for the number of entries in $x$ (or $s$). Since $s$ is a constant with respect to $w$, $\lvert \frac{1}{s} \rvert^D$ can be omitted in the proportionality, which yields:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & P(w = w) \propto exp((w - \frac{\mu}{s})^T \frac{1}{s^2}\Sigma^{-1} (w - \frac{\mu}{s}))
 \end{aligned}
 \label{eq:unnormalisedPDF_w}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>Here we go again! \eqref{eq:unnormalisedPDF_w} indicates $W \sim N(\frac{\mu}{s}, s^2 \Sigma)$, which shows that the multiplication of a random vector $X \sim N(\mu, \Sigma)$ by a constant $s \neq 0$ results in a new random vector whose PDF describes another Gaussian distribution, with a mean $\mu / s$ and a covariance matrix $s^2 \Sigma$.</p>
-
-<h4 id="-3-the-sum-of-two-independent-random-vectors-of-guassian-distributions-yields-a-random-vector-which-also-has-a-gaussian-distribution"><a name="fact3"></a> 3. The sum of two independent random vectors of Guassian distributions yields a random vector which also has a Gaussian distribution</h4>
-
-<p>Let $X_1 \sim N(\mu_1, \Sigma_1)$ and $X_2 \sim N(\mu_2, \Sigma_2)$. The probability density of the sum of them, $W = X_1 + X_2$, can be interpreted as $P(W = w) = \int_{x_1} P(X_1 = x_1) * P(X_2 = w - x_1|X_1 = x_1) dx_1$. The independence between $X_1$ and $X_2$ suggests $P(X_2 = w - x_1 | X_1 = x_1) = P(X_2 = w - x_1)$, and hence the PDF of $W$ can be written as:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<h3 id="fact3">The sum of two independent random vectors of Guassian distributions yields a random vector which also has a Gaussian distribution</h3>
+<p>Let $X_1 \sim N(\mu_1, \Sigma_1)$ and $X_2 \sim N(\mu_2, \Sigma_2)$. The probability density of the sum of them, $W = X_1 + X_2$, can be interpreted as $P(W = w) = \int_{x_1} P(X_1 = x_1) * P(X_2 = w - x_1 | X_1 = x_1) dx_1$. The independence between $X_1$ and $X_2$ suggests $P(X_2 = w - x_1 | X_1 = x_1) = P(X_2 = w - x_1)$, and hence the PDF of $W$ can be written as:</p>
+<p>$$
 \begin{align}
 & P(W = w) \nonumber \\ 
 & = \int_{x_1} P(X_1 = x_1) * P(X_2 = w - x_1) dx_1 \nonumber \\
@@ -369,11 +576,10 @@ z
 & \phantom{\propto \int_{x_1}} * exp(-\frac{1}{2} (w - x_1 - \mu_2)^T \Sigma_2^{-1} (w - x_1 - \mu_2)) dx_1 \nonumber \\ 
 & \propto \int_{x_1} exp(-\frac{1}{2} (x_1 - \mu_1)^T \Sigma_1^{-1} (x_1 - \mu_1)) \nonumber \\
 & \phantom{\propto \int_{x_1}} * exp(-\frac{1}{2} (x_1 - (w - \mu_2))^T \Sigma_2^{-1} (x_1 - (w - \mu_2))) dx_1 \label{eq:unnormalisedPDF_W_1}
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>The next step is to rearrage terms in \eqref{eq:unnormalisedPDF_W_1}, so that those relating to $x_1$ are put together for integration. Note that terms which are constants with respect to $w$ can be safely omitted, as they do not affect the proportionality:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & P(W = w) \nonumber \\
 & \propto \int_{x_1} exp\Big( -\frac{1}{2} \big( \nonumber \\
@@ -388,11 +594,10 @@ z
 & \phantom{=} \; * exp(-\frac{1}{2} ( w - \mu_2 )^T \Sigma_2^{-1} ( w - \mu_2 )) \nonumber \\
 & = \int_{x_1} exp( -\frac{1}{2} (x_1 - \Sigma_3 \mu_3)^T \Sigma_3^{-1} (x_1 - \Sigma_3 \mu_3)) dx_1 \nonumber \\
 & \phantom{=} \; * exp(-\frac{1}{2} (( w - \mu_2 )^T \Sigma_2^{-1} ( w - \mu_2 ) - \mu_3^T \Sigma_3 \mu_3)) \label{eq:unnormalisedPDF_W_2}
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>where $\Sigma_3^{-1} = \Sigma_1^{-1} + \Sigma_2^{-1}$, $\mu_3 = \Sigma_1^{-1} \mu_1 + \Sigma_2^{-1} (w - \mu_2)$. Now the integral with respect to $x_1$, as noted in \eqref{eq:integralOfUnnormalisedPDFOfGaussian}, can be read out directly as $\sqrt{det(2 \pi \Sigma_3)}$, which has nothing to do with $w$. Also the expansion of $\mu_3^T \Sigma_3 \mu_3$ gives:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \mu_3^T \Sigma_3 \mu_3 \\
 & = (\Sigma_1^{-1} \mu_1 + \Sigma_2^{-1} (w - \mu_2))^T \Sigma_3  (\Sigma_1^{-1} \mu_1 + \Sigma_2^{-1} (w - \mu_2)) \\ 
@@ -400,11 +605,10 @@ z
 & = w^T \Sigma_2^{-1} \Sigma_3  \Sigma_2^{-1} w \\ 
 & \phantom{=} - 2 w^T \Sigma_2^{-1} \Sigma_3 (\Sigma_2^{-1} \mu_2 - \Sigma_1^{-1} \mu_1)) \\
 & \phantom{=} + (\Sigma_2^{-1} \mu_2 - \Sigma_1^{-1} \mu_1))^T \Sigma_3 (\Sigma_2^{-1} \mu_2 - \Sigma_1^{-1} \mu_1)) 
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>in which the last bulk contains no $w$. By removing terms not involving $w$ in \eqref{eq:unnormalisedPDF_W_2}, the proportionality can be further simplified to:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & P(W = w) \nonumber \\
 & \propto exp(-\frac{1}{2} (( w - \mu_2 )^T \Sigma_2^{-1} ( w - \mu_2 ) - \mu_3^T \Sigma_3 \mu_3)) \nonumber \\
@@ -414,11 +618,10 @@ z
 & \phantom{\propto \int_{x_1} exp(} + 2 w^T \Sigma_2^{-1} \Sigma_3 (\Sigma_2^{-1} \mu_2 - \Sigma_1^{-1} \mu_1) \nonumber \\
 & \phantom{\propto \int_{x_1} exp(} \big) \Big) \nonumber \\
 & = exp(-\frac{1}{2} (w^T \Sigma_{sum}^{-1} w - 2 w^T \Sigma_{sum}^{-1} \mu_{sum})) \label{eq:unnormalisedPDF_W_3}
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>where</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \Sigma_{sum}^{-1} \\
 & = \Sigma_2^{-1} - \Sigma_2^{-1} \Sigma_3  \Sigma_2^{-1} \\
@@ -427,11 +630,10 @@ z
 & = \Sigma_2^{-1}(\Sigma_1^{-1} + \Sigma_2^{-1})^{-1} \Sigma_1^{-1} \\
 & = (\Sigma_1 (\Sigma_1^{-1} + \Sigma_2^{-1}) \Sigma_2)^{-1} \\
 & = (\Sigma_1 + \Sigma_2)^{-1}
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>and</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \mu_{sum} \\
 & = \Sigma_{sum} (\Sigma_2^{-1} \mu_2 - \Sigma_2^{-1} \Sigma_3 (\Sigma_2^{-1} \mu_2 - \Sigma_1^{-1} \mu_1)) \\
@@ -441,27 +643,22 @@ z
 & = \Sigma_{sum} (\Sigma_{sum}^{-1} \mu_2 + (\Sigma_1 (\Sigma_1^{-1} + \Sigma_2^{-1}) \Sigma_2)^{-1} \mu_1) \\
 & = \Sigma_{sum} (\Sigma_{sum}^{-1} \mu_2 + \Sigma_{sum}^{-1} \mu_1) \\
 & = \mu_2 + \mu_1
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>It is not a coincidence that the derivation arrives at $\Sigma_{sum} = \Sigma_1 + \Sigma_2$ and $\mu_{sum} = \mu_2 + \mu_1$, because this is what the covariance and mean should be for the sum of any two independent random vectors regardless of what distributions they represent! Finaly, since $\Sigma_{sum}^{-1}$ and $\mu_{sum}$ are constant with respect to $w$, \eqref{eq:unnormalisedPDF_W_3} can be tweaked slightly to demonstrate the form similar to \eqref{eq:unnormalisedPDFOfGaussian}:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & P(W = w) \\
 & \propto exp(-\frac{1}{2} (w^T \Sigma_{sum}^{-1} w - 2 w^T \Sigma_{sum}^{-1} \mu_{sum})) \\
 & \propto exp(-\frac{1}{2} (w^T \Sigma_{sum}^{-1} w - 2 w^T \Sigma_{sum}^{-1} \mu_{sum} + \mu_{sum}^T \Sigma_{sum}^{-1} \mu_{sum})) \\
 & = exp(-\frac{1}{2} (w - \mu_{sum})^T \Sigma_{sum}^{-1} (w - \mu_{sum}))
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>which implies $W \sim N(\mu_{sum}, \Sigma_{sum})$. That just proves the sum of two independent Gaussian random vectors $X_1 \sim N(\mu_1, \Sigma_1)$ and $X_2 \sim N(\mu_2, \Sigma_2)$ is indeed a random vector of a Gaussian distribution; and moreover, its mean is $\mu_1 + \mu_2$ and its covariance matrix is $\Sigma_1 + \Sigma_2$.</p>
-
-<h4 id="4--the-linear-combination-of-independent-random-vectors-of-guassian-distributions-yields-a-random-vector-which-also-has-a-gaussian-distribution">4. <a name="fact4"></a> The linear combination of independent random vectors of Guassian distributions yields a random vector which also has a Gaussian distribution</h4>
-
+<h3 id="fact4">The linear combination of independent random vectors of Guassian distributions yields a random vector which also has a Gaussian distribution</h3>
 <p>This is the immediate result from <a href="#fact2">fact 2</a> and <a href="#fact3">fact 3</a>, as every linear combination can been viewed as a sequence of operations involving constant multiplication and sum only; every operation conducted yields a new Gaussian random vector, which is independent of the rest of vectors not involved in that operation, and is used as the operand to the following operator to create another Gaussian random vector; consequently, <a href="#fact2">fact 2</a> and <a href="#fact3">fact 3</a> always hold through out the sequence and the the last random vector produced will be of a Gaussian distribution.</p>
-
-<p>On a side note, given $n$ independent Gaussian random column vectors $X_1, \dotsc, X_n$ and the combination weights $s_1, \dotsc, s_n$, such a linear combination can be expressed as (in terms of matrix multiplication):</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>On a side note, given $n$ independent Gaussian random column vectors $X_1, \dotsc, X_n$ and the combination weights $s_1, \dotsc, s_n$, such a linear combination can be expressed as (in terms of matrix multiplication): </p>
+<p>$$
 \begin{equation}
 \begin{aligned}
 & 
@@ -475,13 +672,11 @@ s_n
 \end{bmatrix}
 \end{aligned}
 \label{eq:linearCombination}
-\end{equation} %]]></script>
-
-<h4 id="5-the-linear-transformation-of-a-random-vector-of-a-guassian-distribution-by-a-invertible-mapping-yields-a-random-vector-which-also-has-a-gaussian-distribution">5. The linear transformation of a random vector of a Guassian distribution by a invertible mapping yields a random vector which also has a Gaussian distribution</h4>
-
-<p>Equivalently, this fact states that the left multiplication of a Gaussian random vector $X$ of a size $d * 1$ by a invertible matrix $A$ of a size $d * d$ produces another Gaussian random vector $U = AX$ (note that do not be confused with \eqref{eq:linearCombination} in <a href="#fact4">fact 4</a>). Since the invertibility of $A$ implies $X = A^{-1}U$, with <strong>Change of Variables</strong> one can derive the PDF of $U$ from the PDF of $X \sim N(\mu_X, \Sigma_X)$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{equation}
+$$</p>
+<h3>The linear transformation of a random vector of a Guassian distribution by a invertible mapping yields a random vector which also has a Gaussian distribution</h3>
+<p>Equivalently, this fact states that the left multiplication of a Gaussian random vector $X$ of a size $d * 1$ by a invertible matrix $A$ of a size $d * d$ produces another Gaussian random vector $U = AX$ (note that do not be confused with \eqref{eq:linearCombination} in <a href="#fact4">fact 4</a>). Since the invertibility of $A$ implies $X = A^{-1}U$, with <strong>Change of Variables</strong> one can derive the PDF of $U$ from the PDF of $X \sim N(\mu_X, \Sigma_X)$: </p>
+<p>$$
 \begin{aligned}
 & P(U = u) = P(X = x) * \lvert det(\frac{dx}{du}) \rvert \\
 & = P(X = x) * \lvert \frac{1}{det(A)} \rvert \\
@@ -489,62 +684,19 @@ s_n
 & \propto exp(-\frac{1}{2} (A^{-1}u - \mu)^T \Sigma_X^{-1} (A^{-1}u - \mu_X)) \\
 & \propto exp(-\frac{1}{2} (u - A \mu_X)^T {A^{-1}}^T \Sigma_X^{-1} A^{-1} (u - A \mu_X)) \\
 & \propto exp(-\frac{1}{2} (u - \mu_U)^T \Sigma_U^{-1} (u - \mu_U))
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>where $\mu_U = A \mu_X$ and $\Sigma_U = A \Sigma_X A^T$. Again by \eqref{eq:unnormalisedPDFOfGaussian}, $U$ has a Gaussian distribution $N(\mu_U, \Sigma_U)$, which leads to the conclusion that the random vector induced by some invertible linear transformation (defined by a square matrix $A$) on a random vector of $N(\mu_X, \Sigma_X)$ is still Gaussian, but with a new mean $A \mu_X$ and a new covariance matrix $A \Sigma_X A^T$.</p>
-
-<h2 id="references">References</h2>
+<h2 class="reference-title">References</h2>
 <ul>
-  <li><a href="http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html">http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html</a></li>
-  <li><a href="http://cs229.stanford.edu/summer2020/more_on_gaussians.pdf">http://cs229.stanford.edu/summer2020/more_on_gaussians.pdf</a></li>
+<li><a href="http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html">http://fourier.eng.hmc.edu/e161/lectures/gaussianprocess/node7.html</a></li>
+<li><a href="http://cs229.stanford.edu/summer2020/more_on_gaussians.pdf">http://cs229.stanford.edu/summer2020/more_on_gaussians.pdf</a></li>
 </ul>
 
-</div>
+</br></br></br></br>
 
-
-</article>
-
-
-
-<foot>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Derictory -->
-
-	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
-
-
-<!-- Directory -->
-
-<script src="/Blogs/assets/js/main.js"></script>
-
-</foot>
-
-
-
-  </div>
+  </article>
+</main>
 
 </body>
-
-
-<footer class="site-footer">
-
-
-	<center>
-			
-	<a class="tab-link" href="/Blogs/archive/">Archive</a> /
-	<a class="tab-link" href="/Blogs/category/">Category</a> / 
-	<a class="tab-link" href="/Blogs/tags/">Tags</a> 
-
-	
-	</center>
-    
-
-</footer>
-
-
-
 </html>

@@ -1,0 +1,425 @@
+
+
+<html data-theme="dark">
+  <head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+
+
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions
+</title>
+  
+  </head>
+
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
+
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
+    
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
+
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>Why Can Gumbel Distribution Be Used to Sample from Discrete Distributions</h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>27.May.2019</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;MachineLearning
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Probability
+  </span>
+  
+  
+</div>
+
+
+
+<p>I got to know Gumbel distribution when I surveyed papers for my project extension. In addition to its capability to relax the bottleneck of discrete distributions and allow gradients to pass through, I am impressed by that it can really simplify processes of generating discrete samples. Given a discrete distribution of $\lvert C \rvert$ categories, and the probability of each category expressed as follows:</p>
+<p>$$
+\begin{equation}
+P(C_j) = \frac{exp(\text{logit}_j)}{\sum_{i=1}^{\lvert C \rvert}exp(\text{logit}_i)}
+\end{equation}
+$$</p>
+<p>where $C_i$ refers to i-th category; then to generate a sample $Sample_c$ from that distribution, we can make use of samples from standard Gumbel distribution (Gumbel distribution with mean $0$, scale $1$):</p>
+<p>$$
+\begin{equation} \label{eq:samplingFromDiscrete}
+Sample_c = argmax_{i \in Z, 1 \leq i \leq \lvert C \rvert} (\text{logit}_i + Sample_{g,i})
+\end{equation}
+$$</p>
+<p>where $Sample_{g,i}$ is a sample drawn independently from standard Gumbel distribution for the i-th category. </p>
+<p>The convenience comes from the fact that sampling from standard Gumbel distribution is rather easy, as it has an invertible, closed-form CDF:</p>
+<p>$$
+\begin{align} 
+&p = CDF_{Gumbel}(g) = exp(-exp(-g)) \label{eq:CDFOfGumbel} \\
+&g = CDF_{Gumbel}^{-1}(p) = -ln(-ln(p))
+\end{align}
+$$</p>
+<p>As a result, we can get $Sample_{g,i}$ by sampling $u_{i}$ from $Uniform[0, 1]$ and computing $Sample_{g,i} = CDF_{Gumbel}^{-1}(u_{i})$.</p>
+<p>I had always taken \eqref{eq:samplingFromDiscrete} for granted until I saw a reference a few days ago, which explains why \eqref{eq:samplingFromDiscrete} is equivalent to sampling from the original discrete distribution. The proof is not too hard to derive with my limited mathematical knowledge, so here I just write it down using my own words to help me better capture the intuition behind.</p>
+<p>Note that samples generated via \eqref{eq:samplingFromDiscrete} also follow a distribution, which describes the probability of $z_i = logit_i + Sample_{g,i}$ being the largest, for each cateogry $i$. If each $Sample_{g,i}$ is replaced with a random variable $G_i$, then it can be thought of as there are $\lvert C \rvert$ independent random variables $Z_i = logit_i + G_i$, each of which follows a Gumbel distribution with mean $logit_i$ and scale $1$. To show what those probabilities really are, we start from assuming that for some category $j$, $Z_j$ is given to be some $z_j$, and write down the conditional probability of $Z_j = z_j$ being the largest as:</p>
+<p>$$
+\begin{align}
+& P(Z_j \text{ is the largest} \vert Z_j = z_j, logit_{1 .. \lvert C \rvert}) \nonumber \\
+& = \prod_{i = 1, i \neq j}^{\lvert C \rvert}P(logit_i + G_i < z_j) \nonumber \\
+& = \prod_{i = 1, i \neq j}^{\lvert C \rvert}P(G_i < z_j - logit_i) \label{eq:conditionalProbabilityOfzjIsTheLargest}
+\end{align}
+$$</p>
+<p>Each term in the product of \eqref{eq:conditionalProbabilityOfzjIsTheLargest} is the cumulative probability of standard Gumbel distribution ranging from $-\inf$ to $z_j - logit_i$, which can be expanded using the CDF from \eqref{eq:CDFOfGumbel}:</p>
+<p>$$
+\begin{align}
+& P(Z_j \text{ is the largest} \vert Z_j = z_j, logit_{1 .. \lvert C \rvert}) \nonumber \\
+& = \prod_{i = 1, i \neq j}^{\lvert C \rvert}exp(-exp(-(z_j - logit_i)) \nonumber \\
+& = exp(\sum_{i = 1, i \neq j}^{\lvert C \rvert}-exp(-z_j + logit_i)) \nonumber \\
+& = exp(-exp(-z_j) * \sum_{i = 1, i \neq j}^{\lvert C \rvert}exp(logit_i)) \nonumber \\
+& = exp(-exp(-z_j) * (\sum_{i = 1}^{\lvert C \rvert}exp(logit_i) - exp(logit_j))) \nonumber \\
+& = exp(-exp(-z_j) * (S - exp(logit_j)))
+\end{align}
+$$</p>
+<p>where $S = \sum_{i = 1}^{\lvert C \rvert}exp(logit_i)$. With that conditional probability, the target distribution can be obtained by Bayes rule and marginalising out $Z_j$, which
+is also a Gumbel distribution with mean $logit_j$ and scale $1$ (So the PDF of it is $P(Z_j) = exp(-(Z_j - logit_j + exp(-(Z_j - logit_j))))$):</p>
+<p>$$
+\begin{align}
+& P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert}) \nonumber \\
+& = \int_{-\infty}^{\infty} P(Z_j \text{ is the largest} \vert Z_j, logit_{1 .. \lvert C \rvert}) * P(Z_j) dZ_j \nonumber \\
+& = \int_{-\infty}^{\infty} exp(-exp(-Z_j) * (S - exp(logit_j))) * \nonumber \\
+& \phantom{= \int_{-\infty}^{\infty}} exp(-(Z_j - logit_j + exp(-(Z_j - logit_j)))) dZ_j \nonumber \\
+& = \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S + exp(-Z_j) * exp(logit_j)) * \nonumber \\
+& \phantom{= \int_{-\infty}^{\infty}} exp(-(Z_j - logit_j) - exp(-Z_j) * exp(logit_j)) dZ_j \nonumber \\
+& = exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S - Z_j) dZ_j \label{eq:integralOverZj}
+\end{align}
+$$</p>
+<p>The integral part still looks intimidating, but it turns out we can introduce a new variable $\hat{Z_j} = Z_j - ln(S)$ to further simplify \eqref{eq:integralOverZj}:</p>
+<p>$$
+\begin{align}
+& exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-Z_j) * S - Z_j) dZ_j \nonumber \\
+& = exp(logit_j) * \int_{-\infty}^{\infty} exp(-exp(-\hat{Z_j} - ln(S)) * \nonumber \\
+& \phantom{= exp(logit_j) * \int_{-\infty}^{\infty}} S - \hat{Z_j} - ln(S)) d\hat{Z_j} \nonumber \\
+& = \frac{exp(logit_j)}{S} * \int_{-\infty}^{\infty} exp(-(exp(-\hat{Z_j}) + \hat{Z_j})) d\hat{Z_j} \label{eq:integralOverZHatj}
+\end{align}
+$$</p>
+<p>Note that the integral in \eqref{eq:integralOverZHatj} is equivalent to integrating the PDF of standard Gumbel distribution over its support, so that integral is just 1, and we arrive at:</p>
+<p>$$
+\begin{align}
+& P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert}) = \frac{exp(logit_j)}{S} \nonumber \\
+& \phantom{P(Z_j \text{ is the largest} \vert logit_{1 .. \lvert C \rvert})} = \frac{exp(logit_j)}{\sum_{i = 1}^{\lvert C \rvert}exp(logit_i)} \label{eq:finale}
+\end{align}
+$$</p>
+<p>As a result, the probability of each category being sampled via \eqref{eq:samplingFromDiscrete} is exactly the same amount of probability assigned to each one by the original discrete distribution.</p>
+<h2 class="reference-title">References</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Gumbel_distribution">https://en.wikipedia.org/wiki/Gumbel_distribution</a></li>
+<li><a href="https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/">https://lips.cs.princeton.edu/the-gumbel-max-trick-for-discrete-distributions/</a></li>
+</ul>
+
+</br></br></br></br>
+
+  </article>
+</main>
+
+</body>
+</html>

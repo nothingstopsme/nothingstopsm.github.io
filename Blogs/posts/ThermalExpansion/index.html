@@ -1,116 +1,357 @@
-<!DOCTYPE html>
-<html>
+
+
+<html data-theme="dark">
   <head>
-      
-  <head>
+
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-	
-	<script type="text/javascript"
-	        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
-
-	<script type="text/x-mathjax-config">
-		MathJax.Hub.Config({
-		tex2jax: {
-		inlineMath: [['$','$'], ['\\(','\\)']],
-		processEscapes: true},
-		jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
-		extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
-		TeX: {
-		extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
-		equationNumbers: {
-		autoNumber: "AMS"
-		}
-		}
-		});
-		</script>
-	
-
-<!-- CSS -->
-
-  <link rel="stylesheet" href="/Blogs/assets/css/main.css">
-  <link rel="canonical" href="/Blogs/note/ThermalExpansion.html">
-  <link rel="alternate" type="application/rss+xml" title="" href="/Blogs/feed.xml">
-
-<!-- Google font -->
-
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open Sans">
-
-<!-- font awesome -->
-
-	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
-	
-	<title>Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</title>
-
-	
-
-
-</head>
-
-
   
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
 
 
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion
+</title>
+  
   </head>
 
-  <body>
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
 
-
-  <div class="wrapper">
-          <header class="post-header">
-
-    <center><div class="post-title" itemprop="name headline">Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</div>
-
-		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="25 Oct 2020" itemprop="datePublished">Oct 25 2020</time>
-
-		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Chao</span>
-        
-		<br>
-		<!--<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>-->
-	</div>
-
-        
-        <div class="post-tags">
-        
-		<a class="post-tags-item" href="/Blogs/tags/">Probability</a>
-        
-		<a class="post-tags-item" href="/Blogs/tags/">Calculus</a>
-        
-	</div>
-    </center>
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
     
-</header>
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
 
-<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
-<div class="post-content">
-    <center>
-	
-    </center>
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>Approximating Partition Functions of Restricted Boltzmann Machines via High-Temperature Expansion</h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>25.Oct.2020</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Probability
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Calculus
+  </span>
+  
+  
 </div>
 
 
 
-
-<div class="post-content" itemprop="articleBody">
-    <p>It is often a difficult task when it comes to computing the gradient of the partition function (i.e. normalising constant) of a probability distribution with a large (and possibly infinite) size of support, due to the intractability of computing the partition function itself, which requires summing/integrating all possible values which an unnormalised <strong>P</strong>robability <strong>M</strong>ass <strong>F</strong>unction/<strong>P</strong>robability <strong>D</strong>ensity <strong>F</strong>unction can take. A famous method called <strong>C</strong>ontrastive <strong>D</strong>ivergence (and its variants) is one of many works developed on tackling the issue, and has been widely applied in the case of <strong>R</strong>estricted <strong>B</strong>oltzmann <strong>M</strong>achines. Being a stochastic algorithm, <em>CD</em> relies on samples from the model distribution to function, which is typically not a problem for the blocked Gibbs sampling enabled by the graph structure of <em>RBM</em>s; however, the Markov chain described by the conditionals of a <em>RBM</em> can sometimes turn less ergodic (or in the worst case, non-ergodic) during training. The loss of ergodicity means random walks of Gibbs sampling are unable to jump to every point with a non-zero probability in the model distribution so as to generate samples of it; as a result, samples collected under the circumstances pooly reflect the underlying distribution, which in turn makes <em>CD</em> fail to produce quality estimation. To escape out of this predicament, there are advanced sampling techniques like <em>Simulated Annealing</em> or <em>Parallel Tempering</em>, which allow more exploratory random walks through the support space; nonetheless, from my inadequate knowledge and experience in sampling, it does not seem easy to incorporate those sampling procedures and have them stable within the training dynamic, where the model distribution constantly changes. So what else can we do? Well, just appeal to other methods which do not involve sampling, and here comes <em>high-temperature expansion</em> to rescue.</p>
-
-<h2 id="objective-">Objective <a name="objective"></a></h2>
+<p>It is often a difficult task when it comes to computing the gradient of the partition function (i.e. normalising constant) of a probability distribution with a large (and possibly infinite) size of support, due to the intractability of computing the partition function itself, which requires summing/integrating all possible values which an unnormalised <strong>P</strong>robability <strong>M</strong>ass <strong>F</strong>unction/<strong>P</strong>robability <strong>D</strong>ensity <strong>F</strong>unction can take. A famous method called <strong>C</strong>ontrastive <strong>D</strong>ivergence (and its variants) is one of many works developed on tackling the issue, and has been widely applied in the case of <strong>R</strong>estricted <strong>B</strong>oltzmann <strong>M</strong>achines. Being a stochastic algorithm, <em>CD</em> relies on samples from the model distribution to function, which is typically not a problem for the blocked Gibbs sampling enabled by the graph structure of <em>RBM</em>s; however, the Markov chain described by the conditionals of a <em>RBM</em> can sometimes turn less ergodic (or in the worst case, non-ergodic) during training. The loss of ergodicity means random walks of Gibbs sampling are unable to jump to every point with a non-zero probability in the model distribution so as to generate samples of it; as a result, samples collected under the circumstances pooly reflect the underlying distribution, which in turn makes <em>CD</em> fail to produce quality estimation. To escape out of this predicament, there are advanced sampling techniques like <em>Simulated Annealing</em> or <em>Parallel Tempering</em>, which allow more exploratory random walks through the support space; nonetheless, from my inadequate knowledge and experience in sampling, it does not seem easy to incorporate those sampling procedures and have them stable within the training dynamic, where the model distribution constantly changes. So what else can we do? Well, just appeal to other methods which do not involve sampling, and here comes <em>high-temperature expansion</em> to rescue.</p>
+<h2 id="objective">Objective</h2>
 <p>Unlike <em>CD</em>, in <em>high-temperature expansion</em> the goal is to directly obtain the logarithm of the partition function of a <em>RBM</em>, and it is achieved via approximation. For instance, considering the basic form of a <em>RBM</em> in which both the hidden varibles $h$ and visible variables $v$ are binary, its energy function is given by:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & E(v, h) = -\sum_i a_i v_i - \sum_j b_j h_j - \sum_{i,j} w_{i,j} v_i h_j
 \end{aligned}
 \label{eq:energyFunction}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>where $a$ is the bias vector for $v$, $b$ is the bias vector for $h$, and $w$ is the weight matrix of which each entry corresponds to a distinct $(v_i, h_j)$ pair. By definition, the logarithm of the partition function $Z$ of the system above is written as:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & log(Z) \\
@@ -118,52 +359,47 @@
 & = log(\sum_{v, h} exp(\sum_i a_i v_i + \sum_j b_j h_j + \sum_{i,j} w_{i,j} v_i h_j))
 \end{aligned}
 \label{eq:log_Z}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>Note that \eqref{eq:energyFunction} can also be seen as the energy function with its $\beta$, the reciprocal of the current temperature, set to 1; restoring $\beta$, therefore, brings back the general form of the partition function $Z(\beta)$ which allows for evaluation at different temperatures:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & log(Z(\beta)) \nonumber \\
 & = log(\sum_{v, h} exp(-\beta * E(v, h))) \nonumber \\
 & = log(\sum_{v, h} exp(\beta \sum_i a_i v_i + \beta \sum_j b_j h_j + \beta \sum_{i,j} w_{i,j} v_i h_j)) \label{eq:log_Z_of_beta}
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>It is \eqref{eq:log_Z_of_beta} that <em>high-temperature expansion</em> is aimed at approximating in this particular example.</p>
-
-<h2 id="derivation">Derivation</h2>
+<h2>Derivation</h2>
 <p>Continuing with the same example in <a href="#objective">Objective</a>, the approximation is started off with the relaxation of $\beta$, so that $\beta \in \mathbb{R}$ (it can be thought of as lifting the restriction that the system must be at a temperature greater or equal to 0). Next, a helping function $G$ is defined with two groups of additional auxiliary variables, $m$ and $\lambda(\beta)$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & G(v, h, m, \lambda(\beta)) \\
 & = -\sum_i \lambda_{v_i}(\beta) (v_i - m_{v_i}) - \sum_j \lambda_{h_j}(\beta) (h_j - m_{h_j})
-\end{aligned} %]]></script>
-
-<p>where subscripts attached to $\lambda(\beta)$ and $m$ are used to indicate what hidden/visible variable to which a subscripted one is linked, and for each hidden/visible variable, there is a variable in $\lambda(\beta)$ and one in $m$ corresponding to it; also all variables in the group $\lambda(\beta)$ are dependent on $\beta$. This function $G$ is then inserted into the system description to form a modified energy function $\hat{E}$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{aligned}
+$$</p>
+<p>where subscripts attached to $\lambda(\beta)$ and $m$ are used to indicate what hidden/visible variable to which a subscripted one is linked, and for each hidden/visible variable, there is a variable in $\lambda(\beta)$ and one in $m$ corresponding to it; also all variables in the group $\lambda(\beta)$ are dependent on $\beta$. This function $G$ is then inserted into the system description to form a modified energy function $\hat{E}$: </p>
+<p>$$
 \begin{equation}
 \begin{aligned}
 & \hat{E}(v, h, m, \beta, \lambda(\beta)) = \beta * E(v, h) + G(v, h, m, \lambda(\beta))
 \end{aligned}
 \label{eq:E_hat}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>and consequently a modified partition function $\hat{Z}$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & log(\hat{Z}(\beta, m, \lambda(\beta))) \nonumber \\
 & = log(\sum_{v, h} exp(-\hat{E}(v, h, m, \beta, \lambda(\beta))) \nonumber \\
 & = log(\sum_{v, h} exp(-\beta * E(v, h) - G(v, h, m, \lambda(\beta))) \nonumber \\
 & = log\Big( \sum_{v, h} exp \big( \beta \sum_i a_i v_i + \beta \sum_j b_j h_j + \beta \sum_{i,j} w_{i,j} v_i h_j \nonumber \\
 & \phantom{= log\Big(} + \sum_i \lambda_{v_i}(\beta) (v_i - m_{v_i}) + \sum_j \lambda_{h_j}(\beta) (h_j - m_{h_j})  \big)\Big) \label{eq:log_Z_hat}
-\end{align} %]]></script>
-
-<p>One might start wondering: “Wait a minute, \eqref{eq:log_Z_hat} is no longer the true partition function we want to approximate, and why do we need to make life even difficult by including more variables?”. Sure, that is a legitimate question, and here is my explanation (based on my understanding about this method) for it: Since all $v$ and $h$ have been summed out, if the value of $\beta$ is given, \eqref{eq:log_Z_hat} can be viewed as a real-valued function taking $m$ and $\lambda(\beta)$ as inputs. So let us analyse that function through finding its stationary points (I deliberately use “stationary points” to avoid overclaiming their roles, while you could think of them as optimal points if you like). To that end, the derivatives of \eqref{eq:log_Z_hat} are taken and set to zero with respect to all variables including $\lambda_{v_i}(\beta)$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{align}
+$$</p>
+<p>One might start wondering: "Wait a minute, \eqref{eq:log_Z_hat} is no longer the true partition function we want to approximate, and why do we need to make life even difficult by including more variables?". Sure, that is a legitimate question, and here is my explanation (based on my understanding about this method) for it: Since all $v$ and $h$ have been summed out, if the value of $\beta$ is given, \eqref{eq:log_Z_hat} can be viewed as a real-valued function taking $m$ and $\lambda(\beta)$ as inputs. So let us analyse that function through finding its stationary points (I deliberately use "stationary points" to avoid overclaiming their roles, while you could think of them as optimal points if you like). To that end, the derivatives of \eqref{eq:log_Z_hat} are taken and set to zero with respect to all variables including...</p>
+<p>$\lambda_{v_i}(\beta)$:</p>
+<p>$$
 \begin{aligned}
 & \frac{\partial log(\hat{Z}(\beta, m, \lambda(\beta)))}{\partial \lambda_{v_i}(\beta)} \\
 & = \sum_{v, h} \frac{exp(-\beta * E(v, h))}{\hat{Z}(\beta, m, \lambda(\beta))} * \frac{\partial exp(-G(v, h, m, \lambda(\beta)))}{\partial \lambda_{v_i}(\beta)}  \\
@@ -172,11 +408,10 @@
 & = \underbrace{\mathbb{E}_{P_{\beta, m, \lambda(\beta)}}[v_i]}_{\text{The expectation of }v_i\,=\,\mu_{\beta, m, \lambda(\beta)}(v_i)} - m_{v_i} = 0 \\
 & \\
 & \implies m_{v_i} = \mu_{\beta, m, \lambda(\beta)}(v_i)
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>$\lambda_{h_j}(\beta)$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \frac{\partial log(\hat{Z}(\beta, m, \lambda(\beta)))}{\partial \lambda_{h_j}(\beta)} \\
 & = \sum_{v, h} \frac{exp(-\beta * E(v, h))}{\hat{Z}(\beta, m, \lambda(\beta))} * \frac{\partial exp(-G(v, h, m, \lambda(\beta)))}{\partial \lambda_{h_j}(\beta)}  \\
@@ -185,49 +420,43 @@
 & = \underbrace{\mathbb{E}_{P_{\beta, m, \lambda(\beta)}}[h_j]}_{\mu_{\beta, m, \lambda(\beta)}(h_j)} - m_{h_j} = 0 \\
 & \\
 & \implies m_{h_j} = \mu_{\beta, m, \lambda(\beta)}(h_j)
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>$m_{v_i}$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \frac{\partial log(\hat{Z}(\beta, m, \lambda(\beta)))}{\partial m_{v_i}} \\
 & = \sum_{v, h} \frac{exp(-\beta * E(v, h))}{\hat{Z}(\beta, m, \lambda(\beta))} * \frac{\partial exp(-G(v, h, m, \lambda(\beta)))}{\partial m_{v_i}}  \\
 & = \sum_{v, h} P_{\beta, m, \lambda(\beta)}(v, h) * (-\lambda_{v_i}(\beta))  \\
 & = -\lambda_{v_i}(\beta) = 0
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>and $m_{h_j}$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & \frac{\partial log(\hat{Z}(\beta, m, \lambda(\beta)))}{\partial m_{h_j}} \\
 & = \sum_{v, h} \frac{exp(-\beta * E(v, h))}{\hat{Z}(\beta, m, \lambda(\beta))} * \frac{\partial exp(-G(v, h, m, \lambda(\beta)))}{\partial m_{h_j}}  \\
 & = \sum_{v, h} P_{\beta, m, \lambda(\beta)}(v, h) * (-\lambda_{h_j}(\beta))  \\
 & = -\lambda_{h_j}(\beta) = 0
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>As indicated by those derivatives, stationary points will be those points which satisfies the relationships of $m_{v_i} = \mu_{\beta, m, \lambda(\beta)}(v_i)$ and $\lambda_{v_i}(\beta) = 0$ for all $v_i$, $m_{h_j} = \mu_{\beta, m, \lambda(\beta)}(h_j)$ and $\lambda_{h_j}(\beta) = 0$ for all $h_j$; therefore, when stationary points are evaluated, \eqref{eq:log_Z_hat} can be further simplified to:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & log\Big( \sum_{v, h} exp \big( \beta \sum_i a_i v_i + \beta \sum_j b_j h_j + \beta \sum_{i,j} w_{i,j} v_i h_j \big)\Big) \\
 & = log(Z(\beta))
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>due to the fact that all $\lambda(\beta)$ variables are 0. The connection above suggests that instead of computing \eqref{eq:log_Z_of_beta} for some $\beta$ of interest directly, one can do the equivalent, which is finding the value of \eqref{eq:log_Z_hat} at it stationary points in terms of $m$ and $\lambda(\beta)$ given $\beta$ fixed to that value; furthermore, unlike the former approach (which is intractable), the latter one can be done manageably through the following approximation steps to avoid the notorious summation over $v$ and $h$:</p>
 <ol>
-  <li>Assume the values of $\lambda(\beta)$ with respect to which the partial derivatives of \eqref{eq:log_Z_hat} equal 0 are known, and denote them as $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$.</li>
-  <li>Conduct a <em>Taylor expansion</em> of $log(\hat{Z}(\beta, m, \lambda^\ast_{v_i}(\beta), \lambda^\ast_{h_j}(\beta)))$, i.e. \eqref{eq:log_Z_hat} with $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$ plugged in, around $\beta = 0$ (corresponding to the highest temperature).</li>
-  <li>Locate stationary points using the approximate function obtained at <a href="#approximation_step2">step 2</a> with a designated $\beta$.</li>
+<li>Assume the values of $\lambda(\beta)$ with respect to which the partial derivatives of \eqref{eq:log_Z_hat} equal 0 are known, and denote them as $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$.</li>
+<li>Conduct a <em>Taylor expansion</em> of $log(\hat{Z}(\beta, m, \lambda^\ast_{v_i}(\beta), \lambda^\ast_{h_j}(\beta)))$, i.e. \eqref{eq:log_Z_hat} with $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$ plugged in, around $\beta = 0$ (corresponding to the highest temperature).</li>
+<li>Locate stationary points using the approximate function obtained at <a href="#approximation_step2">step 2</a> with a designated $\beta$.</li>
 </ol>
-
-<p>Note that the assumption made at <a href="#approximation_step1">step 1</a> is in effect a valid one because all $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$ can be, and will be represented in terms of corresponding $m$ variables; as a result, by estimating $m$ variables, as will be performed at <a href="#approximation_step3">step 3</a>, $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$ are automatically known.</p>
-
-<h3 id="step-1-">Step 1 <a name="approximation_step1"></a></h3>
+<p>Note that the assumption made at <a href="#approximation_step1">step 1</a> is actually not a bold claim because all $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$ can be, and will be represented in terms of corresponding $m$ variables; as a result, by estimating $m$ variables, as will be performed at <a href="#approximation_step3">step 3</a>, $\lambda^\ast_{v_i}(\beta)$ and $\lambda^\ast_{h_j}(\beta)$ are automatically known.</p>
+<h3>Step 1 <a name="approximation_step1"></a></h3>
 <p>Now let us go through each of the steps. At <a href="#approximation_step1">step 1</a>, with the assumption the $\ast$ version of $\lambda(\beta)$ variables are plugged into \eqref{eq:log_Z_hat} to produce:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & log(\hat{Z}(\beta, m, \lambda^\ast(\beta))) \\
@@ -235,21 +464,20 @@
 & \phantom{= log\Big(} + \sum_i \lambda^\ast_{v_i}(\beta) (v_i - m_{v_i}) + \sum_j \lambda^\ast_{h_j}(\beta) (h_j - m_{h_j})  \big)\Big)
 \end{aligned}
 \label{eq:log_Z_hat_lambda_ast}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>which is just as the original \eqref{eq:log_Z_hat} but forced to obey the contraints of $\frac{\partial log(\hat{Z}(\beta, m, \lambda(\beta)))}{\partial \lambda_{v_i}(\beta)} = 0$ and $\frac{\partial log(\hat{Z}(\beta, m, \lambda(\beta)))}{\partial \lambda_{h_j}(\beta)} = 0$ for all $v_i$ and $h_j$. Consequently, the following relationships, as per the discussion above, are implied:</p>
-
-<script type="math/tex; mode=display">\begin{equation}
+<p>$$
+\begin{equation}
 \begin{cases}
 m_{v_i} = \mu_{\beta, m, \lambda^\ast(\beta)}(v_i) \\
 m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 \end{cases}
 \label{eq:magnetisation}
-\end{equation}</script>
-
+\end{equation}
+$$</p>
 <p>for all $v_i$ and $h_j$. Note that \eqref{eq:magnetisation} will hold true no matter what value of $\beta$, such as $\beta = 0$, is given; in that case, an interesting result emerges from \eqref{eq:magnetisation}, based on the fact that $\hat{E}(v, h, m, \beta = 0, \lambda^\ast(\beta = 0)) = G(v, h, m, \lambda^\ast(\beta = 0))$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & m_{v_i} = \mu_{\beta = 0, m, \lambda^\ast(\beta = 0)}(v_i) \\
 & \phantom{m_{v_i}} = \sum_{v_i} P_{\beta = 0, m, \lambda^\ast(\beta = 0)}(v_i) * v_i \\
@@ -261,24 +489,22 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{m_{v_i} =} * \frac{\sum_{v_i} exp(\lambda^\ast_{v_i}(0) (v_i - m_{v_i})) v_i}{\sum_{v_i} exp(\lambda^\ast_{v_i}(0) (v_i - m_{v_i}))} \\
 & \phantom{m_{v_i}} = \underbrace{\frac{exp(-\lambda^\ast_{v_i}(0)m_{v_i})}{exp(-\lambda^\ast_{v_i}(0)m_{v_i})}}_{= 1} \frac{\sum_{v_i} exp(\lambda^\ast_{v_i}(0) v_i) v_i}{\sum_{v_i} exp(\lambda^\ast_{v_i}(0) v_i )} \\
 & \phantom{m_{v_i}} = \frac{exp(\lambda^\ast_{v_i}(0))}{1 + exp(\lambda^\ast_{v_i}(0))} 
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>and similarly for $m_{h_j}$. It turns out that \eqref{eq:magnetisation} evaluated at $\beta = 0$ reveals a special case where invertible relationships between $m_{v_i}$/$m_{h_j}$ and $\lambda^\ast_{v_i}(0)$/$\lambda^\ast_{h_j}(0)$ are identified, suggesting how $\lambda^\ast(0)$ can be expressed in terms of $m$:</p>
-
-<script type="math/tex; mode=display">\begin{equation}
+<p>$$
+\begin{equation}
 \begin{cases}
 \lambda^\ast_{v_i}(0) = log(\frac{m_{v_i}}{1 - m_{v_i}}) \\
 \lambda^\ast_{h_j}(0) = log(\frac{m_{h_j}}{1 - m_{h_j}}) \\
 \end{cases}
 \label{eq:lambda_in_terms_of_m}
-\end{equation}</script>
-
+\end{equation}
+$$</p>
 <p>It is worth noting that the distribution $P_{\beta = 0, m, \lambda^\ast(\beta = 0)}(v, h)$, which is dictated by the energy function $\hat{E}(v, h, m, \beta = 0, \lambda^\ast(\beta = 0)) = G(v, h, m, \lambda^\ast(\beta = 0))$, can be completely factorised in terms of each individual $v_i$ and $h_j$ (thanks to the particular arrangement of $G$, which contains no interactions between variables); in other words, their distributions turn independent of one another when $\beta = 0$. That is a useful property for simplifying the computation whenever the summation over all possible configurations is requried, and will be utilised repeatedly in the following derivation.</p>
-
-<h3 id="step-2-">Step 2 <a name="approximation_step2"></a></h3>
+<h3 id="approximation_step2">Step 2</h3>
 <p>Moving onto step 2, the <em>Taylor expansion</em> of \eqref{eq:log_Z_hat_lambda_ast} around $\beta = 0$ up to the second-order term (Note that the incorporation of other higher-order terms is also possible) is first written out:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & log(\hat{Z}(\beta, m, \lambda^\ast(\beta))) \\ 
@@ -287,11 +513,10 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{\approx} \; + \left. \frac{\partial^2 log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial \beta^2} \right|_{\beta = 0} \frac{\beta^2}{2!} 
 \end{aligned}
 \label{eq:Taylor_expansion_with_unknown_coefficients}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>To complete the expansion, those coefficients associated with each term of different orders need to be computed. For the zeroth-order term:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & \left. log(\hat{Z}(\beta, m, \lambda^\ast(\beta))) \right|_{\beta = 0}  \nonumber \\
 & = log(\sum_{v, h} exp(-G(v, h, m, \lambda^\ast(\beta = 0)))) \nonumber \\
@@ -311,13 +536,11 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{=} + \sum_j -m_{h_j}log(m_{h_j}) + m_{h_j}log(1-m_{h_j}) - log(1-m_{h_j}) \nonumber \\
 & = \sum_i -(m_{v_i}log(m_{v_i}) + (1 - m_{v_i})log(1-m_{v_i})) \nonumber \\
 & \phantom{=} \sum_j -(m_{h_j}log(m_{h_j}) + (1 - m_{h_j})log(1-m_{h_j})) \label{eq:zeroth_order_coef}
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>with the equality at \eqref{eq:zeroth_term_lambda_replacement} resulting from \eqref{eq:lambda_in_terms_of_m}.</p>
-
 <p>In relation to the coefficient of the first-order term, the derivatives involved in this coefficient are actually not as intimidating as it seems, since they can be zeroed out with the help of \eqref{eq:magnetisation}:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & \left. \frac{\partial log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial \beta} \right|_{\beta = 0} \nonumber \\
 & = \frac{1}{\hat{Z}(\beta = 0, m, \lambda^\ast(\beta = 0))} \left. \frac{\partial \hat{Z}(\beta, m, \lambda^\ast(\beta))}{\partial \beta} \right|_{\beta = 0} \nonumber \\
@@ -335,13 +558,11 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & = \sum_i a_i  \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[v_i] + \sum_j b_j  \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[h_j] \nonumber \\
 & \phantom{=} + \sum_{i,j} w_{i,j}  \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[v_i]  \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[h_j] \label{expectation_minus_E} \\
 & = \sum_i a_i m_{v_i} + \sum_j b_j m_{h_j} + \sum_{i, j} w_{i,j} m_{v_i} m_{h_j} \label{eq:first_order_coef}
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>where the equality at \eqref{expectation_minus_E} comes from the independency of marginal distributions as discussed in <a href="#approximation_step1">step 1</a>.</p>
-
 <p>Proceeding the similar procedure for arriving at \eqref{eq:first_order_coef} to work out the second derivative of \eqref{eq:log_Z_hat_lambda_ast} and the coefficient ($\frac{1}{2!}$ is omitted for brevity) of the second-order term:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & \left. \frac{\partial^2 log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial \beta^2} \right|_{\beta = 0} \nonumber \\
 & = \left. \frac{\partial \frac{1}{\hat{Z}(\beta, m, \lambda^\ast(\beta))} \frac{\partial \hat{Z}(\beta, m, \lambda^\ast(\beta))}{\partial \beta}}{\partial \beta} \right|_{\beta = 0} \nonumber \\
@@ -362,32 +583,30 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{= \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[ \big(} + \sum_i \left. \frac{\partial \lambda^\ast_{v_i}(\beta)}{\partial \beta}\right|_{\beta = 0}(v_i - m_{v_i}) \nonumber \\
 & \phantom{= \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[ \big(} + \sum_j \left. \frac{\partial \lambda^\ast_{h_j}(\beta)}{\partial \beta}\right|_{\beta = 0}(h_j - m_{h_j})\big)^2] \nonumber \\
 & \phantom{=} - (\mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[-E(v, h)])^2  \label{eq:second_order_coef_with_lambda_and_expectation} \\
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>This time $\frac{\partial \lambda^\ast_{v_i}(\beta)}{\partial \beta}$ and $\frac{\partial \lambda^\ast_{h_j}(\beta)}{\partial \beta}$ do not disappear, so they all need to be evaluated at $\beta = 0$, which can be done by the following trick: the fact that $\frac{\partial log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial m_{v_i}} = -\lambda^\ast_{v_i}(\beta)$ implies $\frac{\partial \lambda^\ast_{v_i}(\beta)}{\partial \beta} = -\frac{\partial \frac{\partial log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial m_{v_i}}}{\partial \beta}$, and it follows that</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 &\left. \frac{\partial \lambda^\ast_{v_i}(\beta)}{\partial \beta}\right|_{\beta = 0} \\
 & = \left. -\frac{\partial \frac{\partial log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial m_{v_i}}}{\partial \beta} \right|_{\beta = 0} \\
 & = -\frac{\partial \; \underbrace{\left. \frac{\partial log(\hat{Z}(\beta, m, \lambda^\ast(\beta)))}{\partial \beta} \right|_{\beta = 0}}_{= \eqref{eq:first_order_coef}} }{\partial m_{v_i}} \\
 & = -\frac{\partial (\sum_{i'} a_{i'} m_{v_{i'}} + \sum_j b_j m_{h_j} + \sum_{i, j} w_{i',j} m_{v_{i'}} m_{h_j})}{\partial m_{v_i}} \\
 & = - a_i - \sum_j w_{i, j} m_{h_j}
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>As the same idea also applies to $\frac{\partial \lambda^\ast_{h_j}(\beta)}{\partial \beta}$, the conclusion below is reached:</p>
-
-<script type="math/tex; mode=display">\begin{equation}
+<p>$$
+\begin{equation}
 \begin{cases}
 \left. \frac{\partial \lambda^\ast_{v_i}(\beta)}{\partial \beta}\right|_{\beta = 0} = -a_i - \sum_j w_{i, j} m_{h_j} \\
 \left. \frac{\partial \lambda^\ast_{h_j}(\beta)}{\partial \beta}\right|_{\beta = 0} = -b_j - \sum_i w_{i, j} m_{v_i}
 \end{cases}
 \label{eq:evaluation_d_lambda_d_beta_at_0}
-\end{equation}</script>
-
+\end{equation}
+$$</p>
 <p>With \eqref{eq:evaluation_d_lambda_d_beta_at_0} at hand, \eqref{eq:second_order_coef_with_lambda_and_expectation} can now be expressed without involving anything relating to $\lambda^\ast(\beta)$:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[\big(-E(v, h) \nonumber \\ 
 & \phantom{\mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[ \big(} + \sum_i \left. \frac{\partial \lambda^\ast_{v_i}(\beta)}{\partial \beta}\right|_{\beta = 0}(v_i - m_{v_i}) \nonumber \\
@@ -397,11 +616,10 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{= \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[ \big(} + \sum_i (-a_i - \sum_j w_{i, j} m_{h_j})(v_i - m_{v_i}) \nonumber \\
 & \phantom{= \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[ \big(} + \sum_j (-b_j - \sum_i w_{i, j} m_{v_i})(h_j - m_{h_j})\big)^2] \nonumber \\
 & \phantom{=} - (\mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[-E(v, h)])^2 \label{eq:second_order_coef_with_expectation} \\ 
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>For futher simplifying \eqref{eq:second_order_coef_with_expectation}, mainly the evaluation of the expectations, one might expand the quadratic terms in \eqref{eq:second_order_coef_with_expectation} and carefully deal with not only the first moment, but also the second moments of all $v_i$ and $h_j$, which is a lengthy and error-prone process; or adopt another trick developed by brilliant researchers who have found a shortcut for computing the expectation of such a form: given two random variables $A$ and $B$ with $\mathbb{E}[B] = 0$, let $C = A - \mathbb{E}[A] + B$, then</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & \mathbb{E}[C^2] \\
@@ -411,11 +629,10 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & = \mathbb{E}[(A + B)^2] - \mathbb{E}[A]^2
 \end{aligned}
 \label{eq:expectation_trick}
-\end{equation} %]]></script>
-
+\end{equation}
+$$</p>
 <p>in which \eqref{eq:second_order_coef_with_expectation} are perfectly fitted by viewing $-E(v, h)$ as $A$ and $\sum_i (-a_i - \sum_j w_{i, j} m_{h_j})(v_i - m_{v_i}) + \sum_j (-b_j - \sum_i w_{i, j} m_{v_i})(h_j - m_{h_j})$ as $B$. Therefore, $C$ in our case becomes:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & -E(v, h) - \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[-E(v, h)]  \\
 & \; + \sum_i (-a_i - \sum_j w_{i, j} m_{h_j})(v_i - m_{v_i}) \\
@@ -426,11 +643,10 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{=} - \sum_j b_j(h_j - m_{h_j}) - \sum_{i,j} w_{i, j} m_{v_i}(h_j - m_{h_j}) \\
 & = \sum_{i,j} w_{i,j} (v_i h_j - m_{v_i} m_{h_j} - v_i m_{h_j} + m_{v_i} m_{h_j} - m_{v_i} h_j + m_{v_i} m_{h_j}) \\
 & = \sum_{i,j} w_{i,j} (v_i - m_{v_i})(h_j - m_{h_j})
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>and \eqref{eq:second_order_coef_with_expectation} is just equivalent to $\mathbb{E}[C^2]$, which means:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[\big(-E(v, h) \nonumber \\
 & \phantom{\mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[ \big(} + \sum_i (-a_i - \sum_j w_{i, j} m_{h_j})(v_i - m_{v_i}) \nonumber \\
@@ -452,11 +668,10 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{= + \sum_{i \neq k, j} w_{i,j} w_{k,j} \Big(} * \underbrace{\mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[(v_k - m_{v_k})]}_{= 0} \nonumber \\
 & \phantom{= + \sum_{i \neq k, j} w_{i,j} w_{k,j} \Big(} * \mathbb{E}_{P_{0, m, \lambda^\ast(0)}}[(h_j - m_{h_j})^2] \Big) \nonumber \\
 & = \sum_{i,j} w^2_{i,j} (m_{v_i} - m_{v_i}^2) (m_{h_j} - m_{h_j}^2) \label{eq:second_order_coef} \\
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>Surprisingly, the coefficent of the second-order term is just as compact as \eqref{eq:second_order_coef} is. Now that all the ingredients are ready, the complete expression of \eqref{eq:Taylor_expansion_with_unknown_coefficients} can be obtained by the substitution of \eqref{eq:zeroth_order_coef}, \eqref{eq:first_order_coef}, and \eqref{eq:second_order_coef}:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & log(\hat{Z}(\beta, m, \lambda^\ast(\beta))) \\ 
@@ -467,13 +682,11 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{\approx} \; + \big(\sum_{i,j} w^2_{i,j} (m_{v_i} - m_{v_i}^2) (m_{h_j} - m_{h_j}^2)\big) \frac{\beta^2}{2}
 \end{aligned}
 \label{eq:Taylor_expansion}
-\end{equation} %]]></script>
-
-<h3 id="step-3-">Step 3 <a name="approximation_step3"></a></h3>
-
+\end{equation}
+$$</p>
+<h3 id="approximation_step3">Step 3</h3>
 <p>As stated above, the goal at <a href="#approximation_step3">step 3</a> is to find the stationary points of the approximate function, $A(\beta, m)$, while $\beta$ is treated as a constant which is fixed to some value. Recall that at the beginning of the derivation the relaxation introduced has made $\beta$ a free variable instead of a constant 1; therefore to match the setting of the true objective, the particular choice of $\beta = 1$ is used. After $\beta$ is set, the remaining work is to take the derivatives of $A(\beta, m)$ with respect to each $m_{v_i}$ and $m_{h_j}$, which are the only variables left in $A$, and assigning them to 0 in an attempt to acquire a solution:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{equation}
 \begin{aligned}
 & \frac{A(\beta = 1, m)}{\partial m_{v_i}} \\
@@ -481,9 +694,9 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{=} + \sum_j w_{i,j} m_{h_j} + \sum_j w_{i,j}^2 (\frac{1}{2} - m_{v_i})(m_{h_j} - m_{h_j}^2) = 0
 \end{aligned}
 \label{eq:d_A_d_m_vi}
-\end{equation} %]]></script>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{equation}
+$$</p>
+<p>$$
 \begin{equation}
 \begin{aligned}
 & \frac{A(\beta = 1, m)}{\partial m_{h_j}} \\
@@ -491,24 +704,22 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{=} + \sum_i w_{i,j} m_{v_i} + \sum_i w_{i,j}^2 (m_{v_i} - m_{v_i}^2) (\frac{1}{2} - m_{h_j}) = 0
 \end{aligned}
 \label{eq:d_A_d_m_hj}
-\end{equation} %]]></script>
-
-<p>Calling it an “attempt” is because, while \eqref{eq:d_A_d_m_vi} and \eqref{eq:d_A_d_m_hj} do not look very complicated, there is no closed-form solution for each $m_{v_i}$ and $m_{h_j}$; nevertheless, those equations still provide the information about what rules should be obeyed at the stationary point. For example, through some rearrangement of \eqref{eq:d_A_d_m_vi}:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+\end{equation}
+$$</p>
+<p>Calling it an "attempt" is because, while \eqref{eq:d_A_d_m_vi} and \eqref{eq:d_A_d_m_hj} do not look very complicated, there is no closed-form solution for each $m_{v_i}$ and $m_{h_j}$; nevertheless, those equations still provide the information about what rules should be obeyed at the stationary point. For example, through some rearrangement of \eqref{eq:d_A_d_m_vi}:</p>
+<p>$$
 \begin{align}
 & \frac{A(\beta = 1, m)}{\partial m_{v_i}} \nonumber \\
 & = -(log(m_{v_i}) - log(1 - m_{v_i})) + a_i \nonumber \\
 & \phantom{=} + \sum_j w_{i,j} m_{h_j} + \sum_j w_{i,j}^2 (\frac{1}{2} - m_{v_i})(m_{h_j} - m_{h_j}^2) = 0 \nonumber \\
 & \implies log(\frac{m_{v_i}}{1 - m_{v_i}}) = a_i + \sum_j w_{i,j} m_{h_j} \nonumber \\
-& \phantom{\implies log(\frac{m_{v_i}}{1 - m_{v_i}}) =}	+ \sum_j w_{i,j}^2 (\frac{1}{2} - m_{v_i})(m_{h_j} - m_{h_j}^2) \nonumber \\
+& \phantom{\implies log(\frac{m_{v_i}}{1 - m_{v_i}}) =} + \sum_j w_{i,j}^2 (\frac{1}{2} - m_{v_i})(m_{h_j} - m_{h_j}^2) \nonumber \\
 & \implies m_{v_i} = sigmoid\big(a_i + \sum_j w_{i,j} m_{h_j} \nonumber \\ 
 & \phantom{\implies m_{v_i} = sigmoid\big(} + \sum_j w_{i,j}^2 (\frac{1}{2} - m_{v_i})(m_{h_j} - m_{h_j}^2)\big) \label{eq:cc_m_vi} \\
-\end{align} %]]></script>
-
+\end{align}
+$$</p>
 <p>a constraint \eqref{eq:cc_m_vi}, which fits the role of $m_{v_i}$ as the mean of the marginal distribution of $v_i$, is established (constraints for all other $m$ variables can be derived similarly). It specifies that $m_{v_i}$ will stay unchanged, as though it converges, under the transformation involing all other $m_{h_j}$. The researchers who came up with this idea of approximation then drew an analogy between such constraints and the self-consistency rules in <strong>B</strong>elief <strong>P</strong>ropagation, based on which they proposed that one can update all $m_{v_i}$ and all $m_{h_j}$ alternatively and iteratively by:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{cases}
 \begin{aligned}
 & m_{v_i} = sigmoid\big(a_i + \sum_j w_{i,j} m_{h_j} \\
@@ -518,15 +729,12 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & m_{h_j} = sigmoid\big(b_j + \sum_i w_{i,j} m_{v_i} \\
 & \phantom{m_{h_j} = sigmoid\big(} + \sum_i w_{i,j}^2 (m_{v_i} - m_{v_i}^2)(\frac{1}{2} - m_{h_j})\big) \\
 \end{aligned}
-\end{cases} %]]></script>
-
+\end{cases}
+$$</p>
 <p>to reach a steady state where they stop changing (have converged), starting from randomly (or with some heuristics) initialised $m_{v_i}$ and $m_{h_j}$. Once $m$ variables converge, say to some $m^\ast$, $m^\ast$ will respect all contraints required for being a stationary point, and the whole process is finished by taking $m^\ast$ as a solution and evaluating $A(\beta = 1, m^\ast)$ to produce the approximate value for \eqref{eq:log_Z}.</p>
-
-<h2 id="intuition">Intuition</h2>
-
+<h2>Intuition</h2>
 <p>As other researchers have pointed out, this method can be interpreted as an extension of <em>mean-field approximation</em>, with the factorised marginal distributions $P_f(v)$ and $P_f(h)$, which are Bernoulli in the example above, being defined by $m_{v_i}$ and $m_{h_j}$. To see that, considering the case where <em>Taylor expansion</em> is conducted only up to the first-order term, the approximation function, named $A_1(\beta = 1, m)$, can be converted into an interesting form:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{align}
 & A_1(\beta = 1, m) \nonumber \\
 & = -\sum_i m_{v_i}log(m_{v_i}) + (1 - m_{v_i})log(1-m_{v_i}) \nonumber \\
@@ -538,29 +746,25 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & \phantom{=} + \mathbb{E}_{P_f(v, h)}[log(exp(-E(v, h))) - log(Z)] + log(Z)  \nonumber \\
 & = \mathbb{E}_{P_f(v, h)}[log(\frac{P(v, h)}{P_f(v, h)})] + log(Z) \nonumber \\ 
 & = -KL[P_f(v, h)\|P(v, h)] + log(Z) \\
-\end{align} %]]></script>
-
-<p>Thus taking the derivatives of $A_1(\beta = 1, m)$ with respect to $m_{v_i}$ and $m_{h_j}$ and setting them to 0 is equivalent to doing it with $KL[P_f(v, h)|P(v, h)]$ (as log(Z) is a constant), and the latter one is exactly the step for finding the parameters in <em>mean-field approximation</em>; such a link is also true when the <em>Taylor Expansion</em> is taken to a higher order, where extra terms, which serve as correction of error from the perspective of <em>Taylor expansion</em>, will be present together with $KL[P_f(v, h)|P(v, h)]$ to mount some tweaks and thus imporve the approximation result.</p>
-
+\end{align}
+$$</p>
+<p>Thus taking the derivatives of $A_1(\beta = 1, m)$ with respect to $m_{v_i}$ and $m_{h_j}$ and setting them to 0 is equivalent to doing it with $KL[P_f(v, h)\|P(v, h)]$ (as log(Z) is a constant), and the latter one is exactly the step for finding the parameters in <em>mean-field approximation</em>; such a link is also true when the <em>Taylor Expansion</em> is taken to a higher order, where extra terms, which serve as correction of error from the perspective of <em>Taylor expansion</em>, will be present together with $KL[P_f(v, h)\|P(v, h)]$ to mount some tweaks and thus imporve the approximation result.</p>
 <p>This interpretation also shows a further insight into the roles which $m$ variables plays: they are the parameters needed to describe the marginal distributions of $v$ and $h$ when each of them is treated as being independent of one another. So if it is binary variables that are being modelled, there will be $m_{v_i}$ and $m_{h_j}$ introduced acting as means to specify each factorised Bernoulli distribution, just as seen in the example; on the other hand, if the energy function involves continuous variables, such as the <em>RBM</em> with Gaussian visible units:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & E_g(v, h) = \sum_i \frac{(v_i - \mu_i)^2}{2\sigma_i^2} - \sum_j b_j h_j - \sum_{i,j} w_{i,j} \frac{v_i}{\sigma_i} h_j
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>then the helping function $G_g$ in this case will become:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & G_g(v, h, m, \lambda(\beta)) \\
 & = -\sum_i \lambda_{v_{i_1}}(\beta) (v_i - m_{v_{i_1}}) + \sum_i \lambda_{v_{i_2}}(\beta) (v_i^2 - m_{v_{i_2}}) \\
 & \phantom{=} - \sum_j \lambda_{h_j}(\beta) (h_j - m_{h_j})
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>where an additional $\lambda_{v_{i_2}}(\beta) (v_i^2 - m_{v_{i_2}})$ is set up for each $v_i$ to parameterise their second moments, as defining a univariate Gaussian distribution takes a mean (the first moment) and a variance (the second moment - the first moment squared). In case you wonder how those extra terms works in forming Gaussian marginals, recall that when $\beta = 0$, $v$ and $h$ turn independent in the modified distribution $P_g$ described by $\hat{E}_g(\beta, v, h, m, \lambda(\beta)) = \beta E_g(v, h) + G_g(v, h, m, \lambda(\beta))$, from which the factorised marginals can be uncovered:</p>
-
-<script type="math/tex; mode=display">% <![CDATA[
+<p>$$
 \begin{aligned}
 & P_{g_{\beta = 0, m, \lambda(\beta = 0)}}(v_i) \\
 & = \frac{\int_{v_{\neg i}}\sum_h exp(-G_g(v, h, m, \lambda(0)))}{\int_v \sum_h exp(-G_g(v, h, m, \lambda(0)))} \\
@@ -570,62 +774,19 @@ m_{h_j} = \mu_{\beta, m, \lambda^\ast(\beta)}(h_j) \\
 & = \frac{exp(-\lambda_{v_{i_2}}(0)(v_i^2 - \frac{\lambda_{v_{i_1}}(0)}{\lambda_{v_{i_2}}(0)}v_i)) exp(-\frac{\lambda_{v_{i_1}}(0)^2}{4\lambda_{v_{i_2}}(0)} ) }{\int_{v_i} exp(-\lambda_{v_{i_2}}(0)(v_i^2 - \frac{\lambda_{v_{i_1}}(0)}{\lambda_{v_{i_2}}(0)}v_i)) exp(-\frac{\lambda_{v_{i_1}}(0)^2}{4\lambda_{v_{i_2}}(0)} )} \\
 & \propto exp(-\frac{1}{2} \frac{(v_i - \frac{\lambda_{v_{i_1}}(0)}{2\lambda_{v_{i_2}}(0)})^2}{\frac{1}{2\lambda_{v_{i_2}}(0)}}) \\
 & \implies v_i \sim N(\frac{\lambda_{v_{i_1}}(0)}{2\lambda_{v_{i_2}}(0)}, \frac{1}{2\lambda_{v_{i_2}}(0)})
-\end{aligned} %]]></script>
-
+\end{aligned}
+$$</p>
 <p>See, it is Gaussian!</p>
-
-<h2 id="references">References</h2>
+<h2 class="reference-title">References</h2>
 <ul>
-  <li><a href="https://arxiv.org/abs/1506.02914">Marylou Gabrie, Eric W Tramel, and Florent Krzakala. “Training Restricted Boltzmann Ma-chine via the Thouless-Anderson-Palmer free energy”. In:Advances in Neural InformationProcessing Systems. Ed. by C. Cortes et al. Vol. 28. Curran Associates, Inc., 2015, pp. 640–648</a></li>
-  <li><a href="https://nerdwisdom.files.wordpress.com/2007/10/ja910924.pdf">A Georges and J S Yedidia. “How to expand around mean-field theory using high-temperatureexpansions”. In:Journal of Physics A: Mathematical and General24.9 (May 1991), pp. 2173–2192.doi:10.1088/0305-4470/24/9/024</a></li>
+<li><a href="https://arxiv.org/abs/1506.02914">Marylou Gabrie, Eric W Tramel, and Florent Krzakala. “Training Restricted Boltzmann Ma-chine via the Thouless-Anderson-Palmer free energy”. In:Advances in Neural InformationProcessing Systems. Ed. by C. Cortes et al. Vol. 28. Curran Associates, Inc., 2015, pp. 640–648</a></li>
+<li><a href="https://nerdwisdom.files.wordpress.com/2007/10/ja910924.pdf">A Georges and J S Yedidia. “How to expand around mean-field theory using high-temperatureexpansions”. In:Journal of Physics A: Mathematical and General24.9 (May 1991), pp. 2173–2192.doi:10.1088/0305-4470/24/9/024</a></li>
 </ul>
 
-</div>
+</br></br></br></br>
 
-
-</article>
-
-
-
-<foot>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Derictory -->
-
-	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
-  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
-
-
-<!-- Directory -->
-
-<script src="/Blogs/assets/js/main.js"></script>
-
-</foot>
-
-
-
-  </div>
+  </article>
+</main>
 
 </body>
-
-
-<footer class="site-footer">
-
-
-	<center>
-			
-	<a class="tab-link" href="/Blogs/archive/">Archive</a> /
-	<a class="tab-link" href="/Blogs/category/">Category</a> / 
-	<a class="tab-link" href="/Blogs/tags/">Tags</a> 
-
-	
-	</center>
-    
-
-</footer>
-
-
-
 </html>

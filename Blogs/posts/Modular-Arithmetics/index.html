@@ -1,0 +1,529 @@
+
+
+<html data-theme="dark">
+  <head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+
+
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+    article div.post-tags span:not(:last-child)
+    {
+      border-right: 0.1rem solid;
+      margin-right: 0.6rem; 
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Basic Modular Arithmetic and a Simple Application
+</title>
+  
+  </head>
+
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
+
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
+    
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
+
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>Basic Modular Arithmetic and a Simple Application</h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>28.Sep.2021</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;NumberTheory
+  </span>
+  
+  
+</div>
+
+
+
+<p>Speaking of modular arithmetic, the first impression coming to my mind is the terrifying cryptography, and therefore I have long been shy away from it. Inevitably, this topic showed up again during the course of my recent paper reading, but this time it was presented as a technique to define invertible linear functions for integers $\ge 0$. Despite the same fundamental concept as cryptography, that use of modular arithmetic looks much more approachable, emboldening me to write down this post, which contains the overdue study I have finally conducted about modular arithmetic, illustrated by that interesting application.</p>
+<h2>Definition <a name="definition"></a></h2>
+<p>Given an integer $a$, one can specify it in terms of a positive integer $n$ by the equation $a = q_a * n + r$, where $q_a$ and $r$ are uniquely defined under the constraints $0 \le r \lt n$ and $r, q_a \in \mathbb{Z}$; in fact, this is just another way of encoding integer division, with $a$ being the dividend, $n$ being the divisor, $q_a$ being the quotient, and $r$ being the remainder. In modular arithmetic, as remainders are of the most interest, that expression is turned further succinct into $a \equiv r \; (mod \; n)$, which states $a$ and $r$ have the same remainder when divided by $n$ ($n$ now has an alternative name: <em>modulus</em>), regardless of their quotients. By that definition, if there is another integer $b$ satisfying $b = q_b * n + r$, then it can be also expressed as $a \equiv b \; (mod \; n)$.</p>
+<h2>Modular Addition/Subtraction <a name="addition_subtraction"></a></h2>
+<p>A natural question arises as to how arithmetical operations can be defined in this context, and let us start with the easy case of addition. Supposing $a \equiv b \; (mod \; n)$ and $c \equiv d \; (mod \; n)$, according to the <a href="definition">definition</a> it follows that:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a = q_a * n + r_{ab} \\
+& b = q_b * n + r_{ab} \\
+& c = q_c * n + r_{cd} \\
+& d = q_d * n + r_{cd}
+\end{aligned}
+\label{eq:a_b_c_d_rewritting}
+\end{equation}
+$$</p>
+<p>where $0 \le r_{ab}, r_{cd} \lt n$ and $r_{ab}, r_{cd}, q_a, q_b, q_c, q_d \in \mathbb{Z}$. From that the addition of $a$ and $c$ and the addition of $b$ and $d$ can be expressed as:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a + c = (q_a + q_c) * n + r_{ab} + r_{cd} \\
+& b + d = (q_b + q_d) * n + r_{ab} + r_{cd} \\
+\end{aligned}
+\label{eq:a_plus_c_b_plus_d}
+\end{equation}
+$$</p>
+<p>and hence it can be concluded that</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a + c \equiv r_{ab} + r_{cd} \; (mod \; n) \\
+& b + d \equiv r_{ab} + r_{cd} \; (mod \; n) \\
+& \llap{\implies} a + c \equiv b + d \; (mod \; n)
+\end{aligned}
+\label{modular_addition}
+\end{equation}
+$$</p>
+<p>In connection with substraction, the same argument applies:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a - c = (q_a - q_c) * n + r_{ab} - r_{cd} \\
+& b - d = (q_b - q_d) * n + r_{ab} - r_{cd} \\
+\end{aligned}
+\label{a_minus_c_b_minus_d}
+\end{equation}
+$$</p>
+<p>which yields</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a - c \equiv r_{ab} - r_{cd} \; (mod \; n) \\
+& b - d \equiv r_{ab} - r_{cd} \; (mod \; n) \\
+& \llap{\implies} a - c \equiv b - d \; (mod \; n)
+\end{aligned}
+\label{eq:modular_subtraction}
+\end{equation}
+$$</p>
+<h2>Multiplication <a name="multiplication"></a></h2>
+<p>Based on \eqref{eq:a_b_c_d_rewritting}, the multiplication of $a$ and $c$, as well as the one of $b$ and $d$, can be expressed as follows:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a * c = (q_a * n + r_{ab}) * (q_c * n + r_{cd}) \\
+& \phantom{a * c} = (q_a * n * q_c * n + r_{ab} * q_c * n + \\
+& \phantom{a * c = (\;} r_{cd} * q_a * n + r_{ab} * r_{cd})
+\end{aligned}
+\label{eq:a_times_c}
+\end{equation}
+$$</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& b * d = (q_b * n + r_{ab}) * (q_d * n + r_{cd}) \\
+& \phantom{b * d} = (q_b * n * q_d * n + r_{ab} * q_d * n + \\
+& \phantom{b * d = (\;} r_{cd} * q_b * n + r_{ab} * r_{cd})
+\end{aligned}
+\label{eq:b_times_d}
+\end{equation}
+$$</p>
+<p>and accordingly,</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a * c \equiv r_{ab} * r_{cd} \; (mod \; n) \\
+& b * d \equiv r_{ab} * r_{cd} \; (mod \; n) \\
+& \llap{\implies} a * c \equiv b * d \; (mod \; n)
+\end{aligned}
+\label{eq:modular_multiplication}
+\end{equation}
+$$</p>
+<p>It is worth noting an interesting phenomenon about the progression of remainders under multiplication: if a sequence of remainders defined as $0 = r_0 = (0 * a) \% n, r_1 = (1 * a) \% n, \dotsc, r_k = (k * a) \% n, \dotsc$ is written out ($\%$ stands for the operation of division but with the remainder returned instead), at some point it will return back to $0$, and thus forms a loop repeating forever. While the looping behaviour seems obvious due to the fact that it will eventually occur at $k = n$ ($0 = (n * a) \% n$), there is actually a hidden relationship between $a$, $n$, and how remainders loop; in particular, let us consider the maximum length of such a loop. Since for the progression from $0$ to $0$ to happen, there can not be any inner loop inbetween, or otherwise the succession will be stuck in that inner loop. The absence of inner loops suggests all remainders between two $0$s must be distinct, and therefore the length of a loop, starting from the first $0$ until reaching the remainder before the next $0$, can only be up to $n$, which is the number of different values available for remainders. </p>
+<p>Furthermore, when a remainder sequence containing a loop of a maximum length, it can be rearranged like this:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& \underbrace{(0 * a) \% n, (1 * a) \% n, \dotsc, ((n-1) * a) \% n}_{loop \; 0}, \\
+& \underbrace{(n * a) \% n, ((n + 1) * a) \% n, \dotsc, ((2n-1) * a) \% n}_{loop \; 1}, \\
+& \dotsc \\
+& \underbrace{(l * n * a) \% n, \dotsc, (((l+1) * n - 1) * a) \% n}_{loop \; l}, \\
+& \dotsc\end{aligned}
+\label{eq:remainder_sequence}
+\end{equation}
+$$</p>
+<p>where $o * a \equiv (l * n + o) * a \; (mod \; n)$ for $0 \le o \lt n$, $0 \le l$ and $o, l \in \mathbb{Z}$. Considering integers from $1$ to $n-1$ as all potential divisors for $n$ which are small than $n$, $loop \; 0$ shows that none of those divisors of $n$ times $a$ can generate a product divisible by $n$, which implies $a$ and $n$ must have no positive common divisors except for the one that is always shared across all numbers: $1$; in other words, their <strong>G</strong>reatest <strong>C</strong>ommon <strong>D</strong>ivisor, $gcd(a, n)$, is equal to 1, and thus they are <em>coprime</em>.</p>
+<p>Also it is true the other way around: if $a$ and $n$ are coprime, then the remainder sequence generated by the two numbers will appear similar to \eqref{eq:remainder_sequence}, and hence the length of its $0$-to-$0$ loop reaches the maximum value, $n$.</p>
+<h2>Multiplication by Multiplicative Inverses</h2>
+<p>In case you wonder why this section is not named "division", the title used here is just another way to refer to the same operation but as the multiplication by the inverse of a number, rather than the division by that number; however, it is invalid to simply take the reciprocal of an integer as its inverse and conduct the modular multiplication with it, since by definition all operands involved need to be integers. To make the notion of "division" applicable in modular arithmetic, mathematicians define the multiplicative inverse of an integer $a$, which is another integer $a'$, in the context of $(mod \; n)$ to be any integer that satisfies:</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& a' * a \equiv 1 \; (mod \; n)
+\end{aligned}
+\label{eq:inverse_definition}
+\end{equation}
+$$</p>
+<p>so that one can perform calculations like $a' * a * c \equiv 1 * c \equiv c \; (mod \; n)$, just as though dividing $a * c$ by $a$ (when $a \ne 0$) to obtain $c$.</p>
+<p>While \eqref{eq:inverse_definition} successfully translates multiplicative inverses and allows for the realisation of "modular division", sadly $a'$ does not always exist for every $a$ and $n$ pair unless a certain condition is met. Recall the <a href="multiplication">discussion</a> about the link between $a$ and $n$ being coprime, and the corresponding remainder sequence containing a longest loop of a length $n$; as that loop will go through every possible remainder under the modulus $n$, there must exist entries of $a$ multiplied by some respective integer in that sequence at which the resulting remainder is $1$; as a result, the coprime relationship of $a$ and $n$ is a sufficient condition for $a'$ to exist. </p>
+<p>In addition, it is also a necessary condition: as per \eqref{eq:inverse_definition} $a'$ can not be zero; so if $a'$ exists and $a' \gt 0$, it follows that</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& \underbrace{0 * a'}_{k_0} * a \equiv 0 \; (mod \; n) \\
+& \underbrace{1 * a'}_{k_1} * a \equiv 1 \; (mod \; n) \\
+& \underbrace{2 * a'}_{k_2} * a \equiv 2 \; (mod \; n) \\
+& \vdots \\
+& \underbrace{(n-1) * a'}_{k_{n-1}} * a \equiv n-1 \; (mod \; n)
+\end{aligned}
+\label{eq:derivation_from_positive_a_prime}
+\end{equation}
+$$</p>
+<p>On the other hand, when $a' \lt 0$ we have</p>
+<p>$$
+\begin{equation}
+\begin{aligned}
+& \underbrace{0 * a'}_{k_0} * a \equiv 0 \; (mod \; n) \\
+& \underbrace{-1 * a'}_{k_1} * a \equiv -1 \equiv n-1 \; (mod \; n) \\
+& \underbrace{-2 * a'}_{k_2} * a \equiv -2 \equiv n-2 \; (mod \; n) \\
+& \vdots \\
+& \underbrace{-(n-1) * a'}_{k_{n-1}} * a \equiv -n+1 \equiv 1 \; (mod \; n)
+\end{aligned}
+\label{eq:derivation_from_negative_a_prime}
+\end{equation}
+$$</p>
+<p>Either case suggests every possible remainder given the modulus $n$ can be produced via the modular multiplication of $a$ by some non-negative integer $k_i$, and therefore they all appear in the remainder sequence described in the <a href="multiplication">last section</a>; since that sequence is merely comprised of a continuously repeating remainder loop, the appearance of these remaiders implies they must be the members of the loop. Consequently, the existance of $a'$ leads to a remainder loop of a length $n$, and as shown <a href="multiplication">previously</a>, if the length of such a remainder loop is $n$ (the maximum length for the modulus $n$), $a$ and $n$ are coprime.</p>
+<p>On a side note, there are two relating facts to \eqref{eq:inverse_definition} and the coprime condition: firstly, because $a$ can be viewed as the multiplicative inverse of $a'$, the argument above also applies to $a'$, which means for any $(a, a')$ pair satisfying \eqref{eq:inverse_definition}, both of them are coprime with $n$ at the same time; secondly, since \eqref{eq:inverse_definition} can be equivalently expressed as $a' * a = q * n + 1$ for some $q \in \mathbb{Z}$, $a$ coprime with $n$ indicates one can rewrite the equation into the form of B&eacute;zout's identity $a' * a - q * n = gcd(a, n) = 1$, and obtain $a'$ via the efficient <a href="https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm"><em>extended euclidean algorithm</em></a>. </p>
+<h2>Invertible Linear Functions for Integers $\ge 0$</h2>
+<p>In the general case of real numbers, a linear function is any one of the form $y = f(x) = a*x + b$ with $a, b, x, y \in \mathbb{R}$. Its invertibility is guaranteed as long as $a \ne 0$, and its inverse function can be directly read out as $x = f'(y) = \frac{y - b}{a}$. Easy, right? But how about when $a, b, x, y$ are constrained to be intergers $\ge 0$? Is it possible to define similar invertible functions for that particular scenario?</p>
+<p>It tures out through modular arithmetic it is! Let us assume our integers will not exceed an upperbound integer $n \gt 0$, i.e. $0 \le a, b, x, y \lt n$; so to define modular arithmetic in this case it is natural to pick $n$ as the modulus, and the following equations are immediately true based on the <a href="addition_subtraction">discussion</a> above:</p>
+<p>$$
+\begin{equation}
+\begin{cases}
+y \equiv x + b \; (mod \; n) \\
+y - b \equiv x + b - b \equiv x \; (mod \; n) 
+\end{cases}
+\label{eq:invertible_integer_addition_subtraction}
+\end{equation}
+$$</p>
+<p>Note that as $0 \le b \lt n$, there are only $n$ possible ways to shift the value of $x$ and $y$, each of which in turn uniquely shift their corresponding remainder to one of the $n$ different remainder choices; so with the range limit $0 \le x, y \lt n$, the equations in \eqref{eq:invertible_integer_addition_subtraction} are in effect two one-to-one remainder mappings, and inverse to each other.</p>
+<p>Next, like the counterpart of real numbers, an extra constraint for $a$ is imposed to make sure its involvement still renders the resulting function invertible. That constraint, as you might have imagined, is that $a$ and $n$ also needs to be coprime, which allows us to exploit the multiplicative inverse of $a$, $a'$, for mapping back and forth between $x$ and $y$:</p>
+<p>$$
+\begin{equation}
+\begin{cases}
+y \equiv a * x \; (mod \; n) \\
+a' * y \equiv a' * a * x \equiv 1 * x \equiv x \; (mod \; n)
+\end{cases}
+\label{eq:invertible_integer_multiplication_division}
+\end{equation}
+$$</p>
+<p>with $0 \le a' \lt n$ to meet the range limit. Due to $0 \le x, y \lt n$, each result of $a * x \; (mod \; n)$ and $a' * y \; (mod \; n)$ given different $x$ and $y$ coincides with a unique remainder in the $loop \; 0$ of their respective remainder sequence as \eqref{eq:remainder_sequence}; hence \eqref{eq:invertible_integer_multiplication_division} describes again two one-to-one remainder mappings with one being the inverse of the other.</p>
+<p>Lastly, putting all pieces together, the form of the invertible linear functions for integers $\ge 0$ defined in the context of modular arithmetic appear just as the one for real numbers:</p>
+<p>$$
+\begin{equation}
+\begin{cases}
+y \equiv a * x + b \; (mod \; n) \\
+x \equiv a' * (y - b) \; (mod \; n)
+\end{cases}
+\end{equation}
+$$</p>
+<p>where $0 \le a, a', b, x, y \lt n$; $a, a', b, x, y, n \in \mathbb{Z}$; and $a' * a \equiv 1 \; (mod \; n)$ ($a$ and $a'$ are both coprime with $n$)</p>
+<h2 class="reference-title">References</h2>
+<ul>
+<li><a href="http://arxiv.org/abs/1905.10347">Dustin Tran et al. “Discrete Flows: Invertible Generative Models of Discrete Data”. In:CoRRabs/1905.10347 (2019)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Modular_arithmetic">https://en.wikipedia.org/wiki/Modular_arithmetic</a></li>
+<li><a href="https://ericlippert.com/2013/11/12/math-from-scratch-part-thirteen-multiplicative-inverses/">https://ericlippert.com/2013/11/12/math-from-scratch-part-thirteen-multiplicative-inverses/</a></li>
+</ul>
+
+</br></br></br></br>
+
+  </article>
+</main>
+
+</body>
+</html>
