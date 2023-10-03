@@ -1,0 +1,512 @@
+
+
+<html data-theme="dark">
+  <head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+	
+  <!-- font awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="/Blogs/static/main/css/classless.css">
+
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;500;700&display=swap');
+
+
+    html[data-theme='dark'] {
+      /* foreground   | background color */
+      --cfg:   #cdcdcd; --cbg:    #1b1b1b;
+      --cdark: #999;    --clight: #343434; /*#333;*/
+      --cmed:  #566;
+      --clink: #1ad;
+      --cemph: #0b9;    --cemphbg: #0b91;
+
+
+      --font-p: 1.2em/1.7 "Fira Mono", monospace;
+      --font-h: .9em/1.5 "Fira Mono", monospace; 
+      --font-c: .9em/1.4 "Fira Mono", monospace;
+
+      --width: 54rem;
+      --navpos: fixed;
+	    --ornament: "";
+    }
+
+    article * {
+      scroll-margin-top: 9rem; 
+    }
+
+    p,
+    article table{
+      margin-top: 3rem;
+    }
+
+    article figure {
+      text-align: center;
+    }
+
+    article figure img {
+      background: #cdcdcd;
+    }
+
+    article h3:before {
+      left: -0.5rem;
+      margin-left: 0rem;
+      font-size: 1.5rem;
+    }
+
+    article h2:before {
+      left: -0.5rem;
+      margin-left: -2rem;
+      font-size: 1.5rem;
+    }
+
+    article h2.reference-title:before {
+      display: none;
+    }
+
+    article ul {
+      overflow: hidden;
+    }
+
+    
+
+    a[href] {
+      text-decoration: none;
+    }
+
+    
+
+    nav ul:not(:first-child) li {
+      padding: 0;
+      margin: 0;
+    }
+
+
+    nav input[type="checkbox"]:hover + label, 
+    nav input[type="checkbox"]:focus + label, 
+    nav a.nav-active,
+    nav a:hover, 
+    nav a:focus {
+      background: black;
+    }
+
+
+    nav li > a {
+      display: block;
+    }
+
+    nav > span {
+      height: inherit;
+      background: inherit;
+    }
+
+    nav > span > input[type="checkbox"] {
+      width: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label { 
+      color: var(--clink); cursor: pointer; 
+    }
+
+
+    nav > span > ul {
+      background: inherit;
+      display: inline-block;
+      width: auto;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav > span > input[type="checkbox"] + label {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+    nav > span > ul > li {
+      height: 4rem;
+      display: inline-block;
+    }
+
+    nav > span > ul > li > a {
+      height: inherit;
+      padding: 1rem 0.6rem;
+    }
+
+   
+    nav > span.left-menu {
+      float: left;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label {
+      float: left;
+      display: none;
+    }
+
+    nav > span.left-menu > input[type="checkbox"] + label + ul {
+      float: left;
+      clear: left;
+      
+    }
+    
+    nav > span.left-menu > input[type="checkbox"] + label + ul > li{
+      float: left;
+    }
+
+     
+    nav > span.right-menu {
+      float: right;
+    }
+
+
+    nav > span.right-menu > input[type="checkbox"] + label {
+      float: right;
+      display: inline-block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul {
+      display: none;
+      float: right;
+      clear: right;
+      overflow-y: auto;
+      max-height: 50vh;
+
+      border: var(--border);
+      border-radius: 4px;
+
+    }
+
+    nav > span.right-menu > input[type="checkbox"] + label + ul > li {
+      display: block;
+    }
+
+    nav > span.right-menu > input[type="checkbox"]:hover + label + ul,
+    nav > span.right-menu > input[type="checkbox"]:focus + label + ul,
+    nav > span.right-menu > input[type="checkbox"] ~ ul:hover {
+        display: inline-block;
+    }
+
+   
+    body>nav {
+      
+      left: max(calc(50vw - var(--width)/2), 0vw);
+      right: max(calc(50vw - var(--width)/2), 0vw);
+      width: auto;
+      height: 4rem;
+      box-shadow: none;
+      z-index: 100;
+      overflow-y: visible;
+
+    }
+
+		article div.post-tags span {
+			white-space: nowrap;
+		}
+
+    article div.post-tags span:not(:first-child):before
+    {
+			content: "|";
+    }
+  
+   
+    @media (max-width: 40rem) 
+    {
+      nav > span.left-menu > input[type="checkbox"] + label + ul > li {
+        float: none;
+        display: block;
+      }
+   
+      nav > span.left-menu > input[type="checkbox"] + label {
+        display: inline-block;
+      }
+      
+      nav > span.left-menu > input[type="checkbox"] + label + ul {
+        display: none;
+      }
+
+      nav > span.left-menu > input[type="checkbox"]:hover + label + ul,
+      nav > span.left-menu > input[type="checkbox"]:focus + label + ul,
+      nav > span.left-menu > input[type="checkbox"] + label + ul:hover {
+        display: inline-block;
+     
+
+        overflow-y: auto;
+        max-height: 50vh;
+
+        border: var(--border);
+        border-radius: 4px;
+      }
+          
+
+    }
+
+  </style>
+
+  <title>
+Improving &lt;abbr title=&quot;Vector Binarised Variational AutoEncoder&quot;&gt;VBVAE&lt;/abbr&gt;
+</title>
+  
+	
+  </head>
+
+<body style="margin-top: 0; padding-top: 0;">
+<nav>
+  <span class="left-menu">
+  <input type="checkbox" id="nav-menu" />
+  <label for="nav-menu">
+  &nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;
+  </label>
+
+  <!--<a href="#">&nbsp;<i class="fas fa-bars"></i>&nbsp;&#x25BE;</a>-->
+  <ul>
+    <!--<li class="menu-hamburger">
+    </li>-->
+    
+      
+          
+          <li>
+            <a href="/Blogs/archives/"
+            
+            
+
+            >Archives</a>                            
+          </li>
+      
+          
+          <li>
+            <a href="/Blogs/tags/"
+            
+            
+
+            >Tags</a>                            
+          </li>
+      
+    
+  </ul>
+  </span>
+
+  
+  
+
+</nav>
+
+<main style='margin-top: 4rem; padding: 0 2rem; overflow-y: hidden;'>
+  <article>
+      
+<script type="text/javascript"
+          src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS_CHTML"></script>
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    /*inlineMath: [['$','$'], ['\\(','\\)']],*/
+    inlineMath: [['$','$']],
+    processEscapes: true},
+    jax: ["input/TeX","input/MathML","input/AsciiMath","output/CommonHTML"],
+    extensions: ["tex2jax.js","mml2jax.js","asciimath2jax.js","MathMenu.js","MathZoom.js","AssistiveMML.js", "[Contrib]/a11y/accessibility-menu.js"],
+    TeX: {
+    extensions: ["AMSmath.js","AMSsymbols.js","noErrors.js","noUndefined.js"],
+    equationNumbers: {
+    autoNumber: "AMS"
+    }
+  }
+});
+</script>
+
+
+<h1>Improving <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr></h1>
+
+
+<div class="post-tags">
+  
+  <span>
+  <i class="fas fa-calendar"></i>&nbsp;<time>03.Oct.2023</time>
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Probability
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;MachineLearning
+  </span>
+  
+  
+  
+  <span>
+  <i class="fas fa-tags"></i>&nbsp;Research
+  </span>
+  
+  
+</div>
+
+
+
+<p>Designed for modelling a huge code space efficiently, <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> (if you are unfamiliar with that acronym, please refer to this <a href="../VBVAE">post</a>) has the potential and looks promising in theory; but in practice it has been observed that its capability can sometimes be undermined by the slowness of code exploration during training and the resulting inferior code space utilisation. So in this post I would like to share three simple tweaks that I have found helpful in facilitating the training of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>.</p>
+<p>For the sake of convenience, let us first borrow the symbol definition from <a href="../VBVAE">here</a> and write down the quantisation function $Qn_{\text{bi}}(v)$ of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> given the <abbr title="Restricted Boltzmann Machines">RBM</abbr> interpretation with the energy function $E_{\text{bi}}(v, h)$ and the conditional $P_{\text{bi}}(h|v)$:</p>
+<p>$$
+\begin{align}
+& E_{\text{bi}}(v, h) = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h - a^T h
+ \label{eq_E_bi_v_h} \\
+& P_{\text{bi}}(h|v) = \frac{exp(-E_{\text{bi}}(v, h))}{\sum_{\hat{h}}exp(-E_{\text{bi}}(v, \hat{h}))} \nonumber \\
+& \phantom{P_{\text{bi}}(h|v)} = \frac{exp((\overbrace{v^T \Sigma^{-0.5} C + a^T}^{= S(v)^T}) h)}{\sum_{\hat{h}} exp((\underbrace{v^T \Sigma^{-0.5} C + a^T}_{= S(v)^T}) \hat{h})} \nonumber \\
+& \phantom{P_{\text{bi}}(h|v)} = \prod_{m=1}^{K} \frac{exp(S(v)[m] * h[m])}{\sum_{\hat{h}[m] \in \{0, 1\}} exp(S(v)[m] * \hat{h}[m])} \label{eq_P_bi_h_v} \\
+& \phantom{P_{\text{bi}}(h|v)} = \prod_{m=1}^{K} P_{\text{bi}}(h[m]|v) \nonumber \\
+& \phantom{P_{\text{bi}}(h|v)} \propto \prod_{m=1}^{K} \sigma(S(v)[m]) \nonumber \\
+& Qn_{\text{bi}}(v) = \mu + \Sigma^{0.5} C (argmax_{h}P_{\text{bi}}(h|v)) \nonumber \\
+& \phantom{Qn_{\text{bi}}(v)} = \mu + \Sigma^{0.5} C (argmax_{h} \prod_{m=1}^{K} P_{\text{bi}}(h[m]|v)) \nonumber \\
+& \phantom{Qn_{\text{bi}}(v)} = \mu + \Sigma^{0.5} C 
+\begin{bmatrix} 
+argmax_{h[1]} P_{\text{bi}}(h[1]|v) \\
+\vdots \\
+argmax_{h[K]} P_{\text{bi}}(h[K]|v)
+\end{bmatrix} \label{eq_Qn_bi_v} \\
+& \phantom{Qn_{\text{bi}}(v)} = \mu + \Sigma^{0.5} C
+\begin{bmatrix}
+\lfloor \sigma(S(v)[1]) + 0.5 \rfloor \\
+\vdots \\
+\lfloor \sigma(S(v)[K]) + 0.5 \rfloor
+\end{bmatrix} \nonumber
+\end{align}
+$$</p>
+<h2 id="tweak_1">Tweak 1: using $-1$/$+1$ binarisation as opposed to $0$/$1$</h2>
+<p>While the gradients for updating the codebook in <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> are already denser than <abbr title="Vector Quantised Variational AutoEncoder">VQVAE</abbr>, those learning signals can be made even stronger with $-1$/$+1$ binarisation, to always have gradients flow to every component of the codebook embedding sapce, instead of shutting them down when the corresponding bit is $0$.</p>
+<p>Because of the <abbr title="Restricted Boltzmann Machines">RBM</abbr> interpretation, it is rather straightforward to derive the quantisation equation $Qn_{\text{-+}}(v)$ for $-1$/$+1$ binarisation, by applying the new discrete set to each entry of $h$ in $\eqref{eq_P_bi_h_v}$:</p>
+<p>$$
+\begin{aligned}
+& P_{\text{-+}}(h|v) = \prod_{m=1}^{K} \frac{exp(S(v)[m] * h[m])}{\sum_{\hat{h}[m] \in \{-1, 1\}} exp(S(v)[m] * \hat{h}[m])} \\
+& \phantom{P_{\text{-+}}(h|v)} = \prod_{m=1}^{K} \frac{exp(S(v)[m] * h[m])}{exp(S(v)[m]) + exp(-S(v)[m])} \\
+& \phantom{P_{\text{-+}}(h|v)} = \prod_{m=1}^{K} P_{\text{-+}}(h[m]|v) \\
+& P_{\text{-+}}(h[m]|v) = 
+\begin{cases}
+1.0 - (tanh(S(v)[m]) + 1.0) * 0.5, \; if \; h[m] = -1 \\
+(tanh(S(v)[m]) + 1.0) * 0.5, \; if \; h[m] = 1 \\
+\end{cases}
+\end{aligned}
+$$</p>
+<p>then rewriting $\eqref{eq_Qn_bi_v}$ accordingly:</p>
+<p>$$
+\begin{align}
+& Qn_{\text{-+}}(v) = \mu + \Sigma^{0.5} C 
+\begin{bmatrix} 
+argmax_{h[1]} P_{\text{-+}}(h[1]|v) \\
+\vdots \\
+argmax_{h[K]} P_{\text{-+}}(h[K]|v)
+\end{bmatrix} \nonumber \\
+& \phantom{Qn_{\text{-+}}(v)} = \mu + \Sigma^{0.5} C
+\begin{bmatrix}
+\begin{cases}
+-1, \; (tanh(S(v)[1]) + 1.0) * 0.5 < 0.5 \\
+1, \; (tanh(S(v)[1]) + 1.0) * 0.5 \ge 0.5 \\
+\end{cases} \\
+\vdots \\
+\end{bmatrix} \nonumber \\
+& \phantom{Qn_{\text{-+}}(v)} = \mu + \Sigma^{0.5} C
+\begin{bmatrix}
+\begin{cases}
+-1, \; tanh(S(v)[1]) < 0 \\
+1, \; tanh(S(v)[1]) \ge 0 \\
+\end{cases} \\
+\vdots \\
+\end{bmatrix} \nonumber \\
+& \phantom{Qn_{\text{-+}}(v)} = \mu + \Sigma^{0.5} C
+\begin{bmatrix}
+sign(tanh(S(v)[1])) \\
+\vdots \\
+sign(tanh(S(v)[K]))  \\
+\end{bmatrix} \label{eq_Qn_minus_plus_v}
+\end{align}
+$$</p>
+<p>where</p>
+<p>$$
+\begin{aligned}
+& sign(x) =
+\begin{cases}
+-1, \; \text{if} \; x < 0 \\
+1, \; \text{otherwise} \\
+\end{cases}
+\end{aligned}
+$$</p>
+<h2>Tweak 2: injecting autoregressive dependency into binary strings</h2>
+<p>It is well known that autoregression has the capacity of modelling complicated sequences of data; so the idea is with this technique <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr> can produce various binary strings which might be difficult to yield otherwise, resulting in better code space utilisation given the same training time.</p>
+<p>One way to inject such dependency is to modify $\eqref{eq_E_bi_v_h}$ and include an extra auxiliary variable $h_a$, of which the content is assumed given and exactly equal to $h$, plus a function $Ar()$ expressing the autoregressive relationship:</p>
+<p>$$
+\begin{aligned}
+& E_{\text{a}}(v, h, h_a) = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h - (a+Ar(h_a))^T h \\
+& \phantom{E_{\text{a}}(v, h, h_a)} = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - v^T \Sigma^{-0.5} C h \\
+& \phantom{E_{\text{a}}(v, h, h_a) =} - a^T h - \sum_i \underbrace{\big( \sum_{1 \le k < i} A[i,k] h_a[k] \big) }_{Ar(h_a)[i]} h[i] \\
+& \phantom{E_{\text{a}}(v, h, h_a)} = \frac{1}{2} (v - \mu)^T \Sigma^{-1} (v - \mu) - (v^T \Sigma^{-0.5} C + a^T) h \\
+& \phantom{E_{\text{a}}(v, h, h_a) =} - \sum_i \big( \sum_{1 \le k < i} A[i,k] h_a[k] \big) h[i]
+\end{aligned}
+$$</p>
+<p>with $A[i,k]$ being the weight of $h_a[k]$ in a linear combination formulated for $h[i]$. Following this setup, the new conditional of $h$ will be conditioned on both $v$ and $h_a$</p>
+<p>$$
+\begin{align}
+& P_{\text{a}}(h|v, h_a) = \frac{exp((\overbrace{v^T \Sigma^{-0.5} C + a^T}^{S(v)^T} + Ar(h_a)^T) h)}{\sum_{\hat{h}} exp((\underbrace{v^T \Sigma^{-0.5} C + a^T}_{S(v)^T} + Ar(h_a)^T) \hat{h})} \label{eq_P_a_h_v_h_a} \\
+& \phantom{P_{\text{a}}(h|v, h_a)} = \prod_{m=1}^K \frac{exp((S(v)[m] + Ar(h_a)[m]) h[m])}{\sum_{\hat{h}[m]} exp((S(v)[m] + Ar(h_a)[m]) \hat{h}[m])} \nonumber \\
+& \phantom{P_{\text{a}}(h|v, h_a)} = \prod_{m=1}^K \frac{exp((S(v)[m] + \sum_{1 \le k < m} A[m,k] h_a[k]) h[m])}{\sum_{\hat{h}[m]} exp((S(v)[m] + \sum_{1 \le k < m} A[m,k] h_a[k]) \hat{h}[m])} \nonumber \\
+& \phantom{P_{\text{a}}(h|v, h_a)} = \prod_{m=1}^K P_{\text{a}}(h[m]|v, h_{l,< m}) \nonumber
+\end{align}
+$$</p>
+<p>In the case of $-1$/$+1$ binarisation as discussed in <a href="#tweak_1">tweak 1</a>, the conditional above becomes:</p>
+<p>$$
+\begin{aligned}
+& P_{\text{a,-+}}(h|v, h_a) = \prod_{m=1}^K \frac{exp((S(v)[m] + \sum_{1 \le k < m} A[m,k] h_a[k]) h[m])}{\sum_{\hat{h}[m] \in \{-1, +1\}} exp((S(v)[m] + \sum_{1 \le k < m} A[m,k] h_a[k]) \hat{h}[m])} \\
+& \phantom{P_{\text{a,-+}}(h|v, h_a)} = \prod_{m=1}^K P_{\text{a,-+}}(h[m]|v, h_a) \\
+& P_{\text{a,-+}}(h[m]|v, h_a) \\
+& =
+\begin{cases}
+1.0 - (tanh(S(v)[m] + \sum_{1 \le k < m} A[m,k] h_a[k]) + 1.0) * 0.5, \; if \; h[m] = -1 \\ 
+(tanh(S(v)[m] + \sum_{1 \le k < m} A[m,k] h_a[k]) + 1.0) * 0.5, \; if \; h[m] = 1 \\
+\end{cases}
+\end{aligned}
+$$</p>
+<p>which suggests we only need to update the $tanh()$ terms in $\eqref{eq_Qn_minus_plus_v}$ to obtain the corresponding quantisation function $Qn_{\text{a,-+}}(v)$:</p>
+<p>$$
+\begin{align}
+& Qn_{\text{a,-+}}(v) = \mu + \Sigma^{0.5} C 
+\underbrace{\begin{bmatrix}
+sign(tanh(S(v)[1])) \\
+\vdots \\
+sign(tanh(S(v)[m]+\sum_{1 \le k < m} A[m,k] h_a[k]))  \\
+\vdots \\
+sign(tanh(S(v)[K]+\sum_{1 \le k < K} A[K,k] h_a[k]))  \\
+\end{bmatrix}}_{h = h_a} \label{eq_Qn_a_minus_plus}
+\end{align}
+$$</p>
+<p>Note that because $h_a$ is assumed given, entries of $h$ in $Qn_{\text{a,-+}}(v)$ needs to be calculated sequentially (autoregressively) from $1$ to $K$, in order to fulfill that assumption. While this could imply longer computation time due to lack of parallelism, the number of sequential steps $K$, and the consequential time consumption, would not usually go beyond manageability, as the size of <abbr title="Vector Binarised Variational AutoEncoder">VBVAE</abbr>'s code space grows exponetially with respect to $K$ and a samll $K$ might well be sufficient for offering a necessary capacity.</p>
+<h2>Tweak 3: decoupling shared parameters</h2>
+<p>More specifically, $S(v)$ derived from the conditional of $h$ and the quantisation function itself share two matrices $C$ and $\Sigma$; such sharing imposes unnecessary constraints on those parameters in this use case, and could possibly limit models in expressing diverse $h$. That potential impact can be minimised by just having two separate sets of matrices ($\Sigma_h$, $C_h$) and ($\Sigma_v$, $C_v$), which turns $\eqref{eq_P_a_h_v_h_a}$ and $\eqref{eq_Qn_a_minus_plus}$ into</p>
+<p>$$
+\begin{aligned}
+& P_{\text{a}}(h|v, h_a) = \frac{exp((\overbrace{v^T \Sigma_h^{-0.5} C_h + a^T}^{\hat{S}(v)^T} + Ar(h_a)^T) h)}{\sum_{\hat{h}} exp((\underbrace{v^T \Sigma_h^{-0.5} C_h + a^T}_{\hat{S}(v)^T} + Ar(h_a)^T) \hat{h})}
+\end{aligned}
+$$</p>
+<p>and</p>
+<p>$$
+\begin{aligned}
+& Qn_{\text{a,-+}}(v) = \mu + \Sigma_v^{0.5} C_v h \\
+& \phantom{Qn_{\text{a,-+}}(v)} = \mu + \Sigma_v^{0.5} C_v
+\begin{bmatrix}
+sign(tanh(\hat{S}(v)[1])) \\
+\vdots \\
+sign(tanh(\hat{S}(v)[m]+\sum_{1 \le k < m} A[m,k] h_a[k]))  \\
+\vdots \\
+sign(tanh(\hat{S}(v)[K]+\sum_{1 \le k < K} A[K,k] h_a[k]))  \\
+\end{bmatrix}
+\end{aligned}
+$$</p>
+
+</br></br></br></br>
+
+  </article>
+</main>
+
+</body>
+</html>
