@@ -264,8 +264,10 @@ summary:hover, details[open] summary, .card>p:first-child {
 .warn { --cmed: #c11; --clight: #e221; background-color: var(--clight); }
 
 /* big first letter */
-article > section:first-of-type > h2:first-of-type + p:first-letter,
-article > h2:first-of-type + p:first-letter, .lettrine {
+/* article > section:first-of-type > h2:first-of-type + p:first-letter,
+article > h2:first-of-type + p:first-letter, .lettrine { */
+article > section:first-of-type > p:first-of-type:first-letter,
+article > p:first-of-type:first-letter, .lettrine {
 	float: left;
 	font-size: 3.5em;
 	padding: 0.1em 0.1em 0 0;
